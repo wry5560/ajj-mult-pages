@@ -1,0 +1,41 @@
+import { UserLayout, BasicLayout, RouteView, BlankLayout, PageView } from '@/components/layouts'
+
+/**
+ * 基础路由
+ * @type { *[] }
+ */
+export const constantRouterMap = [
+  {
+    path: '/',
+    name: 'index',
+    component: BlankLayout,
+    meta: {},
+    redirect: '/index',
+    children:[
+      {
+        path:'/index',
+        name:'home',
+        component:()=>import(/* webpackChunkName: "index" */'@/views/Index')
+      }
+    ]
+  },
+  {
+    path: '/test',
+    component: BlankLayout,
+    redirect: '/test/home',
+    children: [
+      {
+        path: 'home',
+        name: 'TestHome',
+        component: () => import(/* webpackChunkName: "test" */'@/views/Home')
+      }
+    ]
+  },
+  {
+    path: '*', redirect: '/404', hidden: true
+  },
+  {
+    path: '/404',
+    component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
+  },
+]
