@@ -1,7 +1,7 @@
 <template>
-  <div style="width: 300px;height: 100%;position: relative">
+  <div style="width: 200px;height: 100%;position: relative">
     <a-menu
-      style="width: 300px;height: 100%"
+      style="width: 200px;height: 100%"
       @click="handleClick"
       :defaultSelectedKeys="['1']"
       :openKeys.sync="openKeys"
@@ -11,13 +11,13 @@
       <a-menu-item key="menuTitle">
         <a-icon type="idcard" />
         <a-divider type="vertical" />
-        <span>排班人员列表</span>
+        <span>排班人员顺序表</span>
       </a-menu-item>
       <a-divider :style="{margin:0}"/>
       <a-sub-menu v-for="item in renyuanList" :key="item.type" @titleClick="titleClick">
-        <span slot="title"><span>{{item.title}}</span></span>
+        <span slot="title"><span>{{ item.title }}</span></span>
         <a-menu-item v-for="(option,index) in item.nameList" :key="item.type + index">
-            {{option}}
+          {{ option }}
         </a-menu-item>
       </a-sub-menu>
     </a-menu>

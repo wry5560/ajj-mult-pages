@@ -1,12 +1,12 @@
 <template>
   <div class="index" style="height: 100%">
     <a-layout class="layout">
-          <a-layout-sider width="300px" :style="{position:'fixed',height:'100%',overflow:'auto'}">
-            <role-menu></role-menu>
-          </a-layout-sider>
-          <a-layout-content width="500px" :style="{'padding-left': '300px'}">
-            <task-table></task-table>
-          </a-layout-content>
+      <a-layout-sider width="200px" :style="{position:'fixed',height:'100%',overflow:'auto'}">
+        <role-menu></role-menu>
+      </a-layout-sider>
+      <a-layout-content :style="{ 'padding-left': '200px',overflow:'auto'}">
+        <task-table></task-table>
+      </a-layout-content>
     </a-layout>
   </div>
 </template>
