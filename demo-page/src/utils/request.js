@@ -8,6 +8,7 @@ import { ACCESS_TOKEN } from '@/store/mutation-types'
 // 创建 axios 实例
 const service = axios.create({
   baseURL: '/api', // api base_url
+  // baseURL: ' https://www.easy-mock.com/mock/5c1134372a95a012b1c7497d/api', // 测试环境
   timeout: 6000 // 请求超时时间
 })
 

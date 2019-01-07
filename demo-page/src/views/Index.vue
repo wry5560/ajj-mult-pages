@@ -43,4 +43,7 @@
   .index{
 
   }
+  .ant-layout-sider{
+    background-color: #ffffff;
+  }
 </style>
