@@ -1,7 +1,7 @@
 <template>
-  <div style="width: 200px;height: 100%;position: relative">
+  <div style="width: 300px;height: 100%;position: relative">
     <a-menu
-      style="width: 200px;height: 100%"
+      style="width: 300px;height: 100%"
       @click="handleClick"
       :defaultSelectedKeys="['1']"
       :openKeys.sync="openKeys"
@@ -14,28 +14,33 @@
         <span>排班人员顺序表</span>
       </a-menu-item>
       <a-divider :style="{margin:0}"/>
-      <a-sub-menu v-for="item in staffList" :key="item.type" @titleClick="titleClick">
+      <a-sub-menu v-for="item in staffList" :key="item.type"  v-if="item.nameList.length>0"@titleClick="titleClick">
         <span slot="title"><span>{{ item.titleText }}</span></span>
         <a-menu-item v-for="(option,index) in item.nameList" :key="item.type + index">
-          {{ option }}
+          {{ option.name }}<span style="float:right;margin-right: 20px">
+          <!--<a-icon v-if="option.mobilePhone!==''" theme="filled" style="color:#89c481; margin-right: 2px" type="phone" />-->
+          {{option.mobilePhone}}
+        </span>
         </a-menu-item>
       </a-sub-menu>
     </a-menu>
   </div>
 </template>
 <script>
-  import { axios } from '@/utils/request'
+//  import { axios } from '@/utils/request'
+
   export default {
+    props:{
+      staffList:Array
+    },
     data () {
       return {
         current: ['mail'],
         openKeys: ['juzhang'],
-        staffList:[]
+
       }
     },
-    mounted(){
-      this.initStaffList()
-    },
+
     methods: {
       handleClick (e) {
         console.log('click', e)
@@ -43,26 +48,8 @@
       titleClick (e) {
         console.log('titleClick', e)
       },
-      initStaffList(){
-        this.reqStaffList()
-          .then((res)=>{
-            console.log(JSON.stringify(res))
-            this.staffList=res.staffList
-          })
-          .catch((err)=>{
-          })
-      },
-      reqStaffList(parameter){
-        // this.tableIsLoading=true
-        return axios({
-          url: '/staffList',
-          method: 'get',
-          data: parameter,
-          headers: {
-            'Content-Type': 'application/json;charset=UTF-8'
-          }
-        })
-      }
+
+
     },
     watch: {
       openKeys (val) {

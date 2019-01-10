@@ -1,5 +1,6 @@
 import api from './index'
 import { axios } from '@/utils/request'
+import Qs from 'qs'
 
 /**
  * login func
@@ -17,6 +18,16 @@ export function login(parameter) {
     url: '/auth/login',
     method: 'post',
     data: parameter
+  })
+}
+
+export function loginAjj(parameter) {
+
+  const parameterQs=Qs.stringify(parameter)
+  return axios({
+    url: '/login.html?m=loginAjj',
+    method: 'post',
+    data: parameterQs
   })
 }
 

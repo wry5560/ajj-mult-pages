@@ -75,6 +75,7 @@
   import EditableCell from '@/views/EditableCell'
   import EditableTitleCell from '@/views/EditableTitleCell'
   import { axios } from '@/utils/request'
+  import {postSchedule}from "@/api/scheduling/schedule.js"
 
   import { mapActions } from 'vuex'
   import moment from 'moment';
@@ -87,9 +88,11 @@
       EditableCell,
       EditableTitleCell
     },
+    props:{
+      staffListProp:Array
+    },
     data () {
       return {
-        staffList: [['曾局', '王局', '张局', '李局', '席局', '陈局'], ['吴组长', '许组长', '张组长', '李组长', '席组长', '陈组长'], ['张三', '李四', '王五', '陈六'],['曾局', '王局', '张局', '李局', '席局', '陈局'],['曾局', '王局', '张局', '李局', '席局', '陈局'],],
         dateRange:{
           startDate:moment().format('YYYY-MM-DD'),
           endDate:moment().endOf('month').format('YYYY-MM-DD'),
@@ -185,6 +188,16 @@
     },
     mounted(){
         this.reqTableData()
+    },
+    computed:{
+      staffList(){
+          const staffList=[]
+        staffListProp.forEach((levelX)=>{
+          const temp=[]
+          levelX.nameList
+        })
+          return
+      }
     },
     methods: {
       moment,

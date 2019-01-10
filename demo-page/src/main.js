@@ -5,6 +5,7 @@ import router from './router'
 import store from './store/'
 import moment from 'moment';
 import 'moment/locale/zh-cn';
+import '@babel/polyfill'
 moment.locale('zh-cn');
 
 // import { VueAxios } from '@/utils/request'
@@ -59,7 +60,7 @@ new Vue({
     // store.commit('TOGGLE_COLOR', Vue.ls.get(DEFAULT_COLOR, config.primaryColor))
     // store.commit('SET_TOKEN', Vue.ls.get(ACCESS_TOKEN))
 
-    removeLoadingAnimate('preloadingWrapper')
+    // removeLoadingAnimate('preloadingWrapper')
   },
   render: h => h(App)
 }).$mount('#app')

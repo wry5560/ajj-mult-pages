@@ -7,6 +7,9 @@ function resolve (dir) {
 
 // vue.config.js
 module.exports = {
+  baseUrl:process.env.NODE_ENV === 'production'
+    ? '/asrsajj/AS_SYSTEM/paiban/'
+    : '/',
   /*
     Vue-cli3:
     Crashed when using Webpack `import()` #2463
@@ -62,6 +65,10 @@ module.exports = {
         // target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
         // target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
         target: 'https://www.easy-mock.com/mock/5c1134372a95a012b1c7497d',
+        // target: 'http://feooe.myds.me:6200/',
+        pathRewrite:{
+          // '^/api':'/asrsajj'
+        },
         ws: false,
         changeOrigin: true
       },
