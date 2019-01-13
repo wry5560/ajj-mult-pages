@@ -1,15 +1,2 @@
-{
-  "paiban":[
-    {
-      "paibandate":"2019-01-15",
-      "lv1user":"3079",
-      "lv2user":"3080",
-      "lv3user":"3084",
-      "lv4user":"3086",
-      "lv5user":""
-    }
-  ]
-}
-
-
-
+jsonData: "{"paiban":[{"key":0,"paibandate":"2019-01-11","lv1user":"测试组织管理人员"},{"key":1,"paibandate":"2019-01-12","lv1user":""},{"key":2,"paibandate":"2019-01-13","lv1user":""},{"key":3,"paibandate":"2019-01-14","lv1user":""},{"key":4,"paibandate":"2019-01-15","lv1user":"","lv2user":"安监人员1","lv3user":"测试111管理人员","lv4user":"测试小组管理人员"},{"key":5,"paibandate":"2019-01-16","lv1user":"","lv2user":"安监人员1","lv3user":"测试111管理人员","lv4user":"测试小组管理人员"},{"key":6,"paibandate":"2019-01-17","lv1user":"","lv2user":"安监人员1","lv3user":"测试111管理人员","lv4user":"测试小组管理人员"},{"key":7,"paibandate":"2019-01-18","lv1user":""},{"key":8,"paibandate":"2019-01-19","lv1user":""},{"key":9,"paibandate":"2019-01-20","lv1user":""},{"key":10,"paibandate":"2019-01-21","lv1user":""},{"key":11,"paibandate":"2019-01-22","lv1user":""},{"key":12,"paibandate":"2019-01-23","lv1user":""},{"key":13,"paibandate":"2019-01-24","lv1user":""},{"key":14,"paibandate":"2019-01-25","lv1user":""},{"key":15,"paibandate":"2019-01-26","lv1user":""},{"key":16,"paibandate":"2019-01-27","lv1user":""},{"key":17,"paibandate":"2019-01-28","lv1user":""},{"key":18,"paibandate":"2019-01-29","lv1user":""},{"key":19,"paibandate":"2019-01-30","lv1user":""},{"key":20,"paibandate":"2019-01-31","lv1user":""}]}"
+param1: "9361"

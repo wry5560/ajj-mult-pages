@@ -4,7 +4,8 @@
       <!--<a-button @click="handleAdd">Add</a-button>-->
       <a-button type='primary' @click="()=>autoArrange('all')"size="small" :style="{'margin-left':'5px'}">自动排班</a-button>
       <a-button @click="()=>clearArrange('all')"size="small">清除排班</a-button>
-      <a-button @click=""size="small">提交</a-button>
+      <a-button @click="topostSchedule"size="small">提交</a-button>
+      <a-button @click="reqTableData"size="small">刷新</a-button>
       <a-month-picker :defaultValue="dateRange.defaultMonthValue" :value="dateRange.monthPickedValue" @change="onMonthChange" placeholder="请选择月" :disabledDate="disabledMonth"size="small" />
       <a-range-picker :value="dateRange.dateRangePickedValue"@change="onRangeChange" :disabledDate="disabledDate"size="small" />
     </div>
@@ -18,54 +19,54 @@
       :pagination='false'
       :scroll="scrollSize">
       <template  slot="levelOneTitle">
-        <editable-title-cell :text="columns[1].titleText" textTitle="levelOne" @change="onTitleCellChange"/>
+        <editable-title-cell :text="columns[1].titleText" textTitle="lv1user" @change="onTitleCellChange"/>
       </template>
       <template  slot="levelTwoTitle">
-        <editable-title-cell :text="columns[2].titleText"textTitle="levelTwo" @change="onTitleCellChange"/>
+        <editable-title-cell :text="columns[2].titleText"textTitle="lv2user" @change="onTitleCellChange"/>
       </template>
       <template  slot="levelThreeTitle">
-        <editable-title-cell :text="columns[3].titleText"textTitle="levelThree" @change="onTitleCellChange"/>
+        <editable-title-cell :text="columns[3].titleText"textTitle="lv3user" @change="onTitleCellChange"/>
       </template>
       <template  slot="levelFourTitle">
-        <editable-title-cell :text="columns[4].titleText"textTitle="levelFour" @change="onTitleCellChange"/>
+        <editable-title-cell :text="columns[4].titleText"textTitle="lv4user" @change="onTitleCellChange"/>
       </template>
       <template  slot="levelFiveTitle">
-        <editable-title-cell :text="columns[5].titleText"textTitle="levelFive" @change="onTitleCellChange"/>
+        <editable-title-cell :text="columns[5].titleText"textTitle="lv5user" @change="onTitleCellChange"/>
       </template>
       <div slot="levelOneDropdown" slot-scope="{ setSelectedKeys, selectedKeys,confirm,clearFilters }" class='custom-filter-dropdown'>
-        <a-button type='primary'size="small" @click="()=>autoArrange('levelOne',confirm)">自动排班</a-button>
-        <a-button size="small"@click="()=>clearArrange('levelOne',confirm)">清除排班</a-button>
+        <a-button type='primary'size="small" @click="()=>autoArrange('lv1user',confirm)">自动排班</a-button>
+        <a-button size="small"@click="()=>clearArrange('lv1user',confirm)">清除排班</a-button>
       </div>
       <div slot="levelTwoDropdown" slot-scope="{ setSelectedKeys, selectedKeys,confirm,clearFilters }" class='custom-filter-dropdown'>
-        <a-button size="small"type='primary' @click="()=>autoArrange('levelTwo',confirm)">自动排班</a-button>
-        <a-button size="small"@click="()=>clearArrange('levelTwo',confirm)">清除排班</a-button>
+        <a-button size="small"type='primary' @click="()=>autoArrange('lv2user',confirm)">自动排班</a-button>
+        <a-button size="small"@click="()=>clearArrange('lv2user',confirm)">清除排班</a-button>
       </div>
       <div slot="levelThreeDropdown" slot-scope="{ setSelectedKeys, selectedKeys,confirm,clearFilters }" class='custom-filter-dropdown'>
-        <a-button size="small"type='primary' @click="()=>autoArrange('levelThree',confirm)">自动排班</a-button>
-        <a-button size="small"@click="()=>clearArrange('levelThree',confirm)">清除排班</a-button>
+        <a-button size="small"type='primary' @click="()=>autoArrange('lv3user',confirm)">自动排班</a-button>
+        <a-button size="small"@click="()=>clearArrange('lv3user',confirm)">清除排班</a-button>
       </div>
       <div slot="levelFourDropdown" slot-scope="{ setSelectedKeys, selectedKeys,confirm,clearFilters }" class='custom-filter-dropdown'>
-        <a-button size="small"type='primary' @click="()=>autoArrange('levelFour',confirm)">自动排班</a-button>
-        <a-button size="small"@click="()=>clearArrange('levelFour',confirm)">清除排班</a-button>
+        <a-button size="small"type='primary' @click="()=>autoArrange('lv4user',confirm)">自动排班</a-button>
+        <a-button size="small"@click="()=>clearArrange('lv4user',confirm)">清除排班</a-button>
       </div>
       <div slot="levelFiveDropdown" slot-scope="{ setSelectedKeys, selectedKeys,confirm,clearFilters }" class='custom-filter-dropdown'>
-        <a-button size="small"type='primary' @click="()=>autoArrange('levelFive',confirm)">自动排班</a-button>
-        <a-button size="small"@click="()=>clearArrange('levelFive',confirm)">清除排班</a-button>
+        <a-button size="small"type='primary' @click="()=>autoArrange('lv5user',confirm)">自动排班</a-button>
+        <a-button size="small"@click="()=>clearArrange('lv5user',confirm)">清除排班</a-button>
       </div>
       <template slot="levelOneCell" slot-scope="text, record">
-        <editable-cell :text="text" :staffList="staffList[0]":tableKey="record.key" textTitle="levelOne" @change="onCellChange"/>
+        <editable-cell :text="text" :staffList="staffList[0]":tableKey="record.key" textTitle="lv1user" @change="onCellChange"/>
       </template>
       <template slot="levelTwoCell" slot-scope="text, record">
-        <editable-cell :text="text" :staffList="staffList[1]" :tableKey="record.key" textTitle="levelTwo"@change="onCellChange"/>
+        <editable-cell :text="text" :staffList="staffList[1]" :tableKey="record.key" textTitle="lv2user"@change="onCellChange"/>
       </template>
       <template slot="levelThreeCell" slot-scope="text, record">
-        <editable-cell :text="text" :staffList="staffList[2]" :tableKey="record.key" textTitle="levelThree"@change="onCellChange"/>
+        <editable-cell :text="text" :staffList="staffList[2]" :tableKey="record.key" textTitle="lv3user"@change="onCellChange"/>
       </template>
       <template slot="levelFourCell" slot-scope="text, record">
-        <editable-cell :text="text" :staffList="staffList[3]" :tableKey="record.key" textTitle="levelFour"@change="onCellChange"/>
+        <editable-cell :text="text" :staffList="staffList[3]" :tableKey="record.key" textTitle="lv4user"@change="onCellChange"/>
       </template>
       <template slot="levelFiveCell" slot-scope="text, record">
-        <editable-cell :text="text" :staffList="staffList[4]" :tableKey="record.key" textTitle="levelFive"@change="onCellChange"/>
+        <editable-cell :text="text" :staffList="staffList[4]" :tableKey="record.key" textTitle="lv5user"@change="onCellChange"/>
       </template>
       <a-icon slot="filterIcon" slot-scope="filtered" type='ellipsis' :style="{ color: '#aaa' }" />
     </a-table>
@@ -75,8 +76,7 @@
   import EditableCell from '@/views/EditableCell'
   import EditableTitleCell from '@/views/EditableTitleCell'
   import { axios } from '@/utils/request'
-  import {postSchedule}from "@/api/scheduling/schedule.js"
-
+  import {reqSchedule,postSchedule} from "@/api/scheduling/schedule"
   import { mapActions } from 'vuex'
   import moment from 'moment';
   import {format, eachDay} from 'date-fns'
@@ -89,7 +89,15 @@
       EditableTitleCell
     },
     props:{
-      staffListProp:Array
+      staffListProp:{
+        type:Array,
+        default:[{type:'一级',titleText:'一级',nameList:[]},
+          {type:'二级',titleText:'二级',nameList:[]},
+          {type:'三级',titleText:'三级',nameList:[]},
+          {type:'四级',titleText:'四级',nameList:[]},
+          {type:'五级',titleText:'五级',nameList:[]}],
+      },
+      reqStaffListComplete:Boolean
     },
     data () {
       return {
@@ -101,89 +109,14 @@
           dateRangePickedValue:[]
         },
         scrollSize:{
+            w:1800,
             y:window.innerHeight - 85
         },
         tableIsLoading:false,
         dataSource: [],
         count: 2,
-        columns: [
-          {
-          title: '日期',
-          dataIndex: 'date',
-          width: 150,
-          align:'center',
-        },
-          {
-          titleText:"一级",
-          dataIndex: 'levelOne',
-          width: 150,
-          align:'center',
-            slots:{
-            title:'levelOneTitle'
-            },
-          scopedSlots: {
-            customRender: 'levelOneCell',
-            filterDropdown: 'levelOneDropdown',
-            filterIcon: 'filterIcon',
-          },
-        },
-          {
-            titleText:"二级",
-            dataIndex: 'levelTwo',
-          width: 150,
-          align:'center',
-            slots:{
-              title:'levelTwoTitle'
-            },
-          scopedSlots: {
-            customRender: 'levelTwoCell',
-            filterDropdown: 'levelTwoDropdown',
-            filterIcon: 'filterIcon',
-          },
-        },
-          {
-            titleText:"三级",
-          dataIndex: 'levelThree',
-            slots:{
-              title:'levelThreeTitle'
-            },
-          scopedSlots: {
-            customRender: 'levelThreeCell',
-            filterDropdown: 'levelThreeDropdown',
-            filterIcon: 'filterIcon',
-          },
-          width: 150,
-          align:'center'
-        },
-          {
-            titleText:"四级",
-            dataIndex: 'levelFour',
-            slots:{
-              title:'levelFourTitle'
-            },
-            scopedSlots: {
-              customRender: 'levelFourCell',
-              filterDropdown: 'levelFourDropdown',
-              filterIcon: 'filterIcon',
-            },
-            width: 150,
-            align:'center'
-          },
-          {
-            titleText:"五级",
-            dataIndex: 'levelFive',
-            slots:{
-              title:'levelFiveTitle'
-            },
-            scopedSlots: {
-              customRender: 'levelFiveCell',
-              filterDropdown: 'levelFiveDropdown',
-              filterIcon: 'filterIcon',
-            },
-            width: 150,
-            align:'center'
-          }
-        ],
+        loopNum:0
+
       }
     },
     mounted(){
@@ -192,32 +125,133 @@
     computed:{
       staffList(){
           const staffList=[]
-        staffListProp.forEach((levelX)=>{
-          const temp=[]
-          levelX.nameList
-        })
-          return
+        if (this.staffListProp.length>0) {this.staffListProp.forEach((levelX)=>{
+          const nameList=[]
+          levelX.nameList.forEach((item)=>{
+            nameList.push(item.name)
+          })
+          staffList.push(nameList)
+        })}
+          return staffList
+      },
+      columns(){
+        return[
+            {
+              title: '日期',
+              dataIndex: 'paibandate',
+              width: 120,
+              align:'center',
+            },
+        {
+          titleText:this.staffListProp[0].titleText,
+            dataIndex: 'lv1user',
+          width: 216,
+          align:'center',
+          slots:{
+          title:'levelOneTitle'
+        },
+          scopedSlots: {
+            customRender: 'levelOneCell',
+              filterDropdown: 'levelOneDropdown',
+              filterIcon: 'filterIcon',
+          },
+        },
+        {
+          titleText:this.staffListProp[1].titleText,
+            dataIndex: 'lv2user',
+          width: 216,
+          align:'center',
+          slots:{
+          title:'levelTwoTitle'
+        },
+          scopedSlots: {
+            customRender: 'levelTwoCell',
+              filterDropdown: 'levelTwoDropdown',
+              filterIcon: 'filterIcon',
+          },
+        },
+        {
+          titleText: this.staffListProp[2].titleText,
+            dataIndex: 'lv3user',
+          slots:{
+          title:'levelThreeTitle'
+        },
+          scopedSlots: {
+            customRender: 'levelThreeCell',
+              filterDropdown: 'levelThreeDropdown',
+              filterIcon: 'filterIcon',
+          },
+          width: 216,
+            align:'center'
+        },
+        {
+          titleText:this.staffListProp[3].titleText,
+            dataIndex: 'lv4user',
+          slots:{
+          title:'levelFourTitle'
+        },
+          scopedSlots: {
+            customRender: 'levelFourCell',
+              filterDropdown: 'levelFourDropdown',
+              filterIcon: 'filterIcon',
+          },
+          width: 216,
+            align:'center'
+        },
+        {
+          titleText:this.staffListProp[4].titleText,
+            dataIndex: 'lv5user',
+          slots:{
+          title:'levelFiveTitle'
+        },
+          scopedSlots: {
+            customRender: 'levelFiveCell',
+              filterDropdown: 'levelFiveDropdown',
+              filterIcon: 'filterIcon',
+          },
+          width: 216,
+            align:'center'
+        },
+          {
+            titleText:'',
+            dataIndex: 'other',
+            align:'center'
+          }
+      ]
       }
     },
     methods: {
       moment,
+      idToName(id,index){
+        let staff =this.staffListProp[index].nameList.find(i=>{return i.id==id})
+        if (typeof(staff)!="undefined"){
+          return staff.name
+        }else{return ''}
+      },
+      nameToId(name,index){
+        let staff=this.staffListProp[index].nameList.find(i=>{return i.name==name})
+        if (typeof(staff)!="undefined"){
+          return staff.id.toString()
+        }else{return ''}
+      },
       autoArrange(arrangeType,confirm){
         if(arrangeType=='all'){
-          this.arrange('levelOne')
-          this.arrange('levelTwo')
-          this.arrange('levelThree')
-          this.arrange('levelFour')
-          this.arrange('levelFive')
+          this.arrange('lv1user')
+          this.arrange('lv2user')
+          this.arrange('lv3user')
+          this.arrange('lv4user')
+          this.arrange('lv5user')
         }else{
           this.arrange(arrangeType)
         }
         if (confirm) confirm()
       },
       arrange(type) {
+        // debugger
         let dataSource=[]
-        const staffListIndex=['levelOne','levelTwo','levelThree','levelFour','levelFive'].findIndex((value)=>{return value==type})
+        const staffListIndex=['lv1user','lv2user','lv3user','lv4user','lv5user'].findIndex((value)=>{return value==type})
         dataSource=this.dataSource.map((item,index,arr)=>{
-          if(item[type]==' '|| null){
+          if(item[type]==''|| null){
             if (index==0){item[type]=this.staffList[staffListIndex][0]}else{
               const preValue =arr[index-1][type]
               const staffValueIndex =this.staffList[staffListIndex].findIndex((value) =>{
@@ -234,16 +268,16 @@
         let dataSource=[]
         if(clearData=='all'){
           dataSource=this.dataSource.map((item,index)=>{
-            item.levelOne=' '
-            item.levelTwo=' '
-            item.levelThree=' '
-            item.levelFour=' '
-            item.levelFive=' '
+            item.lv1user=''
+            item.lv2user=''
+            item.lv3user=''
+            item.lv4user=''
+            item.lv5user=''
             return item
           })
         }else{
           dataSource=this.dataSource.map((item,index)=>{
-            item[clearData]=' '
+            item[clearData]=''
             return item
           })
         }
@@ -294,9 +328,10 @@
         this.count = count + 1
       },
       onMonthChange(date, dateString) {
+        // debugger
         this.dateRange.monthPickedValue=date
         const tmpData =moment(date).startOf('month')
-        this.dateRange.startDate= tmpData.isBefore(moment())? moment().format('YYYY-MM-DD'): tmpData
+        this.dateRange.startDate= tmpData.isBefore(moment())? moment().format('YYYY-MM-DD'): tmpData.format('YYYY-MM-DD')
         this.dateRange.endDate=moment(date).endOf('month').format('YYYY-MM-DD')
         this.dateRange.dateRangePickedValue=[]
         this.reqTableData()
@@ -311,44 +346,94 @@
         // console.log(eachDay(date[0],date[1]))
       },
       reqTableData(){
-        //这里临时使用下假数据
+        // debugger
+        this.dataSource=[]
+        this.tableIsLoading=true
         const dateRange ={
-          startDate:this.dateRange.startDate,
-          endDate:this.dateRange.endDate
+          sqlId:'S360001',
+          limit:'10000',
+          param1:'9361',
+          param2:this.dateRange.startDate,
+          param3:this.dateRange.endDate
         }
-        this.reqSchedule(dateRange)
+        reqSchedule(dateRange)
           .then((res)=>{
+            // debugger
             // console.log(JSON.stringify(res));
-            //下面是假数据
             const dates =eachDay(this.dateRange.startDate,this.dateRange.endDate)
-            // console.log(dates)
-            const data= dates.map((date,index)=>{
-                return {
-                  key:index,
-                  date: format(date,'YYYY-MM-DD'),
-                  levelOne: '曾局',
-                  levelTwo: '吴组长',
-                  levelThree:'陈工',
-                  levelFour:'曾局',
-                  levelFive:'陈工',
-              }
+            const datas=[]
+            dates.forEach((date,index)=>{
+              datas.push({
+                key:index,
+                paibandate: format(date,'YYYY-MM-DD'),
+                lv1user:'',
+                lv2user:'',
+                lv3user:'',
+                lv4user:'',
+                lv5user:'',
+              })
             })
-            this.dataSource=data
+
+            if (res.data.length>0){res.data.forEach(item=>{
+              // debugger
+              const paibandata=datas.find(i=>{return i.paibandate ==item.paibandate})
+              paibandata.lv1user=this.idToName(item.lv1user,0)
+              paibandata.lv2user=this.idToName(item.lv2user,1)
+              paibandata.lv3user=this.idToName(item.lv3user,2)
+              paibandata.lv4user=this.idToName(item.lv4user,3)
+              paibandata.lv5user=this.idToName(item.lv5user,4)
+            })}
+            this.dataSource=datas
             this.tableIsLoading=false
+            this.initDataSource(res,datas)
+
             // console.log(data)
           })
           .catch((err)=>{
           })
       },
-      reqSchedule(parameter){
-        this.dataSource=[]
-        this.tableIsLoading=true
-        return axios({
-          url: '/schedule',
-          method: 'get',
-          data: parameter,
-          headers: {
-            'Content-Type': 'application/json;charset=UTF-8'
+      initDataSource(res,datas) {
+        // console.log(this.reqStaffListComplete)
+        // debugger
+        if (this.reqStaffListComplete==true){
+          res.data.forEach(item=>{
+            // debugger
+            const paibandata=datas.find(i=>{return i.paibandate ==item.paibandate})
+            paibandata.lv1user=this.idToName(item.lv1user,0)
+            paibandata.lv2user=this.idToName(item.lv2user,1)
+            paibandata.lv3user=this.idToName(item.lv3user,2)
+            paibandata.lv4user=this.idToName(item.lv4user,3)
+            paibandata.lv5user=this.idToName(item.lv5user,4)
+          })
+          this.loopNum=0
+        }else{
+          // debugger
+          if (this.loopNum==500){
+            this.loopNum=0
+            return}
+          this.loopNum =this.loopNum + 1
+          setTimeout(()=>{this.initDataSource(res,datas)},1000)
+        }
+      },
+      topostSchedule(){
+        const dataSource=[]
+        this.dataSource.forEach((item,index)=>{
+          const data={}
+          data.paibandate=item.paibandate
+          data.lv1user=this.nameToId(item.lv1user,0)
+          data.lv2user=this.nameToId(item.lv2user,1)
+          data.lv3user=this.nameToId(item.lv3user,2)
+          data.lv4user=this.nameToId(item.lv4user,3)
+          data.lv5user=this.nameToId(item.lv5user,4)
+          dataSource.push(data)
+        })
+        const parameter={
+        'jsonData':JSON.stringify({paiban:dataSource}),
+        'param1':'9361'
+        }
+        postSchedule(parameter).then((res)=>{
+          if (res.success) {this.$message.success('提交成功');}else{
+            this.$message.error(res.message)
           }
         })
       }
@@ -371,7 +456,7 @@
   }
 
   .editable-cell-text-wrapper {
-    padding: 5px 24px 5px 5px;
+    /*padding: 5px 24px 5px 5px;*/
   }
 
   .editable-cell-icon,

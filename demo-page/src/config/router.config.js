@@ -10,10 +10,10 @@ export const constantRouterMap = [
     name: 'index',
     component: BlankLayout,
     meta: {},
-    redirect: '/index',
+    redirect: '/index.html',
     children:[
       {
-        path:'/index',
+        path:'/index.html',
         name:'home',
         component:()=>import(/* webpackChunkName: "index" */'@/views/Index')
       }

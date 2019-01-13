@@ -1,11 +1,11 @@
 <template>
   <div class="index" style="height: 100%">
     <a-layout class="layout">
-      <a-layout-sider width="300px" :style="{position:'fixed',height:'100%',overflow:'auto'}">
-        <role-menu :staffList="staffList"></role-menu>
+      <a-layout-sider width="250px" :style="{position:'fixed',height:'100%',overflow:'auto'}">
+        <role-menu :staffListProp="staffList"></role-menu>
       </a-layout-sider>
-      <a-layout-content :style="{ 'padding-left': '300px',overflow:'auto'}">
-        <task-table :staffList="staffList"></task-table>
+      <a-layout-content :style="{ 'padding-left': '250px',overflow:'auto'}">
+        <task-table :staffListProp="staffList" :reqStaffListComplete="reqStaffListComplete"></task-table>
       </a-layout-content>
     </a-layout>
   </div>
@@ -29,11 +29,37 @@
     data () {
       return {
         pagename:'index',
-        staffList:[]
+        staffList:[
+          {type:'一级',titleText:'一级',nameList:[]},
+          {type:'二级',titleText:'二级',nameList:[]},
+          {type:'三级',titleText:'三级',nameList:[]},
+          {type:'四级',titleText:'四级',nameList:[]},
+          {type:'五级',titleText:'五级',nameList:[]}
+        ],
+        reqStaffListComplete:false
       }
     },
-    mounted(){
-      this.initStaffList()
+    beforeCreate(){
+      const parameter={
+        sqlId:'S360002',
+        limit:'10000',
+        param1:'9361'
+      }
+      reqStaffList(parameter)
+        .then((res)=>{
+//            debugger
+          console.log(JSON.stringify(res))
+          const staffList =[...this.staffList]
+          res.data.forEach(item=>{
+            staffList.forEach(level =>{
+              if (level.type===item.userlevel) level.nameList.push({name:item.name,id:item.id,sex:item.sex,mobilePhone:item.mobilePhone})
+            })
+          })
+          this.staffList=staffList
+          this.reqStaffListComplete=true
+        })
+        .catch((err)=>{
+        })
     },
     methods: {
       initStaffList(){
@@ -46,12 +72,7 @@
           .then((res)=>{
 //            debugger
             console.log(JSON.stringify(res))
-            const levelA={type:'一级',titleText:'一级',nameList:[]}
-            const levelB={type:'二级',titleText:'二级',nameList:[]}
-            const levelC={type:'三级',titleText:'三级',nameList:[]}
-            const levelD={type:'四级',titleText:'四级',nameList:[]}
-            const levelE={type:'五级',titleText:'五级',nameList:[]}
-            const staffList =[levelA,levelB,levelC,levelD,levelE]
+            const staffList =[...this.staffList]
             res.data.forEach(item=>{
               staffList.forEach(level =>{
                 if (level.type===item.userlevel) level.nameList.push({name:item.name,id:item.id,sex:item.sex,mobilePhone:item.mobilePhone})

@@ -3,7 +3,7 @@
     <div v-if="editable" class='editable-cell-input-wrapper'>
       <a-select
         :size="size"
-        style="width: 100%"
+        style="width: 168px"
         :defaultValue="getValue"
         @change="handleChange"
         @pressEnter="check"
@@ -48,7 +48,7 @@
       return {
         value: this.text,
         editable: false,
-        size:'default',
+        size:'small',
       }
     },
     computed:{

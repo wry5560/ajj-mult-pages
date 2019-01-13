@@ -7,8 +7,9 @@ import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: '/api', // api base_url
-  // baseURL: ' https://www.easy-mock.com/mock/5c1134372a95a012b1c7497d/api', // 测试环境
+  // baseURL: '/api', // api base_url
+  baseURL:process.env.NODE_ENV === 'production'
+    ? 'http://feooe.myds.me:6200/asrsajj':'/api',
   timeout: 6000 // 请求超时时间
 })
 
@@ -39,6 +40,7 @@ service.interceptors.request.use(config => {
   if (token) {
     config.headers[ 'Access-Token' ] = token // 让每个请求携带自定义 token 请根据实际情况自行修改
   }
+  // console.log(JSON.stringify(config))
   return config
 }, err)
 
