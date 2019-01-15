@@ -1,6 +1,6 @@
 <template>
   <div class='editable-cell'>
-    <div v-if="editable" class='editable-cell-input-wrapper'>
+    <div v-if="editable" class='editable-cell-input-wrapper'style="padding-right: 24px">
       <a-input
         :defaultValue="getValue"
         @change="handleChange"
@@ -9,6 +9,7 @@
       type='check'
       class='editable-cell-icon-check'
       @click="check"
+      :style="{'margin-top': '8px'}"
     />
     </div>
     <div v-else class='editable-cell-text-wrapper'@click="edit" style="padding-right: 5px">
@@ -20,7 +21,7 @@
   export default {
     props: {
       text: String,
-      textTitle:String,
+      textTitleIndex:String,
     },
     data () {
       return {
@@ -40,7 +41,7 @@
       },
       check () {
         this.editable = false
-        this.$emit('change', [this.value,this.textTitle])
+        this.$emit('change', [this.value,this.textTitleIndex])
       },
       edit () {
         this.editable = true

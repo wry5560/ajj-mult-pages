@@ -1,7 +1,7 @@
 <template>
-  <div style="width: 250px;height: 100%;position: relative">
+  <div style="width: 220px;height: 100%;position: relative">
     <a-menu
-      style="width: 250px;height: 100%"
+      style="width: 220px;height: 100%"
       @click="handleClick"
       :defaultSelectedKeys="['1']"
       mode="inline"
@@ -18,8 +18,8 @@
       <a-sub-menu v-for="item in staffListProp" :key="item.type"  v-if="item.nameList.length>0"@titleClick="titleClick">
         <span slot="title"><span>{{ item.titleText }}</span></span>
         <a-menu-item v-for="(option,index) in item.nameList" :key="item.type + index" :style="{'padding-left':'30px'}">
-          <span style="max-width: 120px;display:inline-block;overflow: hidden;white-space: nowrap;text-overflow:ellipsis">{{ option.name }}</span>
-          <span style="float:right;margin-right: 0px">
+          <span style="max-width: 100px;display:inline-block;overflow: hidden;white-space: nowrap;text-overflow:ellipsis">{{ option.name }}</span>
+          <span style="float:right;margin-right: 0px;font-size: 10px">
           <!--<a-icon v-if="option.mobilePhone!==''" theme="filled" style="color:#89c481; margin-right: 2px" type="phone" />-->
           {{option.mobilePhone}}
         </span>

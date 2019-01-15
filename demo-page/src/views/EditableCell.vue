@@ -3,11 +3,13 @@
     <div v-if="editable" class='editable-cell-input-wrapper'>
       <a-select
         :size="size"
-        style="width: 168px"
+        style="width:100%"
         :defaultValue="getValue"
         @change="handleChange"
         @pressEnter="check"
+        @blur="check"
         :defaultOpen="true"
+        notFoundContent="请选择排班人员"
       >
         <a-select-option v-for="(item,index) in staffList" :key="index">
           {{item}}
@@ -18,12 +20,11 @@
         <!--@change="handleChange"-->
         <!--@pressEnter="check"-->
       <!--/>-->
-      <a-icon
-      type='check'
-      class='editable-cell-icon-check'
-      @click="check"
-    />
-
+      <!--<a-icon-->
+      <!--type='check'-->
+      <!--class='editable-cell-icon-check'-->
+      <!--@click="check"-->
+    <!--/>-->
     </div>
     <div v-else class='editable-cell-text-wrapper'@click="edit">
       <div  style="display: inline-block">{{getValue || ' '}}</div>
@@ -60,8 +61,8 @@
       handleChange (key) {
         const value = this.staffList[key]
         this.value = value
-        // this.editable = false
-        // this.$emit('change', [this.value,this.textTitle,this.tableKey])
+        this.editable = false
+        this.$emit('change', [this.value,this.textTitle,this.tableKey])
         // debugger
       },
       check () {
@@ -72,7 +73,7 @@
         this.editable = true
       },
       clear(){
-        this.value=' '
+        this.value=''
         this.$emit('change', [this.value,this.textTitle,this.tableKey])
       }
     },

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import Storage from 'vue-ls'
-import router from './router'
+// import router from './router'
 import store from './store/'
 import moment from 'moment';
 import 'moment/locale/zh-cn';
@@ -46,7 +46,7 @@ Vue.use(Antd)
 // Vue.use(PermissionHelper)
 
 new Vue({
-  router,
+  // router,
   store,
   mounted () {
     // store.commit('SET_SIDEBAR_TYPE', Vue.ls.get(SIDEBAR_TYPE, true))

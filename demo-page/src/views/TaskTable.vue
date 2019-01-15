@@ -1,5 +1,5 @@
 <template>
-  <div class="ajj-tast-table">
+  <div class="ajj-tast-table" :style="{width:'100%'}">
     <div  class="editable-add-btn">
       <!--<a-button @click="handleAdd">Add</a-button>-->
       <a-button type='primary' @click="()=>autoArrange('all')"size="small" :style="{'margin-left':'5px'}">自动排班</a-button>
@@ -19,19 +19,19 @@
       :pagination='false'
       :scroll="scrollSize">
       <template  slot="levelOneTitle">
-        <editable-title-cell :text="columns[1].titleText" textTitle="lv1user" @change="onTitleCellChange"/>
+        <editable-title-cell :text="columns[1].titleText" textTitleIndex="0" @change="onTitleCellChange"/>
       </template>
       <template  slot="levelTwoTitle">
-        <editable-title-cell :text="columns[2].titleText"textTitle="lv2user" @change="onTitleCellChange"/>
+        <editable-title-cell :text="columns[2].titleText"textTitleIndex="1" @change="onTitleCellChange"/>
       </template>
       <template  slot="levelThreeTitle">
-        <editable-title-cell :text="columns[3].titleText"textTitle="lv3user" @change="onTitleCellChange"/>
+        <editable-title-cell :text="columns[3].titleText"textTitleIndex="2" @change="onTitleCellChange"/>
       </template>
       <template  slot="levelFourTitle">
-        <editable-title-cell :text="columns[4].titleText"textTitle="lv4user" @change="onTitleCellChange"/>
+        <editable-title-cell :text="columns[4].titleText"textTitleIndex="3" @change="onTitleCellChange"/>
       </template>
       <template  slot="levelFiveTitle">
-        <editable-title-cell :text="columns[5].titleText"textTitle="lv5user" @change="onTitleCellChange"/>
+        <editable-title-cell :text="columns[5].titleText"textTitleIndex="4" @change="onTitleCellChange"/>
       </template>
       <div slot="levelOneDropdown" slot-scope="{ setSelectedKeys, selectedKeys,confirm,clearFilters }" class='custom-filter-dropdown'>
         <a-button type='primary'size="small" @click="()=>autoArrange('lv1user',confirm)">自动排班</a-button>
@@ -109,8 +109,8 @@
           dateRangePickedValue:[]
         },
         scrollSize:{
-            w:1800,
-            y:window.innerHeight - 85
+          x:1022,
+          y:window.innerHeight - 85
         },
         tableIsLoading:false,
         dataSource: [],
@@ -134,90 +134,94 @@
         })}
           return staffList
       },
-      columns(){
-        return[
+      columns:{
+        get:function () {
+          return[
             {
               title: '日期',
               dataIndex: 'paibandate',
-              width: 120,
+              width: 122,
               align:'center',
             },
-        {
-          titleText:this.staffListProp[0].titleText,
-            dataIndex: 'lv1user',
-          width: 216,
-          align:'center',
-          slots:{
-          title:'levelOneTitle'
+            {
+              titleText:this.staffListProp[0].titleText,
+              dataIndex: 'lv1user',
+              width: 180,
+              align:'center',
+              slots:{
+                title:'levelOneTitle'
+              },
+              scopedSlots: {
+                customRender: 'levelOneCell',
+                filterDropdown: 'levelOneDropdown',
+                filterIcon: 'filterIcon',
+              },
+            },
+            {
+              titleText:this.staffListProp[1].titleText,
+              dataIndex: 'lv2user',
+              width: 180,
+              align:'center',
+              slots:{
+                title:'levelTwoTitle'
+              },
+              scopedSlots: {
+                customRender: 'levelTwoCell',
+                filterDropdown: 'levelTwoDropdown',
+                filterIcon: 'filterIcon',
+              },
+            }, {
+              titleText: this.staffListProp[2].titleText,
+              dataIndex: 'lv3user',
+              slots:{
+                title:'levelThreeTitle'
+              },
+              scopedSlots: {
+                customRender: 'levelThreeCell',
+                filterDropdown: 'levelThreeDropdown',
+                filterIcon: 'filterIcon',
+              },
+              width: 180,
+              align:'center'
+            },
+            {
+              titleText:this.staffListProp[3].titleText,
+              dataIndex: 'lv4user',
+              slots:{
+                title:'levelFourTitle'
+              },
+              scopedSlots: {
+                customRender: 'levelFourCell',
+                filterDropdown: 'levelFourDropdown',
+                filterIcon: 'filterIcon',
+              },
+              width: 180,
+              align:'center'
+            },
+            {
+              titleText:this.staffListProp[4].titleText,
+              dataIndex: 'lv5user',
+              slots:{
+                title:'levelFiveTitle'
+              },
+              scopedSlots: {
+                customRender: 'levelFiveCell',
+                filterDropdown: 'levelFiveDropdown',
+                filterIcon: 'filterIcon',
+              },
+              width: 180,
+              align:'center'
+            },
+            // {
+            //   titleText:'',
+            //   dataIndex: 'other',
+            //   align:'center'
+            // }
+          ]
         },
-          scopedSlots: {
-            customRender: 'levelOneCell',
-              filterDropdown: 'levelOneDropdown',
-              filterIcon: 'filterIcon',
-          },
-        },
-        {
-          titleText:this.staffListProp[1].titleText,
-            dataIndex: 'lv2user',
-          width: 216,
-          align:'center',
-          slots:{
-          title:'levelTwoTitle'
-        },
-          scopedSlots: {
-            customRender: 'levelTwoCell',
-              filterDropdown: 'levelTwoDropdown',
-              filterIcon: 'filterIcon',
-          },
-        },
-        {
-          titleText: this.staffListProp[2].titleText,
-            dataIndex: 'lv3user',
-          slots:{
-          title:'levelThreeTitle'
-        },
-          scopedSlots: {
-            customRender: 'levelThreeCell',
-              filterDropdown: 'levelThreeDropdown',
-              filterIcon: 'filterIcon',
-          },
-          width: 216,
-            align:'center'
-        },
-        {
-          titleText:this.staffListProp[3].titleText,
-            dataIndex: 'lv4user',
-          slots:{
-          title:'levelFourTitle'
-        },
-          scopedSlots: {
-            customRender: 'levelFourCell',
-              filterDropdown: 'levelFourDropdown',
-              filterIcon: 'filterIcon',
-          },
-          width: 216,
-            align:'center'
-        },
-        {
-          titleText:this.staffListProp[4].titleText,
-            dataIndex: 'lv5user',
-          slots:{
-          title:'levelFiveTitle'
-        },
-          scopedSlots: {
-            customRender: 'levelFiveCell',
-              filterDropdown: 'levelFiveDropdown',
-              filterIcon: 'filterIcon',
-          },
-          width: 216,
-            align:'center'
-        },
-          {
-            titleText:'',
-            dataIndex: 'other',
-            align:'center'
-          }
-      ]
+        set:function () {
+          
+        }
       }
     },
     methods: {
@@ -304,12 +308,14 @@
           }
       },
       onTitleCellChange(data){
-        const columns = [...this.columns]
-        const target = columns.find(item=>item.dataIndex===data[1])
-        if (target) {
-          target.titleText = data[0]
-          this.columns = columns
-        }
+        // const columns = [...this.columns]
+        // const target = columns.find(item=>item.dataIndex===data[1])
+        // if (target) {
+        //   target.titleText = data[0]
+        //   this.columns = columns
+
+        // }
+        this.$emit('onTitleChange', data)
         // debugger
       },
       onDelete (key) {
@@ -450,7 +456,6 @@
     position: relative;
   }
 
-  .editable-cell-input-wrapper,
   .editable-cell-text-wrapper {
     padding-right: 24px;
   }
@@ -469,7 +474,7 @@
 
   .editable-cell-icon {
     line-height: 18px;
-    display: none;
+    display: none !important;
     margin-top: 5px;
   }
 
@@ -478,7 +483,7 @@
   }
 
   .editable-cell:hover .editable-cell-icon {
-    display: inline-block;
+    display: inline-block !important;
   }
 
   .editable-cell-icon:hover,

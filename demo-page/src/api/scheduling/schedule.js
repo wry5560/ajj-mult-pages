@@ -8,7 +8,8 @@ export function reqSchedule(parameter) {
   return axios({
     url: process.env.NODE_ENV === 'production'
       ?'/base/General.query.json'
-      : '/base/General.query.json/reqSchedule',
+      // : '/base/General.query.json/reqSchedule',
+      : '/base/General.query.json',
     method: 'get',
     params: parameter,
     // headers: {
@@ -21,7 +22,8 @@ export function reqStaffList(parameter){
   return axios({
     url: process.env.NODE_ENV === 'production'
       ?'/base/General.query.json'
-      : '/base/General.query.json/reqStaffList',
+      // : '/base/General.query.json/reqStaffList',
+      : '/base/General.query.json',
     method: 'get',
     params: parameter,
   })

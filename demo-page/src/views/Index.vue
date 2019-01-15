@@ -1,11 +1,12 @@
 <template>
   <div class="index" style="height: 100%">
     <a-layout class="layout">
-      <a-layout-sider width="250px" :style="{position:'fixed',height:'100%',overflow:'auto'}">
+      <a-layout-sider width="220px" :style="{position:'fixed',height:'100%',overflow:'auto'}">
         <role-menu :staffListProp="staffList"></role-menu>
       </a-layout-sider>
-      <a-layout-content :style="{ 'padding-left': '250px',overflow:'auto'}">
-        <task-table :staffListProp="staffList" :reqStaffListComplete="reqStaffListComplete"></task-table>
+      <a-layout-content :style="{ 'padding-left': '220px',overflow:'auto'}">
+        <task-table :staffListProp="staffList" :reqStaffListComplete="reqStaffListComplete" @onTitleChange="titleChange"></task-table>
+        <!--<test-table></test-table>-->
       </a-layout-content>
     </a-layout>
   </div>
@@ -19,10 +20,12 @@
  import TaskTable from '@/views/TaskTable'
  import {loginAjj}from "@/api/login"
  import {reqStaffList} from '@/api/scheduling/schedule.js'
+  import TestTable from "@/views/TestTable";
 
   export default {
     name: 'Index',
     components: {
+      TestTable,
       RoleMenu,
       TaskTable
     },
@@ -83,6 +86,10 @@
           .catch((err)=>{
           })
       },
+      titleChange(data){
+        // debugger
+        this.staffList[data[1]].titleText=data[0]
+      }
     }
   }
 </script>

@@ -9,7 +9,7 @@ import { ACCESS_TOKEN } from '@/store/mutation-types'
 const service = axios.create({
   // baseURL: '/api', // api base_url
   baseURL:process.env.NODE_ENV === 'production'
-    ? 'http://feooe.myds.me:6200/asrsajj':'/api',
+    ? '/asrsajj':'/api',
   timeout: 6000 // 请求超时时间
 })
 
