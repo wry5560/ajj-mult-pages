@@ -7,52 +7,98 @@
     </div>
     <div>
       <a-table
-        bordered
+
         :dataSource="dataSource"
         :columns="columns"
-        :childrenColumnName="childrenColumnName"
+        :pagination="pagination "
         size="small"
         :loading="tableIsLoading"
-        :scroll="scrollSize">
+        :scroll="scrollSize"
+        @change.current="changeCurrentPage"
+        @showSizeChange="showSizeChange"
       >
-      <span slot="actionCell">
-          <a slot-scope="text" href="javascript:;">查看详情</a>
+        <!--<template slot="centerCell" >-->
+          <!--<div style="text-align:center">事故名称</div>-->
+        <!--</template>-->
+      <span slot="actionCell" slot-scope="text" >
+        <a href="javascript:;">查看详情</a>
       </span>
+
+        <template slot="status" slot-scope="isend">
+          <a-badge :status="`${isend==0 ? 'processing':'success'}`" :text="`${isend==0 ? '审批中':'已审批'}`"/>
+        </template>
       </a-table>
     </div>
   </div>
 </template>
 
 <script>
+  import {reqKuaiBaoList} from '@/api/kuaibao/kuaibao'
 
   export default{
     data(){
       return {
         scrollSize: { x:1022, y: window.innerHeight - 85},
         tableIsLoading: false,
+        pagination:{
+          total:0,
+          showSizeChanger:true,
+          showQuickJumper:true,
+          showTotal:total =>`共${total}条数据`,
+        },
         dataSource: [],
         columns: [
-          {titleText: '编号', dataIndex: 'ID', width: 60, align: 'center',},
-          {titleText: '事故名称', dataIndex: 'accidentNmae', width: 150, align: 'center',},
-          {titleText: '上报时间', dataIndex: 'time', width: 150, align: 'center',},
-          {titleText: '上报人', dataIndex: 'actionPersion', width: 150, align: 'center',},
-          {titleText: '审批状态', dataIndex: 'state', width: 150, align: 'center',},
-          {titleText: '流程节点', dataIndex: 'processNode', width: 150, align: 'center',},
-          {titleText: '操作', dataIndex: 'actions', width: 150, align: 'center', scopedSlots: {customRender: 'actionCell'}},
+          {title: '编号', dataIndex: 'id', width: 95, align: 'center',},
+          {title: '事故名称',dataIndex: 'sgnm', width: 100, align: 'left',slots:{title:'centerCell'}},
+          {title: '上报时间', dataIndex: 'uptime', width: 100, align: 'center',},
+          {title: '上报人', dataIndex: 'upuser', width: 100, align: 'center',},
+          {title: '审批状态', dataIndex: 'isend', width: 100, align: 'center',scopedSlots: {customRender: 'status'}},
+          {title: '流程节点', dataIndex: 'dqlc', width: 100, align: 'center',},
+          {title: '续报数量', dataIndex: 'xbNum', width: 100, align: 'center',},
+          {title: '操作', dataIndex: 'actions', width: 100, align: 'center', scopedSlots: {customRender: 'actionCell'}},
 //         {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
         ],
         innerColumns: [
-          {titleText: '编号', dataIndex: 'ID', width: 60, align: 'center',},
-          {titleText: '事故名称', dataIndex: 'accidentNmae', width: 150, align: 'center',},
-          {titleText: '上报时间', dataIndex: 'time', width: 150, align: 'center',},
-          {titleText: '上报人', dataIndex: 'actionPersion', width: 150, align: 'center',},
-          {titleText: '审批状态', dataIndex: 'state', width: 150, align: 'center',},
-          {titleText: '流程节点', dataIndex: 'processNode', width: 150, align: 'center',},
-          {titleText: '操作', dataIndex: 'actions', width: 150, align: 'center', scopedSlots: {customRender: 'actionCell'}},
+          {title: '编号', dataIndex: 'xbid', width: 60, align: 'center',},
+          {title: '事故名称', dataIndex: 'sgnm', width: 150, align: 'center',},
+          {title: '续报时间', dataIndex: 'xbtime', width: 150, align: 'center',},
+          {title: '上报人', dataIndex: 'upuser', width: 150, align: 'center',},
+          {title: '审批状态', dataIndex: 'isend', width: 150, align: 'center',},
+          {title: '流程节点', dataIndex: 'dqlc', width: 150, align: 'center',},
+          {title: '操作', dataIndex: 'actions', width: 150, align: 'center', scopedSlots: {customRender: 'actionCell'}},
         ]
       }
     },
+    created(){
+      this.reqTableData()
+    },
     methods:{
+      reqTableData(parameter){
+        reqKuaiBaoList(parameter)
+          .then((res)=>{
+            if(res.success){
+              this.initDataSource(res)
+            }else{
+              this.$message.error(res.message)
+            }
+          })
+          .catch(err=>{})
+      },
+      initDataSource(res){
+        // debugger
+        const tempData = res.data.filter(i=>{return !i.xbid || i.xbid == ''})
+        this.dataSource = tempData
+        this.pagination.total=res.totalCount
+      },
+      changeCurrentPage(page){
+        console.log(JSON.stringify(page))
+      },
+      showSizeChange(current, size){
+        console.log(current)
+        console.log(size)
+      }
+    },
+    watch:{
 
     }
   }

@@ -7,12 +7,12 @@
 import { axios } from '@/utils/request'
 import Qs from 'qs'
 
-export function reqSchedule(parameter) {
+export function reqKuaiBaoList(parameter) {
   return axios({
     url: process.env.NODE_ENV === 'production'
       ?'/base/General.query.json'
       // : '/base/General.query.json/reqSchedule',
-      : '/base/General.query.json',
+      : '/kuaibaoList',
     method: 'get',
     params: parameter,
     // headers: {
