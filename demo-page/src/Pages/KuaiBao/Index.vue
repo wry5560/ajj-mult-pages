@@ -54,7 +54,7 @@
           {title: '上报人', dataIndex: 'upuser', width: 100, align: 'center',},
           {title: '审批状态', dataIndex: 'isend', width: 100, align: 'center',scopedSlots: {customRender: 'status'}},
           {title: '流程节点', dataIndex: 'dqlc', width: 100, align: 'center',},
-          {title: '续报数量', dataIndex: 'xbNum', width: 100, align: 'center',},
+          {title: '续报数', dataIndex: 'xbNum', width: 30, align: 'center',},
           {title: '操作', dataIndex: 'actions', width: 100, align: 'center', scopedSlots: {customRender: 'actionCell'}},
 //         {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
         ],
