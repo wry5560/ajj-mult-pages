@@ -1,4 +1,7 @@
 /**
+ * Created by Jeremy Wang on 2019-01-16.
+ */
+/**
  * Created by Jeremy Wang on 2019-01-03.
  */
 import { axios } from '@/utils/request'
@@ -18,32 +21,11 @@ export function reqSchedule(parameter) {
   })
 }
 
-export function reqStaffList(parameter){
-  return axios({
-    url: process.env.NODE_ENV === 'production'
-      ?'/base/General.query.json'
-      // : '/base/General.query.json/reqStaffList',
-      : '/base/General.query.json',
-    method: 'get',
-    params: parameter,
-  })
-}
 
 export function postSchedule(parameter){
   // this.tableIsLoading=true
   return axios({
     url: '/other/Ajjsgkb.savePaiban.jsonp',
-    method: 'post',
-    data: parameter,
-    headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
-    }
-  })
-}
-
-export function levelName(parameter){
-  return axios({
-    url: 'other/Ajjsgkb.saveAlias.jsonp',
     method: 'post',
     data: parameter,
     headers: {

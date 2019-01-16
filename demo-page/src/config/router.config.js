@@ -15,7 +15,7 @@ export const constantRouterMap = [
       {
         path:'/index.html',
         name:'home',
-        component:()=>import(/* webpackChunkName: "index" */'@/views/TestTable')
+        component:()=>import(/* webpackChunkName: "index" */'@/views/test/TestTable')
       },
     ]
   },
@@ -36,6 +36,6 @@ export const constantRouterMap = [
   },
   {
     path: '/404',
-    component: () => import(/* webpackChunkName: "fail" */ '@/views/Index')
+    component: () => import(/* webpackChunkName: "fail" */ '@/views/PaiBan/Index')
   },
 ]

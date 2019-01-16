@@ -26,7 +26,7 @@
       <!--@click="check"-->
     <!--/>-->
     </div>
-    <div v-else class='editable-cell-text-wrapper'@click="edit">
+    <div v-else class='editable-cell-text-wrapper' @click="edit">
       <div  style="display: inline-block">{{getValue || ' '}}</div>
     <!--<a-icon type='edit' class='editable-cell-icon'  />-->
       <a-icon
@@ -71,6 +71,7 @@
       },
       edit () {
         this.editable = true
+        console.log('cell edit')
       },
       clear(){
         this.value=''

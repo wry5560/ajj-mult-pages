@@ -73,8 +73,8 @@
   </div>
 </template>
 <script>
-  import EditableCell from '@/views/EditableCell'
-  import EditableTitleCell from '@/views/EditableTitleCell'
+  import EditableCell from './EditableCell'
+  import EditableTitleCell from './EditableTitleCell'
   import { axios } from '@/utils/request'
   import {reqSchedule,postSchedule} from "@/api/scheduling/schedule"
   import { mapActions } from 'vuex'
@@ -91,11 +91,11 @@
     props:{
       staffListProp:{
         type:Array,
-        default:[{type:'一级',titleText:'一级',nameList:[]},
-          {type:'二级',titleText:'二级',nameList:[]},
-          {type:'三级',titleText:'三级',nameList:[]},
-          {type:'四级',titleText:'四级',nameList:[]},
-          {type:'五级',titleText:'五级',nameList:[]}],
+        default:[{type:'一级',titleText:' ',nameList:[]},
+          {type:'二级',titleText:' ',nameList:[]},
+          {type:'三级',titleText:' ',nameList:[]},
+          {type:'四级',titleText:' ',nameList:[]},
+          {type:'五级',titleText:' ',nameList:[]}],
       },
       reqStaffListComplete:Boolean
     },
@@ -272,16 +272,16 @@
         let dataSource=[]
         if(clearData=='all'){
           dataSource=this.dataSource.map((item,index)=>{
-            item.lv1user=''
-            item.lv2user=''
-            item.lv3user=''
-            item.lv4user=''
-            item.lv5user=''
+            item.lv1user=' '
+            item.lv2user=' '
+            item.lv3user=' '
+            item.lv4user=' '
+            item.lv5user=' '
             return item
           })
         }else{
           dataSource=this.dataSource.map((item,index)=>{
-            item[clearData]=''
+            item[clearData]=' '
             return item
           })
         }
@@ -359,6 +359,7 @@
           sqlId:'S360001',
           limit:'10000',
           param1:'9361',
+//          param1:process.env.NODE_ENV === 'production'? departmentId:'9361',
           param2:this.dateRange.startDate,
           param3:this.dateRange.endDate
         }
@@ -423,7 +424,7 @@
       },
       topostSchedule(){
         const dataSource=[]
-        this.dataSource.forEach((item,index)=>{
+        this.dataSource.forEach((item)=>{
           const data={}
           data.paibandate=item.paibandate
           data.lv1user=this.nameToId(item.lv1user,0)
@@ -436,6 +437,7 @@
         const parameter={
         'jsonData':JSON.stringify({paiban:dataSource}),
         'param1':'9361'
+//          param1:process.env.NODE_ENV === 'production'? departmentId:'9361',
         }
         postSchedule(parameter).then((res)=>{
           if (res.success) {this.$message.success('提交成功');}else{

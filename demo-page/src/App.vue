@@ -11,8 +11,8 @@
   import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN'
   // import enquireScreen from '@/utils/device'
   // import { version } from 'ant-design-vue'
-  import IndexPage from '@/views/Index'
-  // import TestTable from '@/views/TestTable'
+  import IndexPage from '@/Pages/KuaiBao/Index'
+
 
   export default {
     components:{
