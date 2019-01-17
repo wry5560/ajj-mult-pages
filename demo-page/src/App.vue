@@ -1,8 +1,8 @@
 <template>
   <a-locale-provider :locale="locale">
     <div id="app">
+      <alive-route-view></alive-route-view>
       <!--<router-view/>-->
-      <index-page></index-page>
       <!--<test-table></test-table>-->
     </div>
   </a-locale-provider>
@@ -12,12 +12,17 @@
   // import enquireScreen from '@/utils/device'
   // import { version } from 'ant-design-vue'
   import IndexPage from '@/Pages/KuaiBao/Index'
-
+  import AliveRouteView from '@/components/layouts/RouteView'
 
   export default {
+
     components:{
       IndexPage,
+      AliveRouteView
       // TestTable
+    },
+    created(){
+      console.log("baseUrl:"+ process.env.BASE_URL)
     },
     data () {
       return {

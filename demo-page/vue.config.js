@@ -8,7 +8,8 @@ function resolve (dir) {
 // vue.config.js
 module.exports = {
   baseUrl:process.env.NODE_ENV === 'production'
-    ? '/asrsajj/90_asrs/sgkb/paiban_v/'
+    // ? '/asrsajj/90_asrs/sgkb/paiban_v/'
+    ? '/asrsajj/AS_SYSTEM/sgkb/sgsb/'
     : '/',
   /*
     Vue-cli3:

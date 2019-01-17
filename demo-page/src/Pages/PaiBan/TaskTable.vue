@@ -1,6 +1,6 @@
 <template>
   <div class="ajj-tast-table" :style="{width:'100%'}">
-    <div  class="editable-add-btn">
+    <div  class="header-buttons-bar">
       <!--<a-button @click="handleAdd">Add</a-button>-->
       <a-button type='primary' @click="()=>autoArrange('all')"size="small" :style="{'margin-left':'5px'}">自动排班</a-button>
       <a-button @click="()=>clearArrange('all')"size="small">清除排班</a-button>

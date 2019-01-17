@@ -1,9 +1,9 @@
 <template>
   <div class="kuaibao-index">
-    <div  class="editable-add-btn">
+    <div  class="header-buttons-bar">
       <!--<a-button @click="handleAdd">Add</a-button>-->
-      <a-button type='primary' @click=""size="small" :style="{'margin-left':'5px'}">事故上报</a-button>
-      <a-button @click=""size="small">刷新</a-button>
+      <a-button type='primary' @click="showModal"size="small" :style="{'margin-left':'5px'}">事故上报</a-button>
+      <a-button @click="reqTableData"size="small">刷 新</a-button>
     </div>
     <div>
       <a-table
@@ -15,19 +15,18 @@
         :scroll="scrollSize"
         @change.current="changeCurrentPage"
         @showSizeChange="showSizeChange"
+        :indentSize= 20
 
-        :indentSize= 60
       >
         <!--<template slot="centerCell" >-->
           <!--<div style="text-align:center">事故名称</div>-->
         <!--</template>-->
-        <span slot="actionCell" slot-scope="text" >
-        <a href="javascript:;">查看详情</a>
-      </span>
+        <span slot="actionCell" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="gotoSgDetail(record.id)">查看详情</a>
+        </span>
         <template slot="status" slot-scope="isend">
           <a-badge :status="`${isend==0 ? 'processing':'success'}`" :text="`${isend==0 ? '审批中':'已审批'}`"/>
         </template>
-
         <!--<a-table-->
           <!--slot="expandedRowRender"-->
           <!--slot-scope="record, index, indent, expanded"-->
@@ -49,6 +48,62 @@
       </a-table>
       <a-pagination v-model="pagination.current" style="margin-top: 8px;float:right":total="pagination.total" showSizeChanger showQuickJumper :showTotal="total => `共${total}条数据`" @change="changeCurrentPage" @showSizeChange="showSizeChange"/>
     </div>
+    <a-modal
+      title="事故上报"
+      okText="上 报"
+      :visible="modalOption.visible"
+      @ok="sgCommit"
+      @cancel="modalCancel"
+      :destroyOnClose="true"
+      :maskClosable="false"
+      wrapClassName="nomal-modal"
+      width="70%"
+      :bodyStyle="modalOption.bodyStyle"
+      :okButtonProps="modalOption.okButtonProps"
+      :cancelButtonProps="modalOption.cancelButtonProps"
+    >
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+      <p>1111111111111111111111111111</p>
+
+    </a-modal>
   </div>
 </template>
 
@@ -58,6 +113,23 @@
   export default{
     data(){
       return {
+        modalOption:{
+          visible:false,
+          bodyStyle:{
+            "max-height":window.innerHeight-250+'px',
+            "min-height":100
+          },
+          okButtonProps:{
+            props:{
+              size:'small'
+            }
+          },
+          cancelButtonProps:{
+            props:{
+              size:'small'
+            }
+          },
+        },
         scrollSize: { x:1022, y: window.innerHeight - 120},
         tableIsLoading: false,
         pagination:{
@@ -66,7 +138,7 @@
         },
         dataSource: [],
         columns: [
-          {title: '编号', dataIndex: 'id', width: 100, key:'id',align: 'center',},
+          {title: '编号', dataIndex: 'id', width: 120, key:'id',align: 'center',},
           {title: '事故名称',dataIndex: 'sgnm', width: 100,key:'sgnm', align: 'left',slots:{title:'centerCell'}},
           {title: '上报时间', dataIndex: 'uptime', width: 100, key:'uptime',align: 'center',},
           {title: '上报人', dataIndex: 'upuser', width: 100,key:'upuser', align: 'center',},
@@ -88,11 +160,38 @@
         ]
       }
     },
+    computed:{
+    },
     created(){
       this.reqTableData()
     },
+    mounted(){
+      console.log(this.modalOption)
+      let _this=this
+      window.onresize = function(){
+        console.log(_this.modalOption.bodyStyle['max-height'])
+        _this.modalOption.bodyStyle['max-height']= window.innerHeight-250+'px'
+      }
+    },
     methods:{
+      showModal(){
+        this.modalOption.visible=true
+      },
+      sgCommit(){
+        this.modalOption.visible=false
+      },
+      modalCancel(){
+        this.modalOption.visible=false
+      },
+      gotoSgsb(){
+        this.$router.push('/sgsb')
+      },
+      gotoSgDetail(id){
+        console.log("id:"+id)
+        this.$router.push('/sgDetail')
+      },
       reqTableData(parameter){
+        this.tableIsLoading=true
         reqKuaiBaoList(parameter)
           .then((res)=>{
             if(res.success){
@@ -122,6 +221,7 @@
 
         this.dataSource = tempData
         this.pagination.total=res.totalCount
+        this.tableIsLoading=false
       },
       changeCurrentPage(page, pageSize){
         console.log(page)
@@ -130,21 +230,19 @@
       showSizeChange(current, size){
         console.log(current)
         console.log(size)
-      }
+      },
+      routeChange(to,from){
+        if(from.path=='/sgsb'){
+          this.reqTableData()
+        }
+      },
     },
-    watch:{
 
-    }
   }
 </script>
 
 <style lang="scss">
-  .editable-add-btn {
-    margin: 4px 0;
-    button{
-      margin-right: 6px;
-    }
-  }
+
 
 
 </style>

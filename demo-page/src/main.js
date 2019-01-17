@@ -1,14 +1,15 @@
 import Vue from 'vue'
 import App from './App.vue'
 import Storage from 'vue-ls'
-// import router from './router'
+import router from './router'
 import store from './store/'
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import '@babel/polyfill'
+import './main.scss'
 moment.locale('zh-cn');
 
-// import { VueAxios } from '@/utils/request'
+import { VueAxios } from '@/utils/request'
 
 import Antd from 'ant-design-vue'
 import Viser from 'viser-vue'
@@ -39,14 +40,14 @@ Vue.config.productionTip = false
 
 Vue.use(Storage, config.storageOptions)
 Vue.use(Antd)
-// Vue.use(VueAxios, router)
+Vue.use(VueAxios, router)
 
 //图表组件
 // Vue.use(Viser)
 // Vue.use(PermissionHelper)
 
 new Vue({
-  // router,
+  router,
   store,
   mounted () {
     // store.commit('SET_SIDEBAR_TYPE', Vue.ls.get(SIDEBAR_TYPE, true))
