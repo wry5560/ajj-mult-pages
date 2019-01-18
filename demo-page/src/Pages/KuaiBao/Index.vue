@@ -16,13 +16,14 @@
         @change.current="changeCurrentPage"
         @showSizeChange="showSizeChange"
         :indentSize= 20
-
       >
         <!--<template slot="centerCell" >-->
           <!--<div style="text-align:center">事故名称</div>-->
         <!--</template>-->
         <span slot="actionCell" slot-scope="text,record,index" >
           <a href="javascript:;" @click="gotoSgDetail(record.id)">查看详情</a>
+          <a-divider v-if="record.xbid==0" type="vertical" />
+          <a v-if="record.xbid==0" href="javascript:;" @click="">续报</a>
         </span>
         <template slot="status" slot-scope="isend">
           <a-badge :status="`${isend==0 ? 'processing':'success'}`" :text="`${isend==0 ? '审批中':'已审批'}`"/>
@@ -51,9 +52,8 @@
     <a-modal
       title="事故上报"
       okText="上 报"
-      :visible="modalOption.visible"
-      @ok="sgCommit"
       @cancel="modalCancel"
+      :visible="modalOption.visible"
       :destroyOnClose="true"
       :maskClosable="false"
       wrapClassName="nomal-modal"
@@ -62,55 +62,22 @@
       :okButtonProps="modalOption.okButtonProps"
       :cancelButtonProps="modalOption.cancelButtonProps"
     >
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-      <p>1111111111111111111111111111</p>
-
+      <sg-form ref="sgCommit" :showSubmit="false"></sg-form>
+      <template slot="footer">
+        <a-button key="back" @click="modalCancel">返 回</a-button>
+        <a-button key="submit" type="primary" :loading="modalOption.commitLoading" @click="sgCommit">上 报</a-button>
+      </template>
     </a-modal>
   </div>
 </template>
 
 <script>
-  import {reqKuaiBaoList} from '@/api/kuaibao/kuaibao'
-
+  import {reqKuaiBaoList,postSchedule} from '@/api/kuaibao/kuaibao'
+  import SgForm from './sgForm.vue'
   export default{
+    components:{
+      SgForm
+    },
     data(){
       return {
         modalOption:{
@@ -119,16 +86,7 @@
             "max-height":window.innerHeight-250+'px',
             "min-height":100
           },
-          okButtonProps:{
-            props:{
-              size:'small'
-            }
-          },
-          cancelButtonProps:{
-            props:{
-              size:'small'
-            }
-          },
+          commitLoading:false
         },
         scrollSize: { x:1022, y: window.innerHeight - 120},
         tableIsLoading: false,
@@ -178,9 +136,34 @@
         this.modalOption.visible=true
       },
       sgCommit(){
-        this.modalOption.visible=false
+        this.$refs.sgCommit.form.validateFields((err, values) => {
+//            debugger
+          if (!err) {
+//            this.$notification['error']({
+//              message: 'Received values of form:',
+//              description: JSON.stringify(values)
+//            })
+            this.modalOption.commitLoading=true
+            postSchedule().then((res)=>{
+                if (res.success==true){
+                  this.$message.success('上报成功！')
+                  setTimeout(()=>{
+                      this.modalOption.commitLoading=false
+                      this.modalOption.visible=false
+                    }
+                    ,500
+                  )
+                }else{
+                  this.$message.error(res.message+'请稍后再试！')
+                  this.modalOption.commitLoading=false
+                }
+            })
+          }
+        })
+//        this.modalOption.visible=false
       },
       modalCancel(){
+        this.modalOption.commitLoading=false
         this.modalOption.visible=false
       },
       gotoSgsb(){

@@ -25,7 +25,7 @@ export function reqKuaiBaoList(parameter) {
 export function postSchedule(parameter){
   // this.tableIsLoading=true
   return axios({
-    url: '/other/Ajjsgkb.savePaiban.jsonp',
+    url: '/sgCommit',
     method: 'post',
     data: parameter,
     headers: {
