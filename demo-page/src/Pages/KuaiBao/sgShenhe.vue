@@ -2,8 +2,15 @@
   <div class="kuaibao-index">
     <div  class="header-buttons-bar">
       <!--<a-button @click="handleAdd">Add</a-button>-->
-      <a-button type='primary' @click="showModal"size="small" :style="{'margin-left':'5px'}">事故上报</a-button>
-      <a-button @click="reqTableData"size="small">刷 新</a-button>
+      <a-tabs>
+        <a-tab-pane  key="1">
+          <a-badge slot="tab" count="5">
+            <div >待审核</div>
+          </a-badge>
+        </a-tab-pane>
+        <a-tab-pane tab="已审核" key="2"></a-tab-pane>
+        <a-button slot="tabBarExtraContent">Extra Action</a-button>
+      </a-tabs>
     </div>
     <div>
       <a-table
@@ -18,7 +25,7 @@
         :indentSize= 20
       >
         <!--<template slot="centerCell" >-->
-          <!--<div style="text-align:center">事故名称</div>-->
+        <!--<div style="text-align:center">事故名称</div>-->
         <!--</template>-->
         <span slot="actionCell" slot-scope="text,record,index" >
           <a href="javascript:;" @click="gotoSgDetail(record.id)">查看详情</a>
@@ -28,24 +35,6 @@
         <template slot="status" slot-scope="isend">
           <a-badge :status="`${isend==0 ? 'processing':'success'}`" :text="`${isend==0 ? '审批中':'已审批'}`"/>
         </template>
-        <!--<a-table-->
-          <!--slot="expandedRowRender"-->
-          <!--slot-scope="record, index, indent, expanded"-->
-          <!--:columns="innerColumns"-->
-          <!--:dataSource="record.xbList"-->
-          <!--size="small"-->
-          <!--:pagination="false"-->
-          <!--:showHeader="false"-->
-
-        <!--&gt;-->
-          <!--<span slot="actionCell" slot-scope="text" >-->
-            <!--<a href="javascript:;">查看详情</a>-->
-          <!--</span>-->
-          <!--<template slot="status" slot-scope="isend">-->
-            <!--<a-badge :status="`${isend==0 ? 'processing':'success'}`" :text="`${isend==0 ? '审批中':'已审批'}`"/>-->
-          <!--</template>-->
-        <!--</a-table>-->
-
       </a-table>
       <a-pagination v-model="pagination.current" style="margin-top: 8px;float:right":total="pagination.total" showSizeChanger showQuickJumper :showTotal="total => `共${total}条数据`" @change="changeCurrentPage" @showSizeChange="showSizeChange"/>
     </div>
@@ -106,16 +95,16 @@
           {title: '操作', dataIndex: 'actions', width: 100, key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
 //         {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
         ],
-        // innerColumns: [
-        //   {title: '编号', dataIndex: 'id', width: 100, key:'id',align: 'center',},
-        //   {title: '事故名称',dataIndex: 'sgnm', width: 100,key:'sgnm', align: 'left',slots:{title:'centerCell'}},
-        //   {title: '上报时间', dataIndex: 'uptime', width: 100, key:'uptime',align: 'center',},
-        //   {title: '上报人', dataIndex: 'upuser', width: 100,key:'upuser', align: 'center',},
-        //   {title: '审批状态', dataIndex: 'isend', width: 100,key:'isend', align: 'center',scopedSlots: {customRender: 'status'}},
-        //   {title: '流程节点', dataIndex: 'dqlc', width: 100, key:'dqlc',align: 'center',},
-        //   {title: '续报数', dataIndex: 'xbNum', width: 50,key:'xbNum', align: 'center',},
-        //   {title: '操作', dataIndex: 'actions', width: 100, key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
-        // ]
+        innerColumns: [
+          {title: '编号', dataIndex: 'id', width: 100, key:'id',align: 'center',},
+          {title: '事故名称',dataIndex: 'sgnm', width: 100,key:'sgnm', align: 'left',slots:{title:'centerCell'}},
+          {title: '上报时间', dataIndex: 'uptime', width: 100, key:'uptime',align: 'center',},
+          {title: '上报人', dataIndex: 'upuser', width: 100,key:'upuser', align: 'center',},
+          {title: '审批状态', dataIndex: 'isend', width: 100,key:'isend', align: 'center',scopedSlots: {customRender: 'status'}},
+          {title: '流程节点', dataIndex: 'dqlc', width: 100, key:'dqlc',align: 'center',},
+          {title: '续报数', dataIndex: 'xbNum', width: 50,key:'xbNum', align: 'center',},
+          {title: '操作', dataIndex: 'actions', width: 100, key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
+        ]
       }
     },
     computed:{
@@ -145,18 +134,18 @@
 //            })
             this.modalOption.commitLoading=true
             postSchedule().then((res)=>{
-                if (res.success==true){
-                  this.$message.success('上报成功！')
-                  setTimeout(()=>{
-                      this.modalOption.commitLoading=false
-                      this.modalOption.visible=false
-                    }
-                    ,500
-                  )
-                }else{
-                  this.$message.error(res.message+'请稍后再试！')
-                  this.modalOption.commitLoading=false
-                }
+              if (res.success==true){
+                this.$message.success('上报成功！')
+                setTimeout(()=>{
+                    this.modalOption.commitLoading=false
+                    this.modalOption.visible=false
+                  }
+                  ,500
+                )
+              }else{
+                this.$message.error(res.message+'请稍后再试！')
+                this.modalOption.commitLoading=false
+              }
             })
           }
         })
@@ -192,12 +181,12 @@
           data.children=[]
           data.key=index
           res.data.forEach((item,itemIndex)=>{
-              if(item.id==data.id && item.xbid && item.xbid>0){
-                  item.id=item.id + item.xbid
-                  item.key=item.id + item.xbid+itemIndex
-                item.xbNum='-'
-                  data.children.push(item)
-              }
+            if(item.id==data.id && item.xbid && item.xbid>0){
+              item.id=item.id + item.xbid
+              item.key=item.id + item.xbid+itemIndex
+              item.xbNum='-'
+              data.children.push(item)
+            }
           })
           data.xbNum=data.children.length
         })
@@ -225,7 +214,11 @@
 </script>
 
 <style lang="scss">
-
+  .kuaibao-index{
+    .ant-tabs-bar{
+      margin:0 !important;
+    }
+  }
 
 
 </style>

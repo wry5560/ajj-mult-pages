@@ -19,7 +19,7 @@
  import RoleMenu from './RoleMenu'
  import TaskTable from './TaskTable'
  import {loginAjj}from "@/api/login"
- import {reqStaffList,levelName} from '@/api/scheduling/schedule.js'
+ import {reqStaffList,levelName} from './api'
 
   export default {
     name: 'Index',
@@ -51,7 +51,7 @@
       reqStaffList(parameter)
         .then((res)=>{
 //            debugger
-          console.log(JSON.stringify(res))
+//           console.log(JSON.stringify(res))
           const staffList =[...this.staffList]
           res.data.forEach(item=>{
             staffList.forEach(level=>{

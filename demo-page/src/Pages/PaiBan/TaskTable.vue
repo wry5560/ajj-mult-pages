@@ -76,7 +76,7 @@
   import EditableCell from './EditableCell'
   import EditableTitleCell from './EditableTitleCell'
   import { axios } from '@/utils/request'
-  import {reqSchedule,postSchedule} from "@/api/scheduling/schedule"
+  import {reqSchedule,postSchedule} from "./api"
   import { mapActions } from 'vuex'
   import moment from 'moment';
   import {format, eachDay} from 'date-fns'

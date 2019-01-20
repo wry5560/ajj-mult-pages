@@ -129,7 +129,7 @@
 <style lang="scss">
   body {
     // 打开滚动条固定显示
-    overflow-y: scroll;
+    /*overflow-y: scroll;*/
 
     &.colorWeak {
       filter: invert(80%);

@@ -4,7 +4,19 @@ export const constantRouterMap = [
     name: 'index',
     component: ()=>import(/* webpackChunkName: "index" */'@/Pages/KuaiBao/Index'),
     meta: {keepAlive:true},
-    // redirect: '/index.html',
+  },
+  {
+    path: '/shenhe',
+    name: '/shenhe',
+    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/KuaiBao/sgShenhe'),
+    // redirect: '/test/home',
+    // children: [
+    //   {
+    //     path: 'home',
+    //     name: 'TestHome',
+    //     component: () => import(/* webpackChunkName: "test" */'@/views/Home')
+    //   }
+    // ]
   },
   {
     path: '/sgsb',

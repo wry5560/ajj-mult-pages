@@ -34,3 +34,12 @@
     line-height: 40px;
   }
 }
+
+//antd table 的滚动条
+.ant-table-fixed-header .ant-table-scroll .ant-table-header{
+  overflow-x: scroll !important;
+  overflow-y: auto !important;
+}
+.ant-table-fixed-header > .ant-table-content > .ant-table-scroll > .ant-table-body {
+  overflow: auto !important;
+}

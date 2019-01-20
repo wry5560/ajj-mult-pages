@@ -5,20 +5,84 @@
       <!--<a-button @click="" type="primary":style="{'margin-right':'5px','float':'right'}">续 报</a-button>-->
       <div style="clear: both"></div>
     </div>
-    <div>
-      <a-card style="margin-top: 12px":bordered="false" title="流程进度">
+    <div style="padding:0px 16px;overflow: auto">
+      <a-card style="margin-top: 16px":bordered="false" title="流程进度">
         <a-steps  :current="stepsData.current">
           <a-step v-for="step in this.stepsData.steps" :title="step.title" >
             <span slot="description">{{step.info}}</span>
           </a-step>
         </a-steps>
       </a-card>
+      <a-row :gutter="16" style="margin-top: 12px">
+        <a-col :lg="6">
+          <a-card :bordered="false">
+            <a-timeline>
+              <a-timeline-item v-for="timeline in this.timelineData.timelines">{{timeline.auditstate+timeline.audituser+timeline.audittime}}</a-timeline-item>
+            </a-timeline>
+          </a-card>
+        </a-col>
+        <a-col :lg="18">
+          <a-card :bordered="false" >
+            <div slot="title">事故名称:{{this.sgDetail.sgnm}}</div>
+            <detail-list  size="small">
+              <detail-list-item term="事故编号">{{this.sgDetail.xbid=0 ? this.sgDetail.id : this.sgDetail.id + this.sgDetail.xbid}}</detail-list-item>
+              <detail-list-item term="上报时间">{{this.sgDetail.uptime}}</detail-list-item>
+            </detail-list>
+            <detail-list size="small">
+              <detail-list-item term="上报人员">{{this.sgDetail.upuser}}</detail-list-item>
+              <detail-list-item term="报送单位">{{this.sgDetail.bsdw}}</detail-list-item>
+            </detail-list>
+            <detail-list size="small">
+              <detail-list-item term="发生时间">{{this.sgDetail.fssj}}</detail-list-item>
+              <detail-list-item term="事故区域">{{this.sgDetail.qy}}</detail-list-item>
+              <detail-list-item term="发生单位">{{this.sgDetail.sgfsdw}}</detail-list-item>
+            </detail-list>
+            <detail-list size="small">
+              <detail-list-item term="事故地址">{{this.sgDetail.sgdwdz}}</detail-list-item>
+              <detail-list-item term="发生地点">{{this.sgDetail.sgfsd}}</detail-list-item>
+            </detail-list>
+              <detail-list size="small">
+                <detail-list-item term="行业分类">{{this.sgDetail.hy}}</detail-list-item>
+                <detail-list-item term="管理分类">{{this.sgDetail.glfl}}</detail-list-item>
+              </detail-list>
+              <detail-list size="small">
+                <detail-list-item term="监理单位">{{this.sgDetail.jldw}}</detail-list-item>
+                <detail-list-item term="建设单位">{{this.sgDetail.jsdw}}</detail-list-item>
+              </detail-list>
+              <detail-list size="small">
+                <detail-list-item term="事故等级">{{this.sgDetail.sgdj}}</detail-list-item>
+              </detail-list>
+              <detail-list size="small">
+                <detail-list-item term="死亡人数">{{this.sgDetail.swrs}}</detail-list-item>
+                <detail-list-item term="受伤人数">{{this.sgDetail.ssrs}}</detail-list-item>
+              </detail-list>
+              <detail-list size="small">
+                <detail-list-item term="重伤人数">{{this.sgDetail.zsrs}}</detail-list-item>
+                <detail-list-item term="涉险人数">{{this.sgDetail.sxrs}}</detail-list-item>
+              </detail-list>
+              <detail-list size="small">
+                <detail-list-item term="失踪人数">{{this.sgDetail.szrs}}</detail-list-item>
+                <detail-list-item term="直接经济损失">{{this.sgDetail.jjss}}</detail-list-item>
+              </detail-list>
+              <detail-list size="small">
+                <detail-list-item term="事故类型">{{this.sgDetail.sglx}}<a-divider type="vertical" />{{this.sgDetail.sglx2}}</detail-list-item>
+                <detail-list-item term="伤害类别">{{this.sgDetail.sglb}}</detail-list-item>
+              </detail-list>
+              <detail-list size="small">
+                <detail-list-item term="事故性质">{{this.sgDetail.sgxz}}</detail-list-item>
+                <detail-list-item term="是否纳入统计">{{this.sgDetail.sfnrtj}}</detail-list-item>
+              </detail-list>
+            <detail-list size="small">
+              <detail-list-item term="事故简况" :lg="24">{{this.sgDetail.sgjk}}</detail-list-item>
+              <detail-list-item term="事故原因":lg="24">{{this.sgDetail.sgyy}}</detail-list-item>
+              <detail-list-item term="采取措施":lg="24">{{this.sgDetail.cqcs}}</detail-list-item>
+              <detail-list-item term="处理结果":lg="24">{{this.sgDetail.cljg}}</detail-list-item>
+              <detail-list-item term="备注":lg="24">{{this.sgDetail.bz}}</detail-list-item>
+            </detail-list>
+          </a-card>
+        </a-col>
+      </a-row>
 
-      <a-card style="margin-top: 12px;margin-right: 12px":bordered="false">
-        <a-timeline>
-          <a-timeline-item v-for="timeline in this.timelineData.timelines">{{timeline.auditstate+timeline.audituser+timeline.audittime}}</a-timeline-item>
-        </a-timeline>
-      </a-card>
     </div>
   </div>
 </template>
@@ -26,8 +90,12 @@
 <script>
   import ATimeline from "ant-design-vue/es/timeline/Timeline";
   import ATimelineItem from "ant-design-vue/es/timeline/TimelineItem";
+  import DetailList from './DetailList.vue'
+  import  DetailListItem from './DetailListItem.vue'
+
   export default {
-    components: {ATimelineItem, ATimeline}, name:"sgDetail",
+    components: {ATimelineItem, ATimeline,DetailList,DetailListItem },
+    name:"sgDetail",
     data(){
         return {
           stepsData:{
@@ -49,6 +117,42 @@
               {lcid:3,audituser:'XXX',auditstate:'通过',audittime:'2019-01-18 14:00'},
               {lcid:4,audituser:'XXX',auditstate:'通过',audittime:'2019-01-18 14:00'}
             ],
+          },
+          sgDetail:{
+            id:2019011801,
+            xbid:0,
+            sgnm:'xxxx爆炸事件',
+            qy:'XXXX区',
+            hy:'危险化学品',
+            bsdw:'',
+            sgfsdw:'',
+            jldw:'',
+            jsdw:'',
+            glfl:'',
+            sgdwdz:'珠海横琴XXXXXXXXXXXX有限公司',
+            sgfsd:'',
+            fssj:'',
+            sgjk:'',
+            sgdj:'',
+            swrs:'',
+            ssrs:'',
+            zsrs:'',
+            sxrs:'',
+            zsrs:'',
+            sxrs:'',
+            szrs:'',
+            jjss:'',
+            sglx:'',
+            sglx2:'',
+            sglb:'',
+            sgyy:'',
+            cqcs:'',
+            sgxz:'',
+            cljg:'',
+            sfnrtj:'',
+            bz:'',
+            uptime:'2019-01-18 14:00',
+            upuser:'xxx',
           }
         }
       },
@@ -59,3 +163,8 @@
     }
   }
 </script>
+<style lang="scss">
+  .sg-detail{
+    background-color: #f0f2f5;
+  }
+</style>
