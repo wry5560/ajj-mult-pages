@@ -15,6 +15,7 @@
       :dataSource="dataSource"
       :columns="columns"
       size="small"
+      :rowClassName="rowClass"
       :loading="tableIsLoading"
       :pagination='false'
       :scroll="scrollSize">
@@ -356,9 +357,8 @@
         this.dataSource=[]
         this.tableIsLoading=true
         const dateRange ={
-          sqlId:'S360001',
           limit:'10000',
-          param1:'9361',
+          param1:departmentId,
 //          param1:process.env.NODE_ENV === 'production'? departmentId:'9361',
           param2:this.dateRange.startDate,
           param3:this.dateRange.endDate
@@ -436,7 +436,7 @@
         })
         const parameter={
         'jsonData':JSON.stringify({paiban:dataSource}),
-        'param1':'9361'
+        'param1':departmentId
 //          param1:process.env.NODE_ENV === 'production'? departmentId:'9361',
         }
         postSchedule(parameter).then((res)=>{
@@ -444,6 +444,9 @@
             this.$message.error(res.message)
           }
         })
+      },
+      rowClass(record,index){
+        if (index%2==1) return 'even-rows'
       }
     },
   }

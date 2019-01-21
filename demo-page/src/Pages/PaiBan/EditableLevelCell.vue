@@ -1,39 +1,18 @@
 <template>
   <div class='editable-cell'>
-    <div v-if="editable" class='editable-cell-input-wrapper'>
+    <div class='editable-cell-input-wrapper'>
       <a-select
-        :size="size"
+        size="small"
         style="width:100%"
-        :defaultValue="getValue"
-        @change="handleChange"
-        @pressEnter="check"
-        @blur="check"
+        defaultValue=""
         :defaultOpen="true"
-        notFoundContent="请选级别"
+        @change="handleChange"
+        notFoundContent="请选择级别"
       >
-        <a-select-option v-for="(item,index) in levelList" :key="index">
+        <a-select-option v-for="(item,index) in selectItem" :key="index">
           {{item}}
         </a-select-option>
       </a-select>
-      <!--<a-input-->
-        <!--:defaultValue	="getValue"-->
-        <!--@change="handleChange"-->
-        <!--@pressEnter="check"-->
-      <!--/>-->
-      <!--<a-icon-->
-      <!--type='check'-->
-      <!--class='editable-cell-icon-check'-->
-      <!--@click="check"-->
-    <!--/>-->
-    </div>
-    <div v-else class='editable-cell-text-wrapper' @click="edit">
-      <div  style="display: inline-block">{{getValue || ' '}}</div>
-    <!--<a-icon type='edit' class='editable-cell-icon'  />-->
-      <a-icon
-        type='close-circle'
-        class='editable-cell-icon'
-        @click.stop="clear"
-      />
     </div>
   </div>
 </template>
@@ -41,9 +20,8 @@
   export default {
     props: {
       text: String,
-      levelList:Array,
-      tableKey:Number,
-
+      selectItem:Array,
+      record:Object,
     },
     data () {
       return {
@@ -59,10 +37,8 @@
     },
     methods: {
       handleChange (key) {
-        const value = this.staffList[key]
-        this.value = value
-        this.editable = false
-        this.$emit('change', [this.value,this.textTitle,this.tableKey])
+          const record=this.record
+        this.$emit('levelChange', [key,record])
         // debugger
       },
       check () {

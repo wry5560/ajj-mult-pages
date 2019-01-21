@@ -43,9 +43,8 @@
     beforeCreate(){
 //        if(process.env.NODE_ENV === 'production'){console.log('departmentId:'+departmentId)}
       const parameter={
-        sqlId:'S360002',
         limit:'10000',
-        param1:'9361'
+        param1:departmentId
 //        param1:process.env.NODE_ENV === 'production'? departmentId:'9361'
       }
       reqStaffList(parameter)
@@ -74,9 +73,8 @@
     methods: {
       initStaffList(){
         const parameter={
-          sqlId:'S360002',
           limit:'10000',
-          param1:'9361',
+          param1:departmentId,
 //          param1:process.env.NODE_ENV === 'production'? departmentId:'9361'
         }
         reqStaffList(parameter)
@@ -102,7 +100,7 @@
         nameData['lv'+ `${ Number(textIndex)+1 }` +'name']=text
         const parameter={
           jsonData:JSON.stringify(nameData),
-          param1:'9361'
+          param1:departmentId
 //          param1:process.env.NODE_ENV === 'production'? departmentId:'9361'
         }
         const lastText=this.staffList[textIndex].titleText
@@ -129,6 +127,6 @@
 
   }
   .ant-layout-sider{
-    background-color: #ffffff;
+    background: none;
   }
 </style>

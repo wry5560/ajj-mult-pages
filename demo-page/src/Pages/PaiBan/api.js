@@ -11,7 +11,7 @@ export function reqSchedule(parameter) {
       // : '/base/General.query.json/reqSchedule',
       : '/base/General.query.json',
     method: 'get',
-    params: parameter,
+    params: {"sqlId":'S360001',...parameter},
     // headers: {
     //   'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     // }
@@ -25,7 +25,7 @@ export function reqStaffList(parameter){
       // : '/base/General.query.json/reqStaffList',
       : '/base/General.query.json',
     method: 'get',
-    params: parameter,
+    params:{"sqlId":'S360002',...parameter},
   })
 }
 export function reqAllStaff(parameter){
@@ -53,6 +53,17 @@ export function postSchedule(parameter){
 export function levelName(parameter){
   return axios({
     url: 'other/Ajjsgkb.saveAlias.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+export function postChangeLevel(parameter){
+  return axios({
+    url: 'other/Ajjsgkb.addPaibanuser.json',
     method: 'post',
     data: parameter,
     headers: {

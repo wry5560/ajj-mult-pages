@@ -1,3 +1,8 @@
+//全局布局样式
+.ant-layout{
+  height: 100%;
+}
+
 //顶部按钮条按钮样式
 .header-buttons-bar {
   background-color: #fff;
@@ -42,4 +47,23 @@
 }
 .ant-table-fixed-header > .ant-table-content > .ant-table-scroll > .ant-table-body {
   overflow: auto !important;
+}
+
+//table 样式
+.ant-table-wrapper{
+  height: calc(100% - 72px);
+  border-bottom:1px solid #e0e0e0;
+  .odd-rows{
+    //background-color: blue
+  }
+  .even-rows{
+    background-color: #f6f6f6
+  }
+}
+
+.ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-tbody > tr > td{
+  padding:4px 4px  !important;
+}
+.ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-header > table > .ant-table-thead > tr > th{
+  background-color: #fbfbfb !important;
 }
