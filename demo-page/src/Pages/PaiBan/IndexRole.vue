@@ -93,10 +93,10 @@
         <div  class="header-buttons-bar">
           <a-button @click="" size="small" type="primary":style="{'margin-left':'5px',}">添加人员</a-button>
           <a-button @click="refresh" size="small" >刷 新</a-button>
-          <a-button @click="" size="small" :disabled="levelPanes.selectedKey=='6'">批量删除</a-button>
+          <a-button @click="" size="small" :disabled="levelPanes.selectedKey=='6'||staffTable.rowSelection.selectedRowKeys.length<2">批量删除</a-button>
           <a-button-group >
-            <a-button @click="" size="small" icon="up" style="margin-right: 0" :disabled="levelPanes.selectedKey=='6'"></a-button>
-            <a-button @click=""size="small"  icon="down" :disabled="levelPanes.selectedKey=='6'"></a-button>
+            <a-button @click="sortUP" size="small" icon="up" style="margin-right: 0" :disabled="levelPanes.selectedKey=='6'||staffTable.rowSelection.selectedRowKeys.length!=1"></a-button>
+            <a-button @click="sortDown"size="small"  icon="down" :disabled="levelPanes.selectedKey=='6'||staffTable.rowSelection.selectedRowKeys.length!=1"></a-button>
           </a-button-group>
           <a-input-search
             placeholder="请输入人员名称..."
@@ -104,44 +104,21 @@
             size="small"
             @search="onSearch"
           />
-          <span style="margin-left: 6px">
-            <a v-if="!showAdvance" href="javascript:;" @click="switchAdvance">高级</a>
-            <a v-if="showAdvance" href="javascript:;" @click="switchAdvance">收起</a>
-          </span>
-          <div v-if="showAdvance">
-            <div>
-              <a-input-search
-                placeholder="请输入人员名称..."
-                style="width: 200px"
-                size="small"
-                @search="onSearch"
-              />
-            </div>
-            <div>
-              <a-input-search
-                placeholder="请输入人员名称..."
-                style="width: 200px"
-                size="small"
-                @search="onSearch"
-              />
-            </div>
-            <div>
-              <a-input-search
-                placeholder="请输入人员名称..."
-                style="width: 200px"
-                size="small"
-                @search="onSearch"
-              />
-            </div>
-            <div>
-              <a-input-search
-                placeholder="请输入人员名称..."
-                style="width: 200px"
-                size="small"
-                @search="onSearch"
-              />
-            </div>
-          </div>
+          <span v-if="hasToPost" style="margin-left: 16px;color:#ff6250">有未保存数据！</span>
+          <!--<span style="margin-left: 6px">-->
+            <!--<a v-if="!showAdvance" href="javascript:;" @click="switchAdvance">高级</a>-->
+            <!--<a v-if="showAdvance" href="javascript:;" @click="switchAdvance">收起</a>-->
+          <!--</span>-->
+          <!--<div v-if="showAdvance">-->
+            <!--<div>-->
+              <!--<a-input-search-->
+                <!--placeholder="请输入人员名称..."-->
+                <!--style="width: 200px"-->
+                <!--size="small"-->
+                <!--@search="onSearch"-->
+              <!--/>-->
+            <!--</div>-->
+          <!--</div>-->
           <div style="clear: both"></div>
         </div>
         <a-table
@@ -149,7 +126,7 @@
           :dataSource="tableData"
           :rowClassName="rowClass"
           :columns="staffTable.columns"
-          :pagination= "false"
+          :pagination='false'
           size="small"
           :loading="staffTable.tableIsLoading"
           :scroll="staffTable.scrollSize"
@@ -190,6 +167,7 @@ import EditableLevelCell from './EditableLevelCell'
 import {reqStaffList,reqAllStaff,levelName,postChangeLevel} from "./api"
 
 const levelArr=['一级','二级','三级','四级','五级','']
+let timer=null
   export default {
     name:'IndexRole',
     components:{
@@ -198,6 +176,7 @@ const levelArr=['一级','二级','三级','四级','五级','']
     data(){
       return{
         showAdvance:false,
+        hasToPost:false,
         modal:{
           visible:false,
           confirmLoading:false,
@@ -276,6 +255,67 @@ const levelArr=['一级','二级','三级','四级','五级','']
       this.reqStaffData()
     },
     methods:{
+      sortUP(){
+        clearTimeout(timer);
+        const arr = this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List']
+          const index=this.staffTable.rowSelection.selectedRowKeys[0]
+            if(index!=0){
+              this.hasToPost=true;
+              [arr[index-1],arr[index]]=[arr[index],arr[index-1]]
+              this.staffTable.rowSelection.selectedRowKeys=[index-1]
+              this.initLevelIndex()
+              timer=setTimeout(()=>{
+                const data={
+                  jsonData:JSON.stringify({users:arr}),
+                  param1:departmentId,
+                  param2:levelArr[this.levelPanes.selectedKey-1]
+                }
+                postChangeLevel(data).then((res)=>{
+                  if (res.success){
+                    this.$message.success('排序数据保存成功')
+                    this.hasToPost=false
+                  }else{
+                    this.$message.error(res.message+',排序数据未保存成功！')
+                  }
+                }).catch((err)=>{
+                  this.$message.error('发生系统异常，排序数据未保存成功！')
+                  console.log(JSON.stringify(err))
+                })
+              },1500)
+            }else{
+              this.$message.error('已排至第一位！')
+            }
+      },
+      sortDown(){
+        clearTimeout(timer);
+        const arr = this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List']
+        const index=this.staffTable.rowSelection.selectedRowKeys[0]
+        if(index!=arr.length-1){
+          this.hasToPost=true;
+          [arr[index+1],arr[index]]=[arr[index],arr[index+1]]
+          this.staffTable.rowSelection.selectedRowKeys=[index+1]
+          this.initLevelIndex()
+          timer=setTimeout(()=>{
+            const data={
+              jsonData:JSON.stringify({users:arr}),
+              param1:departmentId,
+              param2:levelArr[this.levelPanes.selectedKey-1]
+            }
+            postChangeLevel(data).then((res)=>{
+              if (res.success){
+                this.$message.success('排序数据保存成功')
+                this.hasToPost=false
+              }else{
+                this.$message.error(res.message+',排序数据未保存成功！')
+              }
+            }).catch((err)=>{
+              this.$message.error('发生系统异常，排序数据未保存成功！')
+              console.log(JSON.stringify(err))
+            })
+          },1500)
+        }else{
+          this.$message.error('已排至末位！')}
+      },
       switchAdvance(){this.showAdvance=!this.showAdvance},
       onSearch(){},
       handleLevelClick(e){this.levelPanes.selectedKey=e.key},
@@ -291,10 +331,12 @@ const levelArr=['一级','二级','三级','四级','五级','']
       },
 
       handleModalOk(){
-          debugger
         this.modal.confirmLoading=true
-        const changeMan=this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List'][this.modal.changeData[0]]
+        const tmpMan=this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List'][this.modal.changeData[0]]
+        const changeMan={...tmpMan}
         changeMan.id=parseInt(changeMan.userId)
+        changeMan.level=levelArr[this.modal.changeData[2]-1]
+        changeMan.sortNum=10000
         const data={
           jsonData:JSON.stringify({users:[changeMan]}),
           param1:departmentId,
@@ -302,13 +344,13 @@ const levelArr=['一级','二级','三级','四级','五级','']
         }
         postChangeLevel(data)
           .then((res)=>{
-              debugger
             if(res.success){
               this.$message.success('修改成功')
-              this.modal.changeData[3].editable=false
-              this.changeLevel(this.modal.changeData[0],this.modal.changeData[1],this.modal.changeData[2])
-              this.initLevelNum()
-              this.initLevelIndex()
+              // this.modal.changeData[3].editable=false
+              // this.changeLevel(this.modal.changeData[0],this.modal.changeData[1],this.modal.changeData[2])
+              // this.initLevelNum()
+              // this.initLevelIndex()
+              this.reqStaffData()
               this.modal.changeData=[]
               this.modal.confirmLoading=false
               this.modal.visible=false
@@ -428,7 +470,7 @@ const levelArr=['一级','二级','三级','四级','五级','']
       //请求所有员工数据
       reqStaffData(){
         const parameter={
-          limit: 20,
+          limit: 10000,
           // menuId: "10002085",
           param1: departmentId,
           start: 0
@@ -483,11 +525,11 @@ const levelArr=['一级','二级','三级','四级','五级','']
         this.levelPanes.levelList['lv'+levelA+'List'].splice(manIndex,1)
       },
       initLevelIndex(){
-        this.levelPanes.levelList.lv1List.forEach((i,index)=>{i.id=index+1})
-        this.levelPanes.levelList.lv2List.forEach((i,index)=>{i.id=index+1})
-        this.levelPanes.levelList.lv3List.forEach((i,index)=>{i.id=index+1})
-        this.levelPanes.levelList.lv4List.forEach((i,index)=>{i.id=index+1})
-        this.levelPanes.levelList.lv5List.forEach((i,index)=>{i.id=index+1})
+        this.levelPanes.levelList.lv1List.forEach((i,index)=>{i.id=i.sortNum=index+1;})
+        this.levelPanes.levelList.lv2List.forEach((i,index)=>{i.id=i.sortNum=index+1})
+        this.levelPanes.levelList.lv3List.forEach((i,index)=>{i.id=i.sortNum=index+1})
+        this.levelPanes.levelList.lv4List.forEach((i,index)=>{i.id=i.sortNum=index+1})
+        this.levelPanes.levelList.lv5List.forEach((i,index)=>{i.id=i.sortNum=index+1})
         this.levelPanes.levelList.lv6List.forEach((i,index)=>{i.id=index+1})
       },
       initLevelNum(){

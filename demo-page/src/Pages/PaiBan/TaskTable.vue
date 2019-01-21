@@ -145,6 +145,7 @@
               align:'center',
             },
             {
+              title:this.staffListProp[0].titleText,
               titleText:this.staffListProp[0].titleText,
               dataIndex: 'lv1user',
               width: 180,
@@ -159,6 +160,7 @@
               },
             },
             {
+              title:this.staffListProp[1].titleText,
               titleText:this.staffListProp[1].titleText,
               dataIndex: 'lv2user',
               width: 180,
@@ -172,6 +174,7 @@
                 filterIcon: 'filterIcon',
               },
             }, {
+              title: this.staffListProp[2].titleText,
               titleText: this.staffListProp[2].titleText,
               dataIndex: 'lv3user',
               slots:{
@@ -186,6 +189,7 @@
               align:'center'
             },
             {
+              title:this.staffListProp[3].titleText,
               titleText:this.staffListProp[3].titleText,
               dataIndex: 'lv4user',
               slots:{
@@ -200,6 +204,7 @@
               align:'center'
             },
             {
+              title:this.staffListProp[4].titleText,
               titleText:this.staffListProp[4].titleText,
               dataIndex: 'lv5user',
               slots:{
