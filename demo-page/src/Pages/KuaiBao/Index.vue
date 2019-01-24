@@ -52,6 +52,8 @@
         v-model="pagination.current"
         style="margin-top: 8px; float:right; padding-right: 16px;"
         :total="pagination.total"
+        :pageSizeOptions="pagination.pageSizeOptions"
+        :pageSize="pagination.pageSize"
         showSizeChanger
         showQuickJumper
         :showTotal="total => `共${total}条数据`"
@@ -72,7 +74,7 @@
       :okButtonProps="modalOption.okButtonProps"
       :cancelButtonProps="modalOption.cancelButtonProps"
     >
-      <sg-form ref="sgCommit" :showSubmit="false"></sg-form>
+      <sg-form :selectOptions="selectOptions" ref="sgCommit" :showSubmit="false"></sg-form>
       <template slot="footer">
         <a-button key="back" @click="modalCancel">返 回</a-button>
         <a-button key="submit" type="primary" :loading="modalOption.commitLoading" @click="sgCommit">上 报</a-button>
@@ -109,7 +111,17 @@
         tableIsLoading: false,
         pagination:{
           total:0,
-          current:1
+          current:1,
+          pageSize:10,
+          pageSizeOptions:['10','20','50','100','500']
+        },
+        selectOptions:{
+          hyType:[],
+          glType:[],
+          sgdj:[],
+          sglx:[],
+          shlb:[],
+          sgxz:[],
         },
         dataSource: [],
         columns: [
@@ -149,22 +161,29 @@
     },
     mounted(){
 //      console.log(this.modalOption)
-
       let _this=this
       window.onresize = function(){
         console.log(_this.modalOption.bodyStyle['max-height'])
         _this.modalOption.bodyStyle['max-height']= window.innerHeight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     -250+'px'
       }
       document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
+      //初始化选择项配置
+      const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
+      ls['企业类型'].forEach((item)=>{this.selectOptions.hyType.push([item.label,item.value])})
+      ls['事故管理分类'].forEach((item)=>{this.selectOptions.glType.push([item.label,item.value])})
+      ls['事故等级'].forEach((item)=>{this.selectOptions.sgdj.push([item.label,item.value])})
+      ls['事故类型'].forEach((item)=>{this.selectOptions.sglx.push([item.label,item.value])})
+      ls['事故伤害类型'].forEach((item)=>{this.selectOptions.shlb.push([item.label,item.value])})
+      ls['事故性质'].forEach((item)=>{this.selectOptions.sgxz.push([item.label,item.value])})
+      // debugger
     },
     methods:{
-
       showModal(){
         this.modalOption.visible=true
       },
       sgCommit(){
         this.$refs.sgCommit.form.validateFields((err, values) => {
-//            debugger
+           debugger
           if (!err) {
 //            this.$notification['error']({
 //              message: 'Received values of form:',
@@ -172,7 +191,10 @@
 //            })
             this.modalOption.commitLoading=true
             values.fssj=values.fssj.format('YYYY-MM-DD HH:MM:SS')
-            console.log(values.fssj)
+            if (values.sgdj) values.sgdj=this.selectOptions.sgdj.find(item=>item[0]==values.sgdj)[1]
+            if (values.sglx) values.sglx=this.selectOptions.sglx.find(item=>item[0]==values.sglx)[1]
+            if (values.shlb) values.shlb=this.selectOptions.shlb.find(item=>item[0]==values.shlb)[1]
+            if (values.sgxz) values.sgxz=this.selectOptions.sgxz.find(item=>item[0]==values.sgxz)[1]
             const parameter={
               jsonData:JSON.stringify(values),
               param1:sys_relateDepId2
@@ -207,7 +229,6 @@
         this.$router.push('/sgDetail')
       },
       reqTableData(){
-        console.log('ls1111:'+ JSON.stringify(JSON.parse(localStorage.getItem('/asrsajjdic'))['企业类型']))
         this.tableIsLoading=true
         const parameter={
           param1:sys_relateDepId2,
@@ -264,23 +285,29 @@
           if (data.isend=='1'){data.lcname='已完结'}
           data.uptime=moment(data.uptime).format('YYYY-MM-DD \xa0 HH:MM')
         })
+        this.$store.commit('ADD_KUAIBAO',tempData)
         this.dataSource = tempData
         this.pagination.total=res.totalCount
         this.tableIsLoading=false
       },
       initXbDataSource(res){
+        const tmpData=[]
+        const kbId=res.data[0].id
         res.data.forEach((item,itemIndex)=>{
 //            debugger
           if(item.xbid && item.xbid>0){
             item.key=item.id + item.xbid+itemIndex
             item.upuser=item.__upuser.userName
             if (item.isend=='1'){item.lcname='已完结'}
-            item.uptime=moment(item.xbtime).format('YYYY-MM-DD \xa0 HH:MM')
             item.xbnum='-'
+            tmpData.push({...item})
+            item.uptime=moment(item.xbtime).format('YYYY-MM-DD \xa0 HH:MM')
             this.dataSource.find(i => i.id==item.id).children.push(item)
             item.id="续 "+ item.id + item.xbid
           }
         })
+        // debugger
+        this.$store.commit('ADD_XUBAO',{id:kbId,xbData:tmpData})
       },
       changeCurrentPage(page, pageSize){
         console.log(page)
