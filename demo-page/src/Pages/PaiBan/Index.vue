@@ -5,7 +5,7 @@
         <role-menu :staffListProp="staffList"></role-menu>
       </a-layout-sider>
       <a-layout-content :style="{ 'padding-left': '220px',overflow:'auto'}">
-        <task-table :staffListProp="staffList" :reqStaffListComplete="reqStaffListComplete" @onTitleChange="titleChange"></task-table>
+        <task-table :staffListProp="staffList" :reqStaffListComplete="reqStaffListComplete" @onTitleChange="titleChange"@refresh="refresh"></task-table>
         <!--<test-table></test-table>-->
       </a-layout-content>
     </a-layout>
@@ -19,7 +19,7 @@
  import RoleMenu from './RoleMenu'
  import TaskTable from './TaskTable'
  import {loginAjj}from "@/api/login"
- import {reqStaffList,levelName} from './api'
+ import {reqStaffList,levelName,reqAllStaff} from './api'
 
   export default {
     name: 'Index',
@@ -40,54 +40,48 @@
         reqStaffListComplete:false
       }
     },
-    beforeCreate(){
+    created(){
 //        if(process.env.NODE_ENV === 'production'){console.log('departmentId:'+departmentId)}
       const parameter={
         limit:'10000',
         param1:departmentId
 //        param1:process.env.NODE_ENV === 'production'? departmentId:'9361'
       }
-      reqStaffList(parameter)
-        .then((res)=>{
-//            debugger
-//           console.log(JSON.stringify(res))
-          const staffList =[...this.staffList]
-          res.data.forEach(item=>{
-            staffList.forEach(level=>{
-              if (level.type===item.userlevel) {
-                level.nameList.push({name:item.name,id:item.id,sex:item.sex,mobilePhone:item.mobilePhone})
-              }
-            })
-          })
-          staffList[0].titleText=res.data[0].lv1name;
-          staffList[1].titleText=res.data[0].lv2name;
-          staffList[2].titleText=res.data[0].lv3name;
-          staffList[3].titleText=res.data[0].lv4name;
-          staffList[4].titleText=res.data[0].lv5name;
-          this.staffList=staffList
-          this.reqStaffListComplete=true
-        })
-        .catch((err)=>{
-        })
+      this.initStaffList()
     },
     methods: {
+        refresh(){
+          this.initStaffList()
+        },
       initStaffList(){
         const parameter={
           limit:'10000',
           param1:departmentId,
 //          param1:process.env.NODE_ENV === 'production'? departmentId:'9361'
         }
-        reqStaffList(parameter)
+        reqAllStaff(parameter)
           .then((res)=>{
 //            debugger
-            console.log(JSON.stringify(res))
-            const staffList =[...this.staffList]
+//            console.log(JSON.stringify(res))
+            const staffList =[
+              {type:'一级',titleText:'',nameList:[]},
+              {type:'二级',titleText:'',nameList:[]},
+              {type:'三级',titleText:'',nameList:[]},
+              {type:'四级',titleText:'',nameList:[]},
+              {type:'五级',titleText:'',nameList:[]}
+            ]
             res.data.forEach(item=>{
               staffList.forEach(level =>{
-                if (level.type===item.userlevel) level.nameList.push({name:item.name,id:item.id,sex:item.sex,mobilePhone:item.mobilePhone})
+                if (level.type===item.userlevel) level.nameList.push({name:item.__uuserid.userName,id:item.__uuserid.userId,sex:item.__uuserid.sex,mobilePhone:item.__uuserid.mobilePhone})
               })
             })
+            staffList[0].titleText=res.data[0].lv1name;
+            staffList[1].titleText=res.data[0].lv2name;
+            staffList[2].titleText=res.data[0].lv3name;
+            staffList[3].titleText=res.data[0].lv4name;
+            staffList[4].titleText=res.data[0].lv5name;
             this.staffList=staffList
+            this.reqStaffListComplete=true
           })
           .catch((err)=>{
           })

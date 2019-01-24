@@ -45,17 +45,17 @@
 
     methods: {
       handleClick (e) {
-        console.log('click', e)
+//        console.log('click', e)
       },
       titleClick (e) {
-        console.log('titleClick', e)
+//        console.log('titleClick', e)
       },
 
 
     },
     watch: {
       openKeys (val) {
-        console.log('openKeys', val)
+//        console.log('openKeys', val)
       },
     },
 

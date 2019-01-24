@@ -5,7 +5,7 @@
       <a-button type='primary' @click="()=>autoArrange('all')"size="small" :style="{'margin-left':'5px'}">自动排班</a-button>
       <a-button @click="()=>clearArrange('all')"size="small">清除排班</a-button>
       <a-button @click="topostSchedule"size="small">提交</a-button>
-      <a-button @click="reqTableData"size="small">刷新</a-button>
+      <a-button @click="refresh"size="small">刷新</a-button>
       <a-month-picker :defaultValue="dateRange.defaultMonthValue" :value="dateRange.monthPickedValue" @change="onMonthChange" placeholder="请选择月" :disabledDate="disabledMonth"size="small" />
       <a-range-picker :value="dateRange.dateRangePickedValue"@change="onRangeChange" :disabledDate="disabledDate"size="small" />
     </div>
@@ -18,7 +18,10 @@
       :rowClassName="rowClass"
       :loading="tableIsLoading"
       :pagination='false'
-      :scroll="scrollSize">
+      :style='tableStyle'
+      :scroll="scrollSize"
+      ref='myTable'
+    >
       <template  slot="levelOneTitle">
         <editable-title-cell :text="columns[1].titleText" textTitleIndex="0" @change="onTitleCellChange"/>
       </template>
@@ -110,10 +113,13 @@
           dateRangePickedValue:[]
         },
         scrollSize:{
-          x:1022,
+          x:910,
           y:window.innerHeight - 85
         },
         tableIsLoading:false,
+        tableStyle:{
+          height:window.innerHeight - 85
+        },
         dataSource: [],
         count: 2,
         loopNum:0
@@ -121,7 +127,8 @@
       }
     },
     mounted(){
-        this.reqTableData()
+      this.reqTableData()
+      document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight - 85}px`
     },
     computed:{
       staffList(){
@@ -134,6 +141,13 @@
           staffList.push(nameList)
         })}
           return staffList
+      },
+      allStaffs(){
+        let allStaffs=[]
+        if (this.staffListProp.length>0) {this.staffListProp.forEach((levelX)=>{
+          allStaffs = allStaffs.concat(levelX.nameList)
+        })}
+        return allStaffs
       },
       columns:{
         get:function () {
@@ -148,7 +162,7 @@
               title:this.staffListProp[0].titleText,
               titleText:this.staffListProp[0].titleText,
               dataIndex: 'lv1user',
-              width: 180,
+              width: 155,
               align:'center',
               slots:{
                 title:'levelOneTitle'
@@ -163,7 +177,7 @@
               title:this.staffListProp[1].titleText,
               titleText:this.staffListProp[1].titleText,
               dataIndex: 'lv2user',
-              width: 180,
+              width: 155,
               align:'center',
               slots:{
                 title:'levelTwoTitle'
@@ -185,7 +199,7 @@
                 filterDropdown: 'levelThreeDropdown',
                 filterIcon: 'filterIcon',
               },
-              width: 180,
+              width: 155,
               align:'center'
             },
             {
@@ -200,7 +214,7 @@
                 filterDropdown: 'levelFourDropdown',
                 filterIcon: 'filterIcon',
               },
-              width: 180,
+              width: 155,
               align:'center'
             },
             {
@@ -215,7 +229,7 @@
                 filterDropdown: 'levelFiveDropdown',
                 filterIcon: 'filterIcon',
               },
-              width: 180,
+              width: 155,
               align:'center'
             },
             // {
@@ -232,17 +246,19 @@
     },
     methods: {
       moment,
-      idToName(id,index){
-        let staff =this.staffListProp[index].nameList.find(i=>{return i.id==id})
+      idToName(id){
+//          debugger
+        let staff =this.allStaffs.find(i=>{return i.id==id})
         if (typeof(staff)!="undefined"){
           return staff.name
-        }else{return ''}
+        }else{return ' '}
       },
-      nameToId(name,index){
-        let staff=this.staffListProp[index].nameList.find(i=>{return i.name==name})
+      nameToId(name){
+//          debugger
+        let staff=this.allStaffs.find(i=>{return i.name==name})
         if (typeof(staff)!="undefined"){
-          return staff.id.toString()
-        }else{return ''}
+          return staff.id
+        }else{return ' '}
       },
       autoArrange(arrangeType,confirm){
         if(arrangeType=='all'){
@@ -257,11 +273,11 @@
         if (confirm) confirm()
       },
       arrange(type) {
-        // debugger
+//         debugger
         let dataSource=[]
         const staffListIndex=['lv1user','lv2user','lv3user','lv4user','lv5user'].findIndex((value)=>{return value==type})
         dataSource=this.dataSource.map((item,index,arr)=>{
-          if(item[type]==''|| null){
+          if(item[type]==''||item[type]==' '|| null){
             if (index==0){item[type]=this.staffList[staffListIndex][0]}else{
               const preValue =arr[index-1][type]
               const staffValueIndex =this.staffList[staffListIndex].findIndex((value) =>{
@@ -357,6 +373,10 @@
         this.reqTableData()
         // console.log(eachDay(date[0],date[1]))
       },
+      refresh(){
+        this.reqTableData()
+        this.$emit('refresh')
+      },
       reqTableData(){
         // debugger
         this.dataSource=[]
@@ -387,7 +407,7 @@
             })
 
             if (res.data.length>0){res.data.forEach(item=>{
-              // debugger
+//               debugger
               const paibandata=datas.find(i=>{return i.paibandate ==item.paibandate})
               paibandata.lv1user=this.idToName(item.lv1user,0)
               paibandata.lv2user=this.idToName(item.lv2user,1)
@@ -398,7 +418,6 @@
             this.dataSource=datas
             this.tableIsLoading=false
             this.initDataSource(res,datas)
-
             // console.log(data)
           })
           .catch((err)=>{
@@ -428,9 +447,11 @@
         }
       },
       topostSchedule(){
+//        debugger
         const dataSource=[]
         this.dataSource.forEach((item)=>{
           const data={}
+//          debugger
           data.paibandate=item.paibandate
           data.lv1user=this.nameToId(item.lv1user,0)
           data.lv2user=this.nameToId(item.lv2user,1)
@@ -457,6 +478,10 @@
   }
 </script>
 <style lang="scss">
+  .ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-tbody > tr > td{
+    padding:8px 8px  !important;
+  }
+
   .ajj-task-table{
     h4{
       margin-bottom: 16px;

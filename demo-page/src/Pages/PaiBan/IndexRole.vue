@@ -72,6 +72,13 @@
                 <a-col :span="8" style="text-align: center">{{this.levelPanes.levelList.lv6Num}}人</a-col>
               </a-row>
             </a-menu-item>
+            <a-menu-item class="role-item " key="7">
+              <a-row style="background:none;">
+                <a-col :span="8" style="text-align: center">全部</a-col>
+                <a-col :span="8" style="text-align: center">-</a-col>
+                <a-col :span="8" style="text-align: center">{{this.levelPanes.levelList.lv7Num}}人</a-col>
+              </a-row>
+            </a-menu-item>
           </a-menu>
           <div class="editable-bar" >
             <a v-if="!levelPanes.editable &&!levelPanes.loading" href="javascript:" @click="editLevelName">修改级别名称</a>
@@ -91,18 +98,24 @@
           <p>{{modal.ModalText}}</p>
         </a-modal>
         <div  class="header-buttons-bar">
-          <a-button @click="" size="small" type="primary":style="{'margin-left':'5px',}">添加人员</a-button>
           <a-button @click="refresh" size="small" >刷 新</a-button>
-          <a-button @click="" size="small" :disabled="levelPanes.selectedKey=='6'||staffTable.rowSelection.selectedRowKeys.length<2">批量删除</a-button>
+          <a-popover  trigger="click" placement="bottomLeft" @visibleChange="popoverVisibleChange">
+            <a-button @click="openMultiChange" v-if="!toMultiChange" size="small" :style="{'margin-left':'5px'}" :disabled="staffTable.rowSelection.selectedRowKeys.length<2">批量修改</a-button>
+            <a-button @click="toConfirm" v-else="toMultiChange" size="small" :style="{'margin-left':'5px'}" >保存修改</a-button>
+            <div slot="content"style="width: 200px"><editable-level-cell v-if="toMultiChange" @levelChange="onLevelChange"  :selectItem="selectItem" type="multi"></editable-level-cell></div>
+          </a-popover>
+          <a-button @click="deleteStaffLevel('multi')" size="small" :disabled="levelPanes.selectedKey=='6'||staffTable.rowSelection.selectedRowKeys.length<2">批量删除</a-button>
           <a-button-group >
-            <a-button @click="sortUP" size="small" icon="up" style="margin-right: 0" :disabled="levelPanes.selectedKey=='6'||staffTable.rowSelection.selectedRowKeys.length!=1"></a-button>
-            <a-button @click="sortDown"size="small"  icon="down" :disabled="levelPanes.selectedKey=='6'||staffTable.rowSelection.selectedRowKeys.length!=1"></a-button>
+            <a-button @click="sortUP" size="small" icon="up" style="margin-right: 0" :disabled="levelPanes.selectedKey=='6'||levelPanes.selectedKey=='7'||staffTable.rowSelection.selectedRowKeys.length!=1"></a-button>
+            <a-button @click="sortDown"size="small"  icon="down" :disabled="levelPanes.selectedKey=='6'||levelPanes.selectedKey=='7'||staffTable.rowSelection.selectedRowKeys.length!=1"></a-button>
           </a-button-group>
           <a-input-search
             placeholder="请输入人员名称..."
             style="width: 200px"
+            :value="filteredInfo.name"
             size="small"
             @search="onSearch"
+            @change="(e)=>{this.filteredInfo.name= e.target.value}"
           />
           <span v-if="hasToPost" style="margin-left: 16px;color:#ff6250">有未保存数据！</span>
           <!--<span style="margin-left: 6px">-->
@@ -125,7 +138,7 @@
           bordered
           :dataSource="tableData"
           :rowClassName="rowClass"
-          :columns="staffTable.columns"
+          :columns="columns"
           :pagination='false'
           size="small"
           :loading="staffTable.tableIsLoading"
@@ -177,6 +190,9 @@ let timer=null
       return{
         showAdvance:false,
         hasToPost:false,
+        toMultiChange:false,
+        multiChangeLoading:false,
+        filteredInfo:{name:''},
         modal:{
           visible:false,
           confirmLoading:false,
@@ -205,6 +221,8 @@ let timer=null
             lv5List:[],
             lv6Num:0,
             lv6List:[],
+            lv7Num:0,
+            lv7List:[]
           },
           temNameList:{lv1name:'',lv2name:'',lv3name:'',lv4name:'',lv5name:'',}
         },
@@ -225,22 +243,38 @@ let timer=null
             columnWidth:'20px',
             // fixed:true
           },
-          columns: [
-            {title: '顺序', dataIndex: 'id', width: '40px', key:'id',align: 'center',},
-            {title: '人员名称',dataIndex: 'name', width: '100px',key:'sgnm', align: 'center'},
-            {title: '性别', dataIndex: 'sex', width: '50px',key:'xbNum', align: 'center',},
-            {title: '联系电话', dataIndex: 'phone', width: '100px', key:'uptime',align: 'center',},
-            {title: '所属组织', dataIndex: 'departmentName', width: '120px',key:'upuser', align: 'center',},
-            {title: '排班级别', dataIndex: 'level', width: '100px',key:'isend', align: 'center',scopedSlots: {customRender: 'editLevel'}},
-            {title: '操作', dataIndex: 'actions', width: '100px', key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
-//          {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
-          ],
+//          columns: [
+//            {title: '顺序', dataIndex: 'id', width: '40px', key:'id',align: 'center',},
+//            {title: '人员名称',dataIndex: 'name', width: '100px',key:'sgnm', align: 'center'},
+//            {title: '性别', dataIndex: 'sex', width: '50px',key:'xbNum', align: 'center',},
+//            {title: '联系电话', dataIndex: 'phone', width: '100px', key:'uptime',align: 'center',},
+//            {title: '所属组织', dataIndex: 'departmentName', width: '120px',key:'upuser', align: 'center',},
+//            {title: '排班级别', dataIndex: 'level', width: '100px',key:'isend', align: 'center',scopedSlots: {customRender: 'editLevel'}},
+//            {title: '操作', dataIndex: 'actions', width: '100px', key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
+////          {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
+//          ],
         }
       }
     },
     computed:{
+        columns(){
+          this.filteredInfo=this.filteredInfo ||{}
+          const  columns=[
+              {title: '排班顺序', dataIndex: 'id', width: '40px', key:'id',align: 'center',},
+              {title: '人员名称',dataIndex: 'name', width: '100px',key:'sgnm', align: 'center',filteredValue: [this.filteredInfo.name] || null,onFilter: (value, record) => record.name.includes(value),scopedSlots: {customRender: 'flitered'}},
+              {title: '性别', dataIndex: 'sex', width: '50px',key:'xbNum', align: 'center',},
+              {title: '联系电话', dataIndex: 'phone', width: '100px', key:'uptime',align: 'center',},
+              {title: '所属组织', dataIndex: 'departmentName', width: '120px',key:'upuser', align: 'center',},
+              {title: '排班级别', dataIndex: 'level', width: '100px',key:'isend', align: 'center',scopedSlots: {customRender: 'editLevel'}},
+              {title: '操作', dataIndex: 'actions', width: '100px', key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
+//          {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
+              ]
+          return columns
+        },
       tableData(){
-        return this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List']
+          const start=(this.staffTable.pagination.current-1)* this.staffTable.pagination.pageSize
+          const end=this.staffTable.pagination.current * this.staffTable.pagination.pageSize
+        return this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List'].slice(start,end)
       },
       selectItem(){
         const {lv1name,lv2name,lv3name,lv4name,lv5name}=this.levelPanes.levelList
@@ -248,16 +282,35 @@ let timer=null
       },
       paginationTotal(){
         return this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'Num']
+      },
+      nowLevelList(){
+        return this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List']
       }
     },
     created (){
-      this.reqLevelData()
+//      this.reqLevelData()
       this.reqStaffData()
     },
     methods:{
+      openMultiChange(){
+        this.toMultiChange=true
+      },
+      popoverVisibleChange(visible){
+          if (!visible){
+              this.toMultiChange=false
+          }
+      },
+      toConfirm(){
+        if (this.levelPanes.selectedKey==this.modal.changeData[2]){
+          this.$message.error('与当前级别相同，请选择其他级别')
+          return
+        }else{
+          this.modal.visible=true;
+        }
+      },
       sortUP(){
         clearTimeout(timer);
-        const arr = this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List']
+        const arr = this.nowLevelList
           const index=this.staffTable.rowSelection.selectedRowKeys[0]
             if(index!=0){
               this.hasToPost=true;
@@ -288,7 +341,7 @@ let timer=null
       },
       sortDown(){
         clearTimeout(timer);
-        const arr = this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List']
+        const arr = this.nowLevelList
         const index=this.staffTable.rowSelection.selectedRowKeys[0]
         if(index!=arr.length-1){
           this.hasToPost=true;
@@ -318,9 +371,12 @@ let timer=null
       },
       switchAdvance(){this.showAdvance=!this.showAdvance},
       onSearch(){},
-      handleLevelClick(e){this.levelPanes.selectedKey=e.key},
+      handleLevelClick(e){
+        this.levelPanes.selectedKey=e.key
+        this.staffTable.rowSelection.selectedRowKeys=[]
+      },
       refresh(){
-        this.reqLevelData()
+//        this.reqLevelData()
         this.reqStaffData()
       },
       editLevelName(){
@@ -331,16 +387,31 @@ let timer=null
       },
 
       handleModalOk(){
+//          debugger
         this.modal.confirmLoading=true
-        const tmpMan=this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List'][this.modal.changeData[0]]
-        const changeMan={...tmpMan}
-        changeMan.id=parseInt(changeMan.userId)
-        changeMan.level=levelArr[this.modal.changeData[2]-1]
-        changeMan.sortNum=10000
+        const changeData=this.modal.changeData
+        const changeMans=[]
+        if (changeData[3]=='multi'){
+          changeData[0].forEach((man)=>{
+//              debugger
+            const changeMan={...man}
+            changeMan.id=changeMan.userId
+            changeMan.level=levelArr[changeData[2]-1]
+            changeMan.sortNum=10000
+            changeMans.push(changeMan)
+          })
+        }else{
+          const tmpMan=this.nowLevelList[changeData[0]]
+          const changeMan={...tmpMan}
+          changeMan.id=changeMan.userId
+          changeMan.level=levelArr[changeData[2]-1]
+          changeMan.sortNum=10000
+          changeMans.push(changeMan)
+        }
         const data={
-          jsonData:JSON.stringify({users:[changeMan]}),
+          jsonData:JSON.stringify({users:changeMans}),
           param1:departmentId,
-          param2:levelArr[this.modal.changeData[2]-1]
+          param2:levelArr[changeData[2]-1]
         }
         postChangeLevel(data)
           .then((res)=>{
@@ -351,7 +422,9 @@ let timer=null
               // this.initLevelNum()
               // this.initLevelIndex()
               this.reqStaffData()
+              this.staffTable.rowSelection.selectedRowKeys=[]
               this.modal.changeData=[]
+              this.toMultiChange=false
               this.modal.confirmLoading=false
               this.modal.visible=false
             }else{
@@ -364,25 +437,53 @@ let timer=null
             console.log(JSON.stringify(err))})
       },
       handleModalCancel(){
-        this.modal.changeData[3].editable=false
+        if(this.modal.changeData[3]!='multi'){
+          this.modal.changeData[3].editable=false
+        }
+        this.toMultiChange=false
         this.modal.changeData=[]
         this.modal.visible=false
       },
       onLevelChange(data){
 //          console.log(value)
-        const key=data[0]
-        const record=data[1]
-        if(this.levelPanes.selectedKey==key+1) {
-          record.editable=false
-          return
+        const key = data[0]
+        const record = data[1]
+        if (record=='multi'){
+          const changeMans=[]
+          const manList=this.nowLevelList
+          this.staffTable.rowSelection.selectedRowKeys.forEach((index)=>{changeMans.push(manList[index])})
+          let nameString=''
+          changeMans.forEach((man)=>{
+            nameString = nameString+','+ man.name
+          })
+          this.modal.ModalText="您确认将 "+nameString+" 调整至"+this.selectItem[key]+"吗？"
+          this.modal.changeData=[changeMans,this.levelPanes.selectedKey,key+1,record]
+        }else{
+
+          if (this.levelPanes.selectedKey == key + 1) {
+            record.editable = false
+            return
+          }
+          this.modal.changeData=[record.id-1,this.levelPanes.selectedKey,key+1,record]
+          this.modal.ModalText="您确认将 "+record.name+" 调整至 "+this.selectItem[key]+" 吗？"
+          this.modal.visible=true;
         }
-        this.modal.changeData=[record.id-1,this.levelPanes.selectedKey,key+1,record]
-        this.modal.ModalText="您确认将 "+record.name+" 调整至 "+this.selectItem[key]+" 吗？"
-        this.modal.visible=true;
       },
       deleteStaffLevel(record){
-        this.modal.ModalText="您确认去除 "+record.name+" 的排班级别吗？"
-        this.modal.changeData=[record.id-1,this.levelPanes.selectedKey,6,record]
+        if (record=='multi'){
+          const changeMans=[]
+          const manList=this.nowLevelList
+          this.staffTable.rowSelection.selectedRowKeys.forEach((key)=>{changeMans.push(manList[key])})
+          let nameString=''
+          changeMans.forEach((man)=>{
+            nameString = nameString+','+ man.name
+          })
+          this.modal.ModalText="您确认去除 "+nameString+" 的排班级别吗？"
+          this.modal.changeData=[changeMans,this.levelPanes.selectedKey,6,record]
+        }else{
+          this.modal.ModalText="您确认去除 "+record.name+" 的排班级别吗？"
+          this.modal.changeData=[record.id-1,this.levelPanes.selectedKey,6,record]
+        }
         this.modal.visible=true;
       },
       //提交保存级别自定义名称
@@ -435,11 +536,14 @@ let timer=null
       changeCurrentPage(page, pageSize){
         console.log(page)
         console.log(pageSize)
+        this.staffTable.pagination.current=page
       },
       //分页器每页数量变化后的方法
       showSizeChange(current, size){
         console.log(current)
         console.log(size)
+        this.staffTable.pagination.current=current
+        this.staffTable.pagination.pageSize=size
       },
       //请求左侧级别数据，使用排班接口
       reqLevelData(){
@@ -469,6 +573,7 @@ let timer=null
       },
       //请求所有员工数据
       reqStaffData(){
+        this.levelPanes.loading=true
         const parameter={
           limit: 10000,
           // menuId: "10002085",
@@ -479,12 +584,14 @@ let timer=null
           .then((res)=>{
             // console.log(JSON.stringify(res))
             if (res.success){
-              this.levelPanes.levelList.lv1List=[]
-              this.levelPanes.levelList.lv2List=[]
-              this.levelPanes.levelList.lv3List=[]
-              this.levelPanes.levelList.lv4List=[]
-              this.levelPanes.levelList.lv5List=[]
-              this.levelPanes.levelList.lv6List=[]
+              const levelList=this.levelPanes.levelList
+              const lv1List= this.levelPanes.levelList.lv1List=[]
+              const lv2List=this.levelPanes.levelList.lv2List=[]
+              const lv3List=this.levelPanes.levelList.lv3List=[]
+              const lv4List=this.levelPanes.levelList.lv4List=[]
+              const lv5List=this.levelPanes.levelList.lv5List=[]
+              const lv6List=this.levelPanes.levelList.lv6List=[]
+              const lv7List=this.levelPanes.levelList.lv7List=[]
               res.data.forEach((user)=>{
                 const userData={}
                 userData.id= user.sortNum ==0 ? 10000:user.sortNum
@@ -500,13 +607,20 @@ let timer=null
                   this.levelPanes.levelList['lv'+levelIndex+'List'].push(userData)
                 }
               })
-              this.levelPanes.levelList.lv1List.sort((a,b)=>{return a-b})
-              this.levelPanes.levelList.lv2List.sort((a,b)=>{return a-b})
-              this.levelPanes.levelList.lv3List.sort((a,b)=>{return a-b})
-              this.levelPanes.levelList.lv4List.sort((a,b)=>{return a-b})
-              this.levelPanes.levelList.lv5List.sort((a,b)=>{return a-b})
+              lv1List.sort((a,b)=>{return a-b})
+              lv2List.sort((a,b)=>{return a-b})
+              lv3List.sort((a,b)=>{return a-b})
+              lv4List.sort((a,b)=>{return a-b})
+              lv5List.sort((a,b)=>{return a-b})
+              levelList.lv1name=this.levelPanes.temNameList.lv1name=res.data[0].lv1name
+              levelList.lv2name=this.levelPanes.temNameList.lv2name=res.data[0].lv2name
+              levelList.lv3name=this.levelPanes.temNameList.lv3name=res.data[0].lv3name
+              levelList.lv4name=this.levelPanes.temNameList.lv4name=res.data[0].lv4name
+              levelList.lv5name=this.levelPanes.temNameList.lv5name=res.data[0].lv5name
+
               this.initLevelIndex()
               this.initLevelNum()
+              this.levelPanes.loading=false
             }else{
               this.$message.error(res.message)
             }
@@ -525,12 +639,21 @@ let timer=null
         this.levelPanes.levelList['lv'+levelA+'List'].splice(manIndex,1)
       },
       initLevelIndex(){
-        this.levelPanes.levelList.lv1List.forEach((i,index)=>{i.id=i.sortNum=index+1;})
-        this.levelPanes.levelList.lv2List.forEach((i,index)=>{i.id=i.sortNum=index+1})
-        this.levelPanes.levelList.lv3List.forEach((i,index)=>{i.id=i.sortNum=index+1})
-        this.levelPanes.levelList.lv4List.forEach((i,index)=>{i.id=i.sortNum=index+1})
-        this.levelPanes.levelList.lv5List.forEach((i,index)=>{i.id=i.sortNum=index+1})
-        this.levelPanes.levelList.lv6List.forEach((i,index)=>{i.id=index+1})
+        const levelList=this.levelPanes.levelList
+        const lv1List= this.levelPanes.levelList.lv1List
+        const lv2List=this.levelPanes.levelList.lv2List
+        const lv3List=this.levelPanes.levelList.lv3List
+        const lv4List=this.levelPanes.levelList.lv4List
+        const lv5List=this.levelPanes.levelList.lv5List
+        const lv6List=this.levelPanes.levelList.lv6List
+        const lv7List=this.levelPanes.levelList.lv7List
+        lv1List.forEach((i,index)=>{i.id=i.sortNum=index+1;})
+        lv2List.forEach((i,index)=>{i.id=i.sortNum=index+1})
+        lv3List.forEach((i,index)=>{i.id=i.sortNum=index+1})
+        lv4List.forEach((i,index)=>{i.id=i.sortNum=index+1})
+        lv5List.forEach((i,index)=>{i.id=i.sortNum=index+1})
+        lv6List.forEach((i,index)=>{i.id=index+1})
+        levelList.lv7List =lv7List.concat(lv1List,lv2List,lv3List,lv4List,lv5List,lv6List)
       },
       initLevelNum(){
         this.levelPanes.levelList.lv1Num=this.levelPanes.levelList.lv1List.length
@@ -539,6 +662,7 @@ let timer=null
         this.levelPanes.levelList.lv4Num=this.levelPanes.levelList.lv4List.length
         this.levelPanes.levelList.lv5Num=this.levelPanes.levelList.lv5List.length
         this.levelPanes.levelList.lv6Num=this.levelPanes.levelList.lv6List.length
+        this.levelPanes.levelList.lv7Num=this.levelPanes.levelList.lv7List.length
       },
       mapLevelName(text){
         const levelIndex = levelArr.findIndex(level => level==text)

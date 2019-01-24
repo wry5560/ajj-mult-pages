@@ -1,5 +1,15 @@
 const path = require('path')
 const webpack = require('webpack')
+const settings={
+  // proxyTarget:'https://www.easy-mock.com/mock/5c1134372a95a012b1c7497d', //开发时的代理服务器地址，使用mock数据
+  proxyTarget:'http://feooe.myds.me:6200/', //开发时的代理服务器地址，使用ajj项目测试服务器
+  isPathRewrite:true,  //开发时代理服务器是否需要重定向接口地址,当使用http://feooe.myds.me:6200/做开发服务器时，需要设置为true
+  // isPathRewrite:false,  //开发时代理服务器是否需要重定向接口地址
+  pathRewrite:{'^/api':'/asrsajj'},  //开发时代理服务器接口地址重定向配置
+
+  pubilcUrl:'/asrsajj/90_asrs/sgkb/paiban_v/',        //排班打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanuser_v/'     //排班人员设置打包地址
+}
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -8,8 +18,7 @@ function resolve (dir) {
 // vue.config.js
 module.exports = {
   baseUrl:process.env.NODE_ENV === 'production'
-    // ? '/asrsajj/90_asrs/sgkb/paiban_v/'
-    ? '/asrsajj/AS_SYSTEM/sgkb/sgsb/'
+    ? settings.pubilcUrl
     : '/',
   /*
     Vue-cli3:
@@ -29,7 +38,10 @@ module.exports = {
     plugins: [
       // Ignore all locale files of moment.js
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    ]
+    ],
+    // externals:process.env.NODE_ENV === 'production'
+    // ?{'vue': 'Vue', 'vue-router': 'VueRouter',}
+    // :{}
   },
 
   chainWebpack: (config) => {
@@ -64,12 +76,9 @@ module.exports = {
     proxy: {
       '/api': {
         // target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
-        // target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
         // target: 'https://www.easy-mock.com/mock/5c1134372a95a012b1c7497d',
-        target: 'http://feooe.myds.me:6200/',
-        pathRewrite:{
-          '^/api':'/asrsajj'
-        },
+        target:settings.proxyTarget,
+        pathRewrite:settings.isPathRewrite ? settings.pathRewrite :{},
         ws: false,
         changeOrigin: true
       },

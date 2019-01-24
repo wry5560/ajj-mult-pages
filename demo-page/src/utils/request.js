@@ -4,13 +4,17 @@ import store from '@/store'
 import { VueAxios } from './axios'
 import notification from 'ant-design-vue/es/notification'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
+import {settings} from '../../dev-settings'
+
+console.log(JSON.stringify(settings))
+const {apiBaseUrl,testApiBaseUrl}= settings
 
 // 创建 axios 实例
 const service = axios.create({
-  // baseURL: '/api', // api base_url
   baseURL:process.env.NODE_ENV === 'production'
-    ? '/asrsajj':'/api',
-  timeout: 6000 // 请求超时时间
+    ? apiBaseUrl :testApiBaseUrl,
+
+  timeout: 20000 // 请求超时时间
 })
 
 const err = (error) => {

@@ -12,12 +12,13 @@ moment.locale('zh-cn');
 import { VueAxios } from '@/utils/request'
 
 import Antd from 'ant-design-vue'
-import Viser from 'viser-vue'
-import 'ant-design-vue/dist/antd.less'  // or 'ant-design-vue/dist/antd.less'
+// import Viser from 'viser-vue'
+import 'ant-design-vue/dist/antd.less'
+// or 'ant-design-vue/dist/antd.less'
 
 // import '@/permission' // permission control  权限控制
 import '@/utils/filter' // base filter
-import PermissionHelper from '@/utils/helper/permission'
+// import PermissionHelper from '@/utils/helper/permission'
 import { removeLoadingAnimate } from '@/utils/util'
 
 import {

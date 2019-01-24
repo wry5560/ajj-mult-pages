@@ -16,6 +16,7 @@
         @change.current="changeCurrentPage"
         @showSizeChange="showSizeChange"
         :indentSize= 20
+        @expand="reqXbData"
       >
         <!--<template slot="centerCell" >-->
           <!--<div style="text-align:center">事故名称</div>-->
@@ -47,7 +48,16 @@
         <!--</a-table>-->
 
       </a-table>
-      <a-pagination v-model="pagination.current" style="margin-top: 8px;float:right":total="pagination.total" showSizeChanger showQuickJumper :showTotal="total => `共${total}条数据`" @change="changeCurrentPage" @showSizeChange="showSizeChange"/>
+      <a-pagination
+        v-model="pagination.current"
+        style="margin-top: 8px; float:right; padding-right: 16px;"
+        :total="pagination.total"
+        showSizeChanger
+        showQuickJumper
+        :showTotal="total => `共${total}条数据`"
+        @change="changeCurrentPage"
+        @showSizeChange="showSizeChange"
+        size="small"/>
     </div>
     <a-modal
       title="事故上报"
@@ -57,7 +67,7 @@
       :destroyOnClose="true"
       :maskClosable="false"
       wrapClassName="nomal-modal"
-      width="70%"
+      width="90%"
       :bodyStyle="modalOption.bodyStyle"
       :okButtonProps="modalOption.okButtonProps"
       :cancelButtonProps="modalOption.cancelButtonProps"
@@ -72,9 +82,16 @@
 </template>
 
 <script>
-  import {reqKuaiBaoList,postSchedule} from '@/api/kuaibao/kuaibao'
-  import SgForm from './sgForm.vue'
+  import {reqKuaiBaoList,addSgkb} from './api'
+  import SgForm from './comps/sgForm.vue'
+  import moment from 'moment'
+  import Vue from 'vue'
+
+  moment.locale('zh-cn');
+
   export default{
+    Vue,
+    moment,
     components:{
       SgForm
     },
@@ -96,13 +113,13 @@
         },
         dataSource: [],
         columns: [
-          {title: '编号', dataIndex: 'id', width: 120, key:'id',align: 'center',},
+          {title: '编号', dataIndex: 'id', width: 120, key:'id',align: 'center',style:{'padding-left':'20px'}},
           {title: '事故名称',dataIndex: 'sgnm', width: 100,key:'sgnm', align: 'left',slots:{title:'centerCell'}},
-          {title: '续报数', dataIndex: 'xbNum', width: 50,key:'xbNum', align: 'center',},
+          {title: '续报数', dataIndex: 'xbnum', width: 50,key:'xbnum', align: 'center',},
           {title: '上报时间', dataIndex: 'uptime', width: 100, key:'uptime',align: 'center',},
           {title: '上报人', dataIndex: 'upuser', width: 100,key:'upuser', align: 'center',},
           {title: '审批状态', dataIndex: 'isend', width: 100,key:'isend', align: 'center',scopedSlots: {customRender: 'status'}},
-          {title: '流程节点', dataIndex: 'dqlc', width: 100, key:'dqlc',align: 'center',},
+          {title: '流程节点', dataIndex: 'lcname', width: 100, key:'lcname',align: 'center',},
           {title: '操作', dataIndex: 'actions', width: 100, key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
 //         {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
         ],
@@ -120,18 +137,28 @@
     },
     computed:{
     },
+    beforeCreate(){
+      if (process.env.NODE_ENV !== 'production') {
+        const {asrsajjdic}=require('../../temp/lsTemp')
+        localStorage.setItem('/asrsajjdic',JSON.stringify(asrsajjdic))
+      }
+    },
     created(){
       this.reqTableData()
+
     },
     mounted(){
-      console.log(this.modalOption)
+//      console.log(this.modalOption)
+
       let _this=this
       window.onresize = function(){
         console.log(_this.modalOption.bodyStyle['max-height'])
         _this.modalOption.bodyStyle['max-height']= window.innerHeight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     -250+'px'
       }
+      document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
     },
     methods:{
+
       showModal(){
         this.modalOption.visible=true
       },
@@ -144,7 +171,13 @@
 //              description: JSON.stringify(values)
 //            })
             this.modalOption.commitLoading=true
-            postSchedule().then((res)=>{
+            values.fssj=values.fssj.format('YYYY-MM-DD HH:MM:SS')
+            console.log(values.fssj)
+            const parameter={
+              jsonData:JSON.stringify(values),
+              param1:sys_relateDepId2
+            }
+            addSgkb(parameter).then((res)=>{
                 if (res.success==true){
                   this.$message.success('上报成功！')
                   setTimeout(()=>{
@@ -173,8 +206,15 @@
         console.log("id:"+id)
         this.$router.push('/sgDetail')
       },
-      reqTableData(parameter){
+      reqTableData(){
+        console.log('ls1111:'+ JSON.stringify(JSON.parse(localStorage.getItem('/asrsajjdic'))['企业类型']))
         this.tableIsLoading=true
+        const parameter={
+          param1:sys_relateDepId2,
+          param5:1
+//          limit:2,
+//          start:0
+        }
         reqKuaiBaoList(parameter)
           .then((res)=>{
             if(res.success){
@@ -185,26 +225,62 @@
           })
           .catch(err=>{})
       },
+      reqXbData(expanded, record){
+//          debugger
+        if (expanded){
+          this.tableIsLoading=true
+          const parameter={
+            param1:sys_relateDepId2,
+            param6:record.id
+//          limit:2,
+//          start:0
+          }
+          const tmpChildren= [...record.children]
+          record.children=[]
+          reqKuaiBaoList(parameter)
+            .then((res)=>{
+              if(res.success){
+                this.tableIsLoading=false
+                this.initXbDataSource(res)
+              }else{
+                this.tableIsLoading=false
+                record.children= tmpChildren
+                this.$message.error(res.message)
+              }
+            })
+            .catch(err=>{
+              this.tableIsLoading=false
+              record.children= tmpChildren
+            })
+        }
+      },
       initDataSource(res){
 //         debugger
         const tempData = res.data.filter(i=>{return !i.xbid || i.xbid== 0})
         tempData.forEach((data,index)=>{
-          data.children=[]
-          data.key=index
-          res.data.forEach((item,itemIndex)=>{
-              if(item.id==data.id && item.xbid && item.xbid>0){
-                  item.id=item.id + item.xbid
-                  item.key=item.id + item.xbid+itemIndex
-                item.xbNum='-'
-                  data.children.push(item)
-              }
-          })
-          data.xbNum=data.children.length
+          if(data.xbnum && data.xbnum !=0){data.children=[]}else{ data.xbnum = 0}
+          data.key=index+data.id
+          data.upuser=data.__upuser.userName
+          if (data.isend=='1'){data.lcname='已完结'}
+          data.uptime=moment(data.uptime).format('YYYY-MM-DD \xa0 HH:MM')
         })
-
         this.dataSource = tempData
         this.pagination.total=res.totalCount
         this.tableIsLoading=false
+      },
+      initXbDataSource(res){
+        res.data.forEach((item,itemIndex)=>{
+//            debugger
+          if(item.xbid && item.xbid>0){
+            item.key=item.id + item.xbid+itemIndex
+            item.upuser=item.__upuser.userName
+            if (item.isend=='1'){item.lcname='已完结'}
+            item.uptime=moment(item.xbtime).format('YYYY-MM-DD \xa0 HH:MM')
+            item.xbnum='-'
+            this.dataSource.find(i => i.id==item.id).children.push(item)
+            item.id="续 "+ item.id + item.xbid
+          }
+        })
       },
       changeCurrentPage(page, pageSize){
         console.log(page)

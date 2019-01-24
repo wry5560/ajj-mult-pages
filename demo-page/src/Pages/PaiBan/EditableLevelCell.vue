@@ -5,7 +5,7 @@
         size="small"
         style="width:100%"
         defaultValue=""
-        :defaultOpen="true"
+        :defaultOpen="defaultOpen"
         @change="handleChange"
         notFoundContent="请选择级别"
       >
@@ -22,23 +22,33 @@
       text: String,
       selectItem:Array,
       record:Object,
+      type:String
     },
     data () {
       return {
         value: this.text,
         editable: false,
         size:'small',
+
       }
     },
     computed:{
       getValue () {
         return this.text
+      },
+      defaultOpen(){
+        if(this.type=='multi')return false
+        return true
       }
     },
     methods: {
       handleChange (key) {
-          const record=this.record
-        this.$emit('levelChange', [key,record])
+          if (this.type=='multi'){
+            this.$emit('levelChange', [key,'multi'])
+          }else{
+            const record=this.record
+            this.$emit('levelChange', [key,record])
+          }
         // debugger
       },
       check () {

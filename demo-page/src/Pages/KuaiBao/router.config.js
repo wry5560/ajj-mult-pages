@@ -8,20 +8,13 @@ export const constantRouterMap = [
   {
     path: '/shenhe',
     name: '/shenhe',
-    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/KuaiBao/sgShenhe'),
-    // redirect: '/test/home',
-    // children: [
-    //   {
-    //     path: 'home',
-    //     name: 'TestHome',
-    //     component: () => import(/* webpackChunkName: "test" */'@/views/Home')
-    //   }
-    // ]
+    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/KuaiBao/IndexShenhe'),
+
   },
   {
     path: '/sgsb',
     name: '/shiguCommit',
-    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/KuaiBao/shiguCommit'),
+    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/KuaiBao/comps/shiguCommit'),
     // redirect: '/test/home',
     // children: [
     //   {
@@ -34,7 +27,7 @@ export const constantRouterMap = [
   {
     path: '/sgDetail',
     name: 'sgDetail',
-    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/KuaiBao/sgDetail'),
+    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/KuaiBao/comps/sgDetail'),
     meta: {},
     // redirect: '/index.html',
   },

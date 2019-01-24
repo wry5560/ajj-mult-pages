@@ -1,0 +1,10 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+		 pageEncoding="utf-8" errorPage="/hasNoRight.jsp"%>
+
+		 <script>
+     	var sys_relateDepId2 = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getRelateDep2()%>';
+     	var departmentId = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getDepartmentId()%>';
+     	var departmentNm = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getDepartmentNm()%>';
+     	var userId = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getUserId()%>';
+     	var userNm = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getUserName()%>';
+     	</script>

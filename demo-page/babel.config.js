@@ -4,6 +4,6 @@ module.exports = {
     ["@babel/env",
       {
         useBuiltIns: "entry",
-      },]
-  ]
+      },],
+  ],
 }

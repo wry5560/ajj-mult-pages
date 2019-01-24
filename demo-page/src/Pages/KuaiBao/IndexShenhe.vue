@@ -61,8 +61,8 @@
 </template>
 
 <script>
-  import {reqKuaiBaoList,postSchedule} from '@/api/kuaibao/kuaibao'
-  import SgForm from './sgForm.vue'
+  import {reqKuaiBaoList,postSchedule} from './api'
+  import SgForm from './comps/sgForm.vue'
   export default{
     components:{
       SgForm
