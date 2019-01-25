@@ -105,10 +105,10 @@
           stepsData:{
             current:2,
             steps:[
-              {title:'',info:{auditstate:'',audituser:'',audittime:''}}
-              {title:'',info:{auditstate:'',audituser:'',audittime:''}}
-              {title:'',info:{auditstate:'',audituser:'',audittime:''}}
-              {title:'',info:{auditstate:'',audituser:'',audittime:''}}
+              {title:'',info:{auditstate:'',audituser:'',audittime:''}},
+              {title:'',info:{auditstate:'',audituser:'',audittime:''}},
+              {title:'',info:{auditstate:'',audituser:'',audittime:''}},
+              {title:'',info:{auditstate:'',audituser:'',audittime:''}},
               {title:'完成',info:{auditstate:'',audituser:'',audittime:''}}
             ],
           },
@@ -239,7 +239,8 @@
         reqSbLc(parameter)
           .then((res)=>{
             if(res.success){
-              res.data.forEach((item)=>{this.stepsData.steps.push({
+              res.data.forEach((item,index)=>{
+                this.stepsData.steps.push({
                 title:item.lcname,
                 info:{
                   auditstate:'',
