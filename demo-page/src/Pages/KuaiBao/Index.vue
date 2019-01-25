@@ -2,7 +2,7 @@
   <div class="kuaibao-index">
     <div  class="header-buttons-bar">
       <!--<a-button @click="handleAdd">Add</a-button>-->
-      <a-button type='primary' @click="showModal"size="small" :style="{'margin-left':'5px'}">事故上报</a-button>
+      <a-button type='primary' @click="showModal('sb')"size="small" :style="{'margin-left':'5px'}">事故上报</a-button>
       <a-button @click="reqTableData"size="small">刷 新</a-button>
     </div>
     <div>
@@ -22,9 +22,9 @@
           <!--<div style="text-align:center">事故名称</div>-->
         <!--</template>-->
         <span slot="actionCell" slot-scope="text,record,index" >
-          <a href="javascript:;" @click="gotoSgDetail(record.id)">查看详情</a>
+          <a href="javascript:;" @click="gotoSgDetail(record)">查看详情</a>
           <a-divider v-if="record.xbid==0" type="vertical" />
-          <a v-if="record.xbid==0" href="javascript:;" @click="">续报</a>
+          <a v-if="record.xbid==0" href="javascript:;" @click="showModal(record.id)">续报</a>
         </span>
         <template slot="status" slot-scope="isend">
           <a-badge :status="`${isend==0 ? 'processing':'success'}`" :text="`${isend==0 ? '审批中':'已审批'}`"/>
@@ -56,13 +56,13 @@
         :pageSize="pagination.pageSize"
         showSizeChanger
         showQuickJumper
-        :showTotal="total => `共${total}条数据`"
+        :showTotal="total =>`共${total}条数据`"
         @change="changeCurrentPage"
         @showSizeChange="showSizeChange"
         size="small"/>
     </div>
     <a-modal
-      title="事故上报"
+      :title="sbType=='sb'?'事故上报':'事故续报'"
       okText="上 报"
       @cancel="modalCancel"
       :visible="modalOption.visible"
@@ -77,14 +77,15 @@
       <sg-form :selectOptions="selectOptions" ref="sgCommit" :showSubmit="false"></sg-form>
       <template slot="footer">
         <a-button key="back" @click="modalCancel">返 回</a-button>
-        <a-button key="submit" type="primary" :loading="modalOption.commitLoading" @click="sgCommit">上 报</a-button>
+        <a-button v-if="sbType=='sb'" key="submit" type="primary" :loading="modalOption.commitLoading" @click="sgCommit">上 报</a-button>
+        <a-button v-if="sbType!='sb'" key="submit" type="primary" :loading="modalOption.commitLoading" @click="xbCommit">续 报</a-button>
       </template>
     </a-modal>
   </div>
 </template>
 
 <script>
-  import {reqKuaiBaoList,addSgkb} from './api'
+  import {reqKuaiBaoList,addSgkb,reqSbLc,addSgkbxb} from './api'
   import SgForm from './comps/sgForm.vue'
   import moment from 'moment'
   import Vue from 'vue'
@@ -99,6 +100,7 @@
     },
     data(){
       return {
+        sbType:'sb',
         modalOption:{
           visible:false,
           bodyStyle:{
@@ -150,40 +152,36 @@
     computed:{
     },
     beforeCreate(){
-      if (process.env.NODE_ENV !== 'production') {
-        const {asrsajjdic}=require('../../temp/lsTemp')
-        localStorage.setItem('/asrsajjdic',JSON.stringify(asrsajjdic))
-      }
     },
     created(){
       this.reqTableData()
-
     },
     mounted(){
 //      console.log(this.modalOption)
       let _this=this
       window.onresize = function(){
-        console.log(_this.modalOption.bodyStyle['max-height'])
         _this.modalOption.bodyStyle['max-height']= window.innerHeight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     -250+'px'
       }
       document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
-      //初始化选择项配置
-      const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
-      ls['企业类型'].forEach((item)=>{this.selectOptions.hyType.push([item.label,item.value])})
-      ls['事故管理分类'].forEach((item)=>{this.selectOptions.glType.push([item.label,item.value])})
-      ls['事故等级'].forEach((item)=>{this.selectOptions.sgdj.push([item.label,item.value])})
-      ls['事故类型'].forEach((item)=>{this.selectOptions.sglx.push([item.label,item.value])})
-      ls['事故伤害类型'].forEach((item)=>{this.selectOptions.shlb.push([item.label,item.value])})
-      ls['事故性质'].forEach((item)=>{this.selectOptions.sgxz.push([item.label,item.value])})
-      // debugger
+      //测试环境初始化选择项配置
+      if (process.env.NODE_ENV !== 'production'){
+        const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
+        ls['企业类型'].forEach((item)=>{this.selectOptions.hyType.push([item.label,item.value])})
+        ls['事故管理分类'].forEach((item)=>{this.selectOptions.glType.push([item.label,item.value])})
+        ls['事故等级'].forEach((item)=>{this.selectOptions.sgdj.push([item.label,item.value])})
+        ls['事故类型'].forEach((item)=>{this.selectOptions.sglx.push([item.label,item.value])})
+        ls['事故伤害类型'].forEach((item)=>{this.selectOptions.shlb.push([item.label,item.value])})
+        ls['事故性质'].forEach((item)=>{this.selectOptions.sgxz.push([item.label,item.value])})
+        // debugger
+      }
     },
     methods:{
-      showModal(){
+      showModal(type){
+        this.sbType=type
         this.modalOption.visible=true
       },
       sgCommit(){
         this.$refs.sgCommit.form.validateFields((err, values) => {
-           debugger
           if (!err) {
 //            this.$notification['error']({
 //              message: 'Received values of form:',
@@ -217,6 +215,40 @@
         })
 //        this.modalOption.visible=false
       },
+      xbCommit(){
+        this.$refs.sgCommit.form.validateFields((err, values) => {
+          if (!err) {
+            this.modalOption.commitLoading=true
+            values.fssj=values.fssj.format('YYYY-MM-DD HH:MM:SS')
+            if (values.sgdj) values.sgdj=this.selectOptions.sgdj.find(item=>item[0]==values.sgdj)[1]
+            if (values.sglx) values.sglx=this.selectOptions.sglx.find(item=>item[0]==values.sglx)[1]
+            if (values.shlb) values.shlb=this.selectOptions.shlb.find(item=>item[0]==values.shlb)[1]
+            if (values.sgxz) values.sgxz=this.selectOptions.sgxz.find(item=>item[0]==values.sgxz)[1]
+            values.id=this.sbType
+            const parameter={
+              jsonData:JSON.stringify(values),
+              param1:sys_relateDepId2
+            }
+            addSgkbxb(parameter).then((res)=>{
+              if (res.success==true){
+                this.$message.success('上报成功！')
+                setTimeout(()=>{
+                    this.modalOption.commitLoading=false
+                    this.modalOption.visible=false
+                  }
+                  ,500
+                )
+              }else{
+                this.$message.error(res.message+'请稍后再试！')
+                this.modalOption.commitLoading=false
+              }
+            })
+          }else{
+            this.$message.error('请填写必填项！')
+          }
+        })
+//        this.modalOption.visible=false
+      },
       modalCancel(){
         this.modalOption.commitLoading=false
         this.modalOption.visible=false
@@ -224,17 +256,19 @@
       gotoSgsb(){
         this.$router.push('/sgsb')
       },
-      gotoSgDetail(id){
-        console.log("id:"+id)
-        this.$router.push('/sgDetail')
+      gotoSgDetail(record){
+//          debugger
+        const id = record.xbid==0? record.id:record.idBf
+        this.$router.push({name:'sgDetail',params:{id:id,xbid:record.xbid}})
       },
+
       reqTableData(){
         this.tableIsLoading=true
         const parameter={
           param1:sys_relateDepId2,
-          param5:1
-//          limit:2,
-//          start:0
+          param5:1,
+          limit:this.pagination.pageSize,
+          start:(this.pagination.current -1)*this.pagination.pageSize
         }
         reqKuaiBaoList(parameter)
           .then((res)=>{
@@ -252,9 +286,7 @@
           this.tableIsLoading=true
           const parameter={
             param1:sys_relateDepId2,
-            param6:record.id
-//          limit:2,
-//          start:0
+            param6:record.id,
           }
           const tmpChildren= [...record.children]
           record.children=[]
@@ -290,6 +322,7 @@
         this.pagination.total=res.totalCount
         this.tableIsLoading=false
       },
+
       initXbDataSource(res){
         const tmpData=[]
         const kbId=res.data[0].id
@@ -303,6 +336,7 @@
             tmpData.push({...item})
             item.uptime=moment(item.xbtime).format('YYYY-MM-DD \xa0 HH:MM')
             this.dataSource.find(i => i.id==item.id).children.push(item)
+            item.idBf=item.id
             item.id="续 "+ item.id + item.xbid
           }
         })
@@ -310,10 +344,21 @@
         this.$store.commit('ADD_XUBAO',{id:kbId,xbData:tmpData})
       },
       changeCurrentPage(page, pageSize){
+        this.pagination.current=page
+        this.pagination.pageSize=pageSize
+        this.reqTableData()
         console.log(page)
         console.log(pageSize)
       },
       showSizeChange(current, size){
+        const start=(this.pagination.current-1 )* this.pagination.pageSize
+        if(start==0){
+          this.pagination.current=1
+        }else{
+          this.pagination.current= Math.ceil(start/size)
+        }
+        this.pagination.pageSize=size
+        this.reqTableData()
         console.log(current)
         console.log(size)
       },

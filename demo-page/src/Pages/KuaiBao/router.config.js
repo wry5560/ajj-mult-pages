@@ -9,7 +9,7 @@ export const constantRouterMap = [
     path: '/shenhe',
     name: '/shenhe',
     component: ()=>import(/* webpackChunkName: "index" */'@/Pages/KuaiBao/IndexShenhe'),
-
+    meta: {keepAlive:true},
   },
   {
     path: '/sgsb',

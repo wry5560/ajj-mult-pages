@@ -7,12 +7,41 @@
 import { axios } from '@/utils/request'
 import Qs from 'qs'
 
-// param1 sys_relateDepId2 查询流程节点
+// param1 sys_relateDepId2  查询流程名称
+
 export function reqSbLc(parameter) {
   return axios({
     url:  '/base/General.query.json',
     method: 'get',
     params: {sqlId:'S360005',...parameter},
+    // headers: {
+    //   'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    // }
+  })
+}
+
+// param1 sys_relateDepId2  查询总流程节点
+// param2 sgid
+// param3 xbid
+export function reqSbLcTotal(parameter) {
+  return axios({
+    url:  '/base/General.query.json',
+    method: 'get',
+    params: {sqlId:'S360011',...parameter},
+    // headers: {
+    //   'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    // }
+  })
+}
+
+// 查询所有流程节点
+// param2 sgid
+// param3 xbid
+export function reqAllSbLc(parameter) {
+  return axios({
+    url:  '/base/General.query.json',
+    method: 'get',
+    params: {sqlId:'S360009',...parameter},
     // headers: {
     //   'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     // }
@@ -35,6 +64,25 @@ export function reqKuaiBaoList(parameter) {
       : '/base/General.query.json',
     method: 'get',
     params: {sqlId:'S360006',...parameter},
+    // headers: {
+    //   'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    // }
+  })
+}
+
+// param1 sys_relateDepId2  查询事故详情
+// param2 开关 a.xbid=0 主事故
+// param3 开关 a.xbid>0 所有续报
+// param4 开关 a.id=id  主事故
+
+export function reqKuaiBaoDetail(parameter) {
+  return axios({
+    url: process.env.NODE_ENV === 'production'
+      ?'/base/General.query.json'
+      // : '/kuaibaoList',
+      : '/base/General.query.json',
+    method: 'get',
+    params: {sqlId:'S360008',...parameter},
     // headers: {
     //   'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     // }

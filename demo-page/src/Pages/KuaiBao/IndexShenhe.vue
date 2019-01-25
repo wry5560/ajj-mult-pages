@@ -2,14 +2,14 @@
   <div class="kuaibao-index">
     <div  class="header-buttons-bar">
       <!--<a-button @click="handleAdd">Add</a-button>-->
-      <a-tabs>
+      <a-tabs @change="tabChange">
         <a-tab-pane  key="1">
-          <a-badge slot="tab" count="5">
+          <a-badge slot="tab" :count="noEndNum">
             <div >待审核</div>
           </a-badge>
         </a-tab-pane>
         <a-tab-pane tab="已审核" key="2"></a-tab-pane>
-        <a-button slot="tabBarExtraContent">Extra Action</a-button>
+        <a-button slot="tabBarExtraContent" style="float: left;" @click="refresh">刷 新</a-button>
       </a-tabs>
     </div>
     <div>
@@ -28,15 +28,26 @@
         <!--<div style="text-align:center">事故名称</div>-->
         <!--</template>-->
         <span slot="actionCell" slot-scope="text,record,index" >
-          <a href="javascript:;" @click="gotoSgDetail(record.id)">查看详情</a>
-          <a-divider v-if="record.xbid==0" type="vertical" />
-          <a v-if="record.xbid==0" href="javascript:;" @click="">续报</a>
+          <a v-if="record.isend!=0"href="javascript:;" @click="gotoSgDetail(record)">查看详情</a>
+          <!--<a-divider v-if="record.isend==0" type="vertical" />-->
+          <a v-if="record.isend==0" href="javascript:;" @click="gotoSgDetail(record,'true')">审核</a>
         </span>
         <template slot="status" slot-scope="isend">
           <a-badge :status="`${isend==0 ? 'processing':'success'}`" :text="`${isend==0 ? '审批中':'已审批'}`"/>
         </template>
       </a-table>
-      <a-pagination v-model="pagination.current" style="margin-top: 8px;float:right":total="pagination.total" showSizeChanger showQuickJumper :showTotal="total => `共${total}条数据`" @change="changeCurrentPage" @showSizeChange="showSizeChange"/>
+      <a-pagination
+        size="small"
+        v-model="pagination.current"
+        style="margin-top: 4px;float:right;padding-right: 16px;"
+        :total="pagination.total"
+        :pageSizeOptions="pagination.pageSizeOptions"
+        :pageSize="pagination.pageSize"
+        showSizeChanger
+        showQuickJumper
+        :showTotal="total => `共${total}条数据`"
+        @change="changeCurrentPage"
+        @showSizeChange="showSizeChange"/>
     </div>
     <a-modal
       title="事故上报"
@@ -63,12 +74,17 @@
 <script>
   import {reqKuaiBaoList,postSchedule} from './api'
   import SgForm from './comps/sgForm.vue'
+  import moment from 'moment'
+
   export default{
+    moment,
     components:{
       SgForm
     },
     data(){
       return {
+        activeTab:'1',
+        noEndNum:0,
         modalOption:{
           visible:false,
           bodyStyle:{
@@ -81,13 +97,15 @@
         tableIsLoading: false,
         pagination:{
           total:0,
-          current:1
+          current:1,
+          pageSize:10,
+          pageSizeOptions:['2','5','10','20','50','100','500']
         },
         dataSource: [],
         columns: [
           {title: '编号', dataIndex: 'id', width: 120, key:'id',align: 'center',},
           {title: '事故名称',dataIndex: 'sgnm', width: 100,key:'sgnm', align: 'left',slots:{title:'centerCell'}},
-          {title: '续报数', dataIndex: 'xbNum', width: 50,key:'xbNum', align: 'center',},
+          {title: '续报数', dataIndex: 'xbnum', width: 50,key:'xbnum', align: 'center',},
           {title: '上报时间', dataIndex: 'uptime', width: 100, key:'uptime',align: 'center',},
           {title: '上报人', dataIndex: 'upuser', width: 100,key:'upuser', align: 'center',},
           {title: '审批状态', dataIndex: 'isend', width: 100,key:'isend', align: 'center',scopedSlots: {customRender: 'status'}},
@@ -95,16 +113,6 @@
           {title: '操作', dataIndex: 'actions', width: 100, key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
 //         {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
         ],
-        innerColumns: [
-          {title: '编号', dataIndex: 'id', width: 100, key:'id',align: 'center',},
-          {title: '事故名称',dataIndex: 'sgnm', width: 100,key:'sgnm', align: 'left',slots:{title:'centerCell'}},
-          {title: '上报时间', dataIndex: 'uptime', width: 100, key:'uptime',align: 'center',},
-          {title: '上报人', dataIndex: 'upuser', width: 100,key:'upuser', align: 'center',},
-          {title: '审批状态', dataIndex: 'isend', width: 100,key:'isend', align: 'center',scopedSlots: {customRender: 'status'}},
-          {title: '流程节点', dataIndex: 'dqlc', width: 100, key:'dqlc',align: 'center',},
-          {title: '续报数', dataIndex: 'xbNum', width: 50,key:'xbNum', align: 'center',},
-          {title: '操作', dataIndex: 'actions', width: 100, key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
-        ]
       }
     },
     computed:{
@@ -113,16 +121,21 @@
       this.reqTableData()
     },
     mounted(){
-      console.log(this.modalOption)
+//      console.log(this.modalOption)
       let _this=this
       window.onresize = function(){
-        console.log(_this.modalOption.bodyStyle['max-height'])
+//        console.log(_this.modalOption.bodyStyle['max-height'])
         _this.modalOption.bodyStyle['max-height']= window.innerHeight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     -250+'px'
       }
+      document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
     },
     methods:{
       showModal(){
         this.modalOption.visible=true
+      },
+      tabChange(activeKey){
+        activeKey=='1'? this.activeTab='1': this.activeTab='2'
+        this.reqTableData()
       },
       sgCommit(){
         this.$refs.sgCommit.form.validateFields((err, values) => {
@@ -158,12 +171,20 @@
       gotoSgsb(){
         this.$router.push('/sgsb')
       },
-      gotoSgDetail(id){
-        console.log("id:"+id)
-        this.$router.push('/sgDetail')
+      gotoSgDetail(record,isshenhe){
+        const id = record.xbid==0? record.id:record.idBf
+        this.$router.push({name:'sgDetail',params:{id:id,xbid:record.xbid,isShenhe:isshenhe,isEnd:record.isend}})
       },
-      reqTableData(parameter){
+      reqTableData(){
         this.tableIsLoading=true
+        const parameter={
+          param1:sys_relateDepId2,
+          param4:1,
+//          param5:1,
+          limit:this.pagination.pageSize,
+          start:(this.pagination.current -1)*this.pagination.pageSize
+        }
+        this.activeTab=='1'? parameter.param2=1 :parameter.param3=1
         reqKuaiBaoList(parameter)
           .then((res)=>{
             if(res.success){
@@ -175,31 +196,39 @@
           .catch(err=>{})
       },
       initDataSource(res){
-//         debugger
-        const tempData = res.data.filter(i=>{return !i.xbid || i.xbid== 0})
+        const tempData = res.data
         tempData.forEach((data,index)=>{
-          data.children=[]
-          data.key=index
-          res.data.forEach((item,itemIndex)=>{
-            if(item.id==data.id && item.xbid && item.xbid>0){
-              item.id=item.id + item.xbid
-              item.key=item.id + item.xbid+itemIndex
-              item.xbNum='-'
-              data.children.push(item)
-            }
-          })
-          data.xbNum=data.children.length
+          if(!data.xbnum >0){data.xbnum = 0}
+          data.key=index+ data.id + data.xbid
+          data.upuser=data.__upuser.userName
+          if (data.isend=='1'){data.lcname='已完结'}
+          data.uptime=moment(data.uptime).format('YYYY-MM-DD \xa0 HH:MM')
         })
-
+        this.$store.commit('ADD_KUAIBAO',tempData)
         this.dataSource = tempData
+        this.activeTab=='1'? this.noEndNum=res.totalCount :0
         this.pagination.total=res.totalCount
         this.tableIsLoading=false
       },
+      refresh(){
+        this.reqTableData()
+      },
       changeCurrentPage(page, pageSize){
+        this.pagination.current=page
+        this.pagination.pageSize=pageSize
+        this.reqTableData()
         console.log(page)
         console.log(pageSize)
       },
       showSizeChange(current, size){
+        const start=(this.pagination.current-1 )* this.pagination.pageSize
+        if(start==0){
+          this.pagination.current=1
+        }else{
+          this.pagination.current= Math.ceil(start/size)
+        }
+        this.pagination.pageSize=size
+        this.reqTableData()
         console.log(current)
         console.log(size)
       },
@@ -218,6 +247,7 @@
     .ant-tabs-bar{
       margin:0 !important;
     }
+
   }
 
 

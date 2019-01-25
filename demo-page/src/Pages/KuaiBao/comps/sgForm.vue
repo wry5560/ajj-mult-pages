@@ -136,14 +136,14 @@
             </a-select>
           </a-form-item>
         </a-col>
-        <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="是否统计" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-            <a-select size="small" placeholder="请选择是否纳入统计" v-decorator="['sfnrtj']" >
-              <a-select-option key="yes">1</a-select-option>
-              <a-select-option key="no">0</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
+        <!--<a-col :lg="8" :md="12" :sm="24">-->
+          <!--<a-form-item label="是否统计" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">-->
+            <!--<a-select size="small" placeholder="请选择是否纳入统计" v-decorator="['sfnrtj']" >-->
+              <!--<a-select-option key="yes">1</a-select-option>-->
+              <!--<a-select-option key="no">0</a-select-option>-->
+            <!--</a-select>-->
+          <!--</a-form-item>-->
+        <!--</a-col>-->
         <a-col :lg="24">
           <a-form-item label="事故简况" :labelCol="{ span: 2 }" :wrapperCol="{ span: 22 }">
             <a-textarea size="small" placeholder="请输入事故简况" :autosize="{ minRows: 2, maxRows: 6 }"v-decorator="['sgjk',{rules: [{ required: true, message: '请输入事故简况', whitespace: true}]}]" />

@@ -98,3 +98,8 @@
 .ant-table-header{
   margin-bottom: -6px;
 }
+.ant-table-placeholder{
+  position: absolute !important;
+  top: 50px;
+  left:calc(50% - 44px)
+}

@@ -2,6 +2,7 @@ const kuaibao = {
   state:{
     kuaibaoList:[],
     xbList:{},
+    lcInfo:[]
   },
   mutations: {
     ADD_KUAIBAO: (state, payload) => {
@@ -9,9 +10,11 @@ const kuaibao = {
       // state.kuaibaoList.push(payload)
     },
     ADD_XUBAO:(state,payload)=>{
-      debugger
       state.xbList[payload.id]=[]
       state.xbList[payload.id]=payload.xbData
+    },
+    ADD_LC_INFO:(state,payload)=>{
+      state.lcInfo=payload
     }
   },
   actions: {
