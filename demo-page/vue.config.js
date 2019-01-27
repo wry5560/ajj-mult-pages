@@ -8,8 +8,10 @@ const settings={
   // isPathRewrite:false,  //开发时代理服务器是否需要重定向接口地址
   pathRewrite:{'^/api':'/asrsajj'},  //开发时代理服务器接口地址重定向配置
 
-  pubilcUrl:'/asrsajj/90_asrs/sgkb/paiban_v/',        //排班打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/sgkb/paiban_v/',        //排班打包地址
   // pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanuser_v/'     //排班人员设置打包地址
+
+  pubilcUrl:'/asrsajj/90_asrs/sgkb/sgkb/'     //事故快报设置打包地址
 }
 
 function resolve (dir) {

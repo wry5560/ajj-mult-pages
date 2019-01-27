@@ -35,8 +35,8 @@ export function reqSbLcTotal(parameter) {
 }
 
 // 查询所有流程节点
-// param2 sgid
-// param3 xbid
+// param1 sgid
+// param2 xbid
 export function reqAllSbLc(parameter) {
   return axios({
     url:  '/base/General.query.json',

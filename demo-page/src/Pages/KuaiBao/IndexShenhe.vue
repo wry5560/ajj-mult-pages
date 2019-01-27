@@ -99,7 +99,7 @@
           total:0,
           current:1,
           pageSize:10,
-          pageSizeOptions:['2','5','10','20','50','100','500']
+          pageSizeOptions:['10','20','50','100','500']
         },
         dataSource: [],
         columns: [
@@ -109,7 +109,7 @@
           {title: '上报时间', dataIndex: 'uptime', width: 100, key:'uptime',align: 'center',},
           {title: '上报人', dataIndex: 'upuser', width: 100,key:'upuser', align: 'center',},
           {title: '审批状态', dataIndex: 'isend', width: 100,key:'isend', align: 'center',scopedSlots: {customRender: 'status'}},
-          {title: '流程节点', dataIndex: 'dqlc', width: 100, key:'dqlc',align: 'center',},
+          {title: '流程节点', dataIndex: 'lcname', width: 100, key:'lcname',align: 'center',},
           {title: '操作', dataIndex: 'actions', width: 100, key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
 //         {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
         ],
@@ -173,7 +173,7 @@
       },
       gotoSgDetail(record,isshenhe){
         const id = record.xbid==0? record.id:record.idBf
-        this.$router.push({name:'sgDetail',params:{id:id,xbid:record.xbid,isShenhe:isshenhe,isEnd:record.isend}})
+        this.$router.push({name:'sgDetail',params:{id:id,xbid:record.xbid,isShenhe:isshenhe}})
       },
       reqTableData(){
         this.tableIsLoading=true
@@ -203,6 +203,12 @@
           data.upuser=data.__upuser.userName
           if (data.isend=='1'){data.lcname='已完结'}
           data.uptime=moment(data.uptime).format('YYYY-MM-DD \xa0 HH:MM')
+          if(data.xbid!=0){
+            data.idBf=data.id
+            data.id="续"+data.id+"-"+data.xbid
+            data.xbnum='-'
+            data.uptime=moment(data.xbtime).format('YYYY-MM-DD \xa0 HH:MM')
+          }
         })
         this.$store.commit('ADD_KUAIBAO',tempData)
         this.dataSource = tempData

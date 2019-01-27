@@ -24,7 +24,7 @@
         <span slot="actionCell" slot-scope="text,record,index" >
           <a href="javascript:;" @click="gotoSgDetail(record)">查看详情</a>
           <a-divider v-if="record.xbid==0" type="vertical" />
-          <a v-if="record.xbid==0" href="javascript:;" @click="showModal(record.id)">续报</a>
+          <a v-if="record.xbid==0" href="javascript:;" @click="showModal(record)">续报</a>
         </span>
         <template slot="status" slot-scope="isend">
           <a-badge :status="`${isend==0 ? 'processing':'success'}`" :text="`${isend==0 ? '审批中':'已审批'}`"/>
@@ -74,7 +74,7 @@
       :okButtonProps="modalOption.okButtonProps"
       :cancelButtonProps="modalOption.cancelButtonProps"
     >
-      <sg-form :selectOptions="selectOptions" ref="sgCommit" :showSubmit="false"></sg-form>
+      <sg-form :sbType="sbType" :sbData="sbData" :selectOptions="selectOptions" ref="sgCommit" :showSubmit="false"></sg-form>
       <template slot="footer">
         <a-button key="back" @click="modalCancel">返 回</a-button>
         <a-button v-if="sbType=='sb'" key="submit" type="primary" :loading="modalOption.commitLoading" @click="sgCommit">上 报</a-button>
@@ -101,6 +101,7 @@
     data(){
       return {
         sbType:'sb',
+        sbData:{},
         modalOption:{
           visible:false,
           bodyStyle:{
@@ -163,8 +164,7 @@
         _this.modalOption.bodyStyle['max-height']= window.innerHeight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     -250+'px'
       }
       document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
-      //测试环境初始化选择项配置
-      if (process.env.NODE_ENV !== 'production'){
+      //初始化选择项配置
         const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
         ls['企业类型'].forEach((item)=>{this.selectOptions.hyType.push([item.label,item.value])})
         ls['事故管理分类'].forEach((item)=>{this.selectOptions.glType.push([item.label,item.value])})
@@ -173,11 +173,11 @@
         ls['事故伤害类型'].forEach((item)=>{this.selectOptions.shlb.push([item.label,item.value])})
         ls['事故性质'].forEach((item)=>{this.selectOptions.sgxz.push([item.label,item.value])})
         // debugger
-      }
     },
     methods:{
       showModal(type){
-        this.sbType=type
+        this.sbType=type=='sb'? 'sb':'xb'
+        this.sbData=type=='sb'? {}:type
         this.modalOption.visible=true
       },
       sgCommit(){
@@ -200,6 +200,7 @@
             addSgkb(parameter).then((res)=>{
                 if (res.success==true){
                   this.$message.success('上报成功！')
+                  this.reqTableData()
                   setTimeout(()=>{
                       this.modalOption.commitLoading=false
                       this.modalOption.visible=false
@@ -219,7 +220,7 @@
         this.$refs.sgCommit.form.validateFields((err, values) => {
           if (!err) {
             this.modalOption.commitLoading=true
-            values.fssj=values.fssj.format('YYYY-MM-DD HH:MM:SS')
+            values.fssj=values.fssj.format('YYYY-MM-DD HH:MM')
             if (values.sgdj) values.sgdj=this.selectOptions.sgdj.find(item=>item[0]==values.sgdj)[1]
             if (values.sglx) values.sglx=this.selectOptions.sglx.find(item=>item[0]==values.sglx)[1]
             if (values.shlb) values.shlb=this.selectOptions.shlb.find(item=>item[0]==values.shlb)[1]
@@ -232,6 +233,7 @@
             addSgkbxb(parameter).then((res)=>{
               if (res.success==true){
                 this.$message.success('上报成功！')
+                this.reqTableData()
                 setTimeout(()=>{
                     this.modalOption.commitLoading=false
                     this.modalOption.visible=false
@@ -337,7 +339,7 @@
             item.uptime=moment(item.xbtime).format('YYYY-MM-DD \xa0 HH:MM')
             this.dataSource.find(i => i.id==item.id).children.push(item)
             item.idBf=item.id
-            item.id="续 "+ item.id + item.xbid
+            item.id="续 "+ item.id + "-"+item.xbid
           }
         })
         // debugger

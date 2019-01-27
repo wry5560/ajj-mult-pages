@@ -3,27 +3,16 @@ export const constantRouterMap = [
     path: '/',
     name: 'index',
     component: ()=>import(/* webpackChunkName: "index" */'@/Pages/KuaiBao/Index'),
+    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/KuaiBao/IndexShenhe'),
     meta: {keepAlive:true},
   },
   {
     path: '/shenhe',
     name: '/shenhe',
     component: ()=>import(/* webpackChunkName: "index" */'@/Pages/KuaiBao/IndexShenhe'),
-    meta: {keepAlive:true},
+    // meta: {keepAlive:true},
   },
-  {
-    path: '/sgsb',
-    name: '/shiguCommit',
-    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/KuaiBao/comps/shiguCommit'),
-    // redirect: '/test/home',
-    // children: [
-    //   {
-    //     path: 'home',
-    //     name: 'TestHome',
-    //     component: () => import(/* webpackChunkName: "test" */'@/views/Home')
-    //   }
-    // ]
-  },
+
   {
     path: '/sgDetail',
     name: 'sgDetail',
