@@ -43,6 +43,11 @@
             </a-select>
           </a-form-item>
         </a-col>
+        <a-col :lg="24">
+          <a-form-item label="事故简况" :labelCol="{ span: 2 }" :wrapperCol="{ span: 22 }">
+            <a-textarea size="small" placeholder="请输入事故简况" :autosize="{ minRows: 2, maxRows: 6 }"v-decorator="['sgjk',{rules: [{ required: true, message: '请输入事故简况', whitespace: true}],initialValue: initialValues.sgjk}]" />
+          </a-form-item>
+        </a-col>
         <a-divider >单位信息</a-divider>
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="发生单位" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
@@ -145,11 +150,7 @@
             <!--</a-select>-->
           <!--</a-form-item>-->
         <!--</a-col>-->
-        <a-col :lg="24">
-          <a-form-item label="事故简况" :labelCol="{ span: 2 }" :wrapperCol="{ span: 22 }">
-            <a-textarea size="small" placeholder="请输入事故简况" :autosize="{ minRows: 2, maxRows: 6 }"v-decorator="['sgjk',{rules: [{ required: true, message: '请输入事故简况', whitespace: true}],initialValue: initialValues.sgjk}]" />
-          </a-form-item>
-        </a-col>
+
         <a-col :lg="24">
           <a-form-item label="事故原因" :labelCol="{ span: 2}" :wrapperCol="{ span: 22 }">
             <a-textarea size="small" placeholder="请输入事故原因" :autosize="{ minRows: 2, maxRows: 6 }"v-decorator="['sgyy',{initialValue: initialValues.sgyy}]" />

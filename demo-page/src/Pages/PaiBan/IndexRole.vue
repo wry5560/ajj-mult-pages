@@ -488,6 +488,11 @@ let timer=null
       },
       //提交保存级别自定义名称
       commitLevelName(){
+        if (this.levelPanes.temNameList.lv1name=='') this.levelPanes.temNameList.lv1name='一级'
+        if (this.levelPanes.temNameList.lv2name=='') this.levelPanes.temNameList.lv2name='二级'
+        if (this.levelPanes.temNameList.lv3name=='') this.levelPanes.temNameList.lv3name='三级'
+        if (this.levelPanes.temNameList.lv4name=='') this.levelPanes.temNameList.lv4name='四级'
+        if (this.levelPanes.temNameList.lv5name=='') this.levelPanes.temNameList.lv5name='五级'
         const data={
           jsonData:JSON.stringify(this.levelPanes.temNameList),
           param1:departmentId
@@ -556,11 +561,11 @@ let timer=null
         reqStaffList(parameter)
           .then((res)=>{
             if (res.success){
-              this.levelPanes.levelList.lv1name=this.levelPanes.temNameList.lv1name=res.data[0].lv1name
-              this.levelPanes.levelList.lv2name=this.levelPanes.temNameList.lv2name=res.data[0].lv2name
-              this.levelPanes.levelList.lv3name=this.levelPanes.temNameList.lv3name=res.data[0].lv3name
-              this.levelPanes.levelList.lv4name=this.levelPanes.temNameList.lv4name=res.data[0].lv4name
-              this.levelPanes.levelList.lv5name=this.levelPanes.temNameList.lv5name=res.data[0].lv5name
+              this.levelPanes.levelList.lv1name=this.levelPanes.temNameList.lv1name=res.data[0].lv1name ==null || ''? '一级':res.data[0].lv1name
+              this.levelPanes.levelList.lv2name=this.levelPanes.temNameList.lv2name=res.data[0].lv2name ==null || ''? '二级':res.data[0].lv2name
+              this.levelPanes.levelList.lv3name=this.levelPanes.temNameList.lv3name=res.data[0].lv3name ==null || ''? '三级':res.data[0].lv3name
+              this.levelPanes.levelList.lv4name=this.levelPanes.temNameList.lv4name=res.data[0].lv4name ==null || ''? '四级':res.data[0].lv4name
+              this.levelPanes.levelList.lv5name=this.levelPanes.temNameList.lv5name=res.data[0].lv5name ==null || ''? '五级':res.data[0].lv5name
               this.levelPanes.loading=false
             }else{
               this.$message.error(res.message)

@@ -4,7 +4,9 @@
       <!--<a-button @click="handleAdd">Add</a-button>-->
       <a-button type='primary' @click="()=>autoArrange('all')"size="small" :style="{'margin-left':'5px'}">自动排班</a-button>
       <a-button @click="()=>clearArrange('all')"size="small">清除排班</a-button>
-      <a-button @click="topostSchedule"size="small">提交</a-button>
+      <a-popconfirm title="您确认提交排班信息吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="topostSchedule">
+        <a-button size="small">提交</a-button>
+      </a-popconfirm>
       <a-button @click="refresh"size="small">刷新</a-button>
       <a-month-picker :defaultValue="dateRange.defaultMonthValue" :value="dateRange.monthPickedValue" @change="onMonthChange" placeholder="请选择月" :disabledDate="disabledMonth"size="small" />
       <a-range-picker :value="dateRange.dateRangePickedValue"@change="onRangeChange" :disabledDate="disabledDate"size="small" />

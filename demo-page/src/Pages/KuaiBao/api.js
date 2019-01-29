@@ -64,12 +64,22 @@ export function reqKuaiBaoList(parameter) {
       : '/base/General.query.json',
     method: 'get',
     params: {sqlId:'S360006',...parameter},
-    // headers: {
-    //   'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-    // }
+    headers: {
+      "Content-Type": "application/json;charset=UTF-8",
+    }
   })
 }
 
+export function searchKuaiBaoList(parameter) {
+  return axios({
+    url: process.env.NODE_ENV === 'production'
+      ?'/base/General.query.json'
+      // : '/kuaibaoList',
+      : '/base/General.query.json',
+    method: 'post',
+    data: {sqlId:'S360006',...parameter},
+  })
+}
 // param1 sys_relateDepId2  查询事故详情
 // param2 开关 a.xbid=0 主事故
 // param3 开关 a.xbid>0 所有续报

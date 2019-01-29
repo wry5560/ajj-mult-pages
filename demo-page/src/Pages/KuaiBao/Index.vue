@@ -4,6 +4,13 @@
       <!--<a-button @click="handleAdd">Add</a-button>-->
       <a-button type='primary' @click="showModal('sb')"size="small" :style="{'margin-left':'5px'}">事故上报</a-button>
       <a-button @click="reqTableData"size="small">刷 新</a-button>
+      <a-input-search
+        :placeholder="search.placeholder"
+        style="width: 250px"
+        v-model="search.searchValue"
+        size="small"
+        @search="onSearch"
+      />
     </div>
     <div>
       <a-table
@@ -17,6 +24,7 @@
         @showSizeChange="showSizeChange"
         :indentSize= 20
         @expand="reqXbData"
+        :expandedRowKeys="expandedRowKeys"
       >
         <!--<template slot="centerCell" >-->
           <!--<div style="text-align:center">事故名称</div>-->
@@ -85,7 +93,7 @@
 </template>
 
 <script>
-  import {reqKuaiBaoList,addSgkb,reqSbLc,addSgkbxb} from './api'
+  import {reqKuaiBaoList,addSgkb,reqSbLc,addSgkbxb,searchKuaiBaoList} from './api'
   import SgForm from './comps/sgForm.vue'
   import moment from 'moment'
   import Vue from 'vue'
@@ -100,8 +108,14 @@
     },
     data(){
       return {
+        search:{
+          searchValue:'',
+          placeholder:'',
+          searchOption:{}
+        },
         sbType:'sb',
         sbData:{},
+        expandedRowKeys:[],
         modalOption:{
           visible:false,
           bodyStyle:{
@@ -115,7 +129,7 @@
         pagination:{
           total:0,
           current:1,
-          pageSize:10,
+          pageSize:20,
           pageSizeOptions:['10','20','50','100','500']
         },
         selectOptions:{
@@ -153,7 +167,12 @@
     computed:{
     },
     beforeCreate(){
-    },
+//        debugger
+      if (process.env.NODE_ENV !== 'production'){
+          const lsTemp= require('../../temp/lsTemp')
+        localStorage.setItem('/asrsajjdic',JSON.stringify(lsTemp.asrsajjdic))
+        localStorage.setItem('/asrsajjfixsearch',JSON.stringify(lsTemp.asrsajjfixsearch))
+      }},
     created(){
       this.reqTableData()
     },
@@ -172,7 +191,10 @@
         ls['事故类型'].forEach((item)=>{this.selectOptions.sglx.push([item.label,item.value])})
         ls['事故伤害类型'].forEach((item)=>{this.selectOptions.shlb.push([item.label,item.value])})
         ls['事故性质'].forEach((item)=>{this.selectOptions.sgxz.push([item.label,item.value])})
-        // debugger
+      const lsSearch=JSON.parse(localStorage.getItem('/asrsajjfixsearch'))['事故快报信息列表']
+      this.search.placeholder="请输入"+lsSearch["0"][0].dispNm+"..."
+      this.search.searchOption=lsSearch
+      console.log(lsSearch["0"])
     },
     methods:{
       showModal(type){
@@ -265,6 +287,7 @@
       },
 
       reqTableData(){
+          this.expandedRowKeys=[]
         this.tableIsLoading=true
         const parameter={
           param1:sys_relateDepId2,
@@ -285,6 +308,7 @@
       reqXbData(expanded, record){
 //          debugger
         if (expanded){
+          this.expandedRowKeys.push(record.key)
           this.tableIsLoading=true
           const parameter={
             param1:sys_relateDepId2,
@@ -307,6 +331,9 @@
               this.tableIsLoading=false
               record.children= tmpChildren
             })
+        }else{
+            const index=this.expandedRowKeys.findIndex(value=>value==record.key)
+            this.expandedRowKeys.splice(index,1)
         }
       },
       initDataSource(res){
@@ -369,6 +396,44 @@
           this.reqTableData()
         }
       },
+      onSearch(){
+        const searchItems=this.search.searchOption["0"][0].procSql.split('|')
+        const filterOption=[]
+        const normalVlaue={
+          "operate":"more",
+        }
+        const valueA=[]
+        const valueB={
+          "relation":"0",
+          "value":valueA
+        }
+        searchItems.forEach(item=>valueA.push({
+        "operate":"like",
+          "sqlIndex":item,
+          "value":this.search.searchValue
+        }))
+        normalVlaue.value=JSON.stringify(valueB)
+        filterOption.push(normalVlaue)
+        this.expandedRowKeys=[]
+        this.tableIsLoading=true
+        const parameter={
+          filter:JSON.stringify(filterOption),
+          param1:sys_relateDepId2,
+          param5:1,
+          limit:this.pagination.pageSize,
+          start:(this.pagination.current -1)*this.pagination.pageSize
+        }
+        searchKuaiBaoList(parameter)
+          .then((res)=>{
+            if(res.success){
+              this.initDataSource(res)
+            }else{
+              this.$message.error(res.message)
+            }
+          })
+          .catch(err=>{})
+      }
+
     },
 
   }

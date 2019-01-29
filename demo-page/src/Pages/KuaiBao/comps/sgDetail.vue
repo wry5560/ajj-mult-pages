@@ -232,6 +232,7 @@
     },
     mounted(){
       //初始化选择项配置
+//      debugger
       const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
       ls['企业类型'].forEach((item)=>{this.selectOptions.hyType.push([item.label,item.value])})
       ls['事故管理分类'].forEach((item)=>{this.selectOptions.glType.push([item.label,item.value])})
@@ -239,6 +240,7 @@
       ls['事故类型'].forEach((item)=>{this.selectOptions.sglx.push([item.label,item.value])})
       ls['事故伤害类型'].forEach((item)=>{this.selectOptions.shlb.push([item.label,item.value])})
       ls['事故性质'].forEach((item)=>{this.selectOptions.sgxz.push([item.label,item.value])})
+
     },
     methods:{
       goBack(){
@@ -268,7 +270,7 @@
             .then((res)=>{
               //设置事故详情
               if(res.success){
-                // debugger
+//                 debugger
                   this.sgDetail=res.data[0]
                   this.sgDetail.upuser=res.data[0].__upuser.userName
                   const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
@@ -427,6 +429,8 @@
           if (this.sgDetail.shlb) this.sgDetail.shlb=this.selectOptions.shlb.find(item=>item[0]==this.sgDetail.shlb)[1]
           if (this.sgDetail.sgxz) this.sgDetail.sgxz=this.selectOptions.sgxz.find(item=>item[0]==this.sgDetail.sgxz)[1]
           this.sgDetail.uptime=this.sgDetail.uptimeBF
+          delete this.sgDetail.uptimeBF
+          delete this.sgDetail.upuser
           const paramater={
             jsonData:JSON.stringify(this.sgDetail),
             param1:values.spyj,
