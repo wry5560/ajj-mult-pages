@@ -1,6 +1,6 @@
 <template>
   <div class='editable-cell'>
-    <div v-if="editable" class='editable-cell-input-wrapper'>
+    <div v-if="editable && !disabled" class='editable-cell-input-wrapper'>
       <a-select
         :size="size"
         style="width:100%"
@@ -29,7 +29,7 @@
     <div v-else class='editable-cell-text-wrapper' @click="edit">
       <div  style="display: inline-block">{{getValue || ' '}}</div>
     <!--<a-icon type='edit' class='editable-cell-icon'  />-->
-      <a-icon
+      <a-icon v-if=" !disabled"
         type='close-circle'
         class='editable-cell-icon'
         @click.stop="clear"
@@ -38,8 +38,11 @@
   </div>
 </template>
 <script>
+  import moment from 'moment'
   export default {
+    moment,
     props: {
+      disabled:Boolean,
       text: String,
       textTitle:String,
       tableKey:Number,
@@ -55,7 +58,7 @@
     computed:{
       getValue () {
         return this.text
-      }
+      },
     },
     methods: {
       handleChange (key) {

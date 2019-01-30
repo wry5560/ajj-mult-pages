@@ -215,6 +215,58 @@ export const asrsajjdic = {
       "value": "2"
     }
   ],
+  "cstype": [
+    {"label": "一级避难场所", "value": "一级避难场所"},
+    {"label": "二级避难场所", "value": "二级避难场所"},
+    {"label": "三级避难场所", "value": "三级避难场所"}
+  ],
+  "wzjb":[
+    {"label": "国家级", "value": "国家级"},
+    {"label": "社会力量", "value": "社会力量"},
+    {"label": "其他", "value": "其他"}
+  ],
+  "wztype":[
+    {label: "生命救助", value: "生命救助"},
+    {label: "生命支持", value: "生命支持"},
+    {label: "救援运载", value: "救援运载"},
+    {label: "临时食宿", value: "临时食宿"},
+    {label: "污染清理", value: "污染清理"},
+    {label: "动力燃料", value: "动力燃料"},
+    {label: "工程设备", value: "工程设备"},
+    {label: "器材工具", value: "器材工具"},
+    {label: "照明设备", value: "照明设备"},
+    {label: "通讯广播", value: "通讯广播"},
+    {label: "交通运输", value: "交通运输"},
+    {label: "工程材料", value: "工程材料"},
+  ],
+  "dwtype":[
+    {label: "国家级", value: "国家级"},
+    {label: "地区级", value: "地区级"},
+    {label: "社会级", value: "社会级"},
+    {label: "其他", value: "其他"}
+  ],
+  "zbtype":[
+    {label: "个体防护装备", value: "个体防护装备"},
+    {label: "通信与信息装备", value: "通信与信息装备"},
+    {label: "灭火抢险装备", value: "灭火抢险装备"},
+    {label: "医疗救护装备", value: "医疗救护装备"},
+    {label: "交通运输装备", value: "交通运输装备"},
+    {label: "工程救援装备", value: "工程救援装备"},
+    {label: "应急技术装备", value: "应急技术装备"},
+    {label: "其他", value: "其他"}
+  ],
+  "zbjb":[
+    {label: "国家级", value: "国家级"},
+    {label: "社会力量", value: "社会力量"},
+    {label: "其他", value: "其他"}
+  ],
+  "zstype":[
+    {label: "公共卫生", value: "公共卫生"},
+    {label: "社会安全", value: "社会安全"},
+    {label: "自然灾害", value: "自然灾害"},
+    {label: "突发事件", value: "突发事件"},
+    {label: "其他", value: "其他"}
+  ]
 }
 
 export const asrsajjfixsearch = {

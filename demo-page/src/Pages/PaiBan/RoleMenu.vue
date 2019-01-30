@@ -39,7 +39,6 @@
       return {
         current: ['mail'],
         openKeys: ['juzhang'],
-
       }
     },
 

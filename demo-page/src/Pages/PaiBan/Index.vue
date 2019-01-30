@@ -1,11 +1,33 @@
 <template>
   <div class="index" style="height: 100%">
     <a-layout class="layout">
-      <a-layout-sider width="220px" :style="{position:'fixed',height:'100%',overflow:'auto'}">
-        <role-menu :staffListProp="staffList"></role-menu>
+      <a-layout-sider width="160px" :style="{position:'fixed',height:'100%',overflow:'auto'}">
+        <div style="width: 160px;height: 100%;position: relative">
+          <a-menu
+            style="width: 160px;height: 100%"
+            mode="inline"
+            theme="light"
+            :openKeys="openKeys"
+            v-model="selKey"
+          >
+            <!--&lt;!&ndash;:openKeys.sync="openKeys"&ndash;&gt; //只展开一个二级选项的写法-->
+            <a-menu-item key="menuTitle">
+              <a-icon type="idcard" />
+              <a-divider type="vertical" />
+              <span>已排班月份</span>
+            </a-menu-item>
+            <a-divider :style="{margin:0}"/>
+            <a-sub-menu  v-for="year in years" :key="year.paibandateyear" @titleClick="titleClick">
+              <span slot="title"><span>{{ year.paibandateyear }}</span></span>
+              <a-menu-item v-if="year.months" v-for="(month,index) in year.months" :key="month.paibandatemonth" :style="{'padding-left':'30px'}" @click="clickMonth">
+                <span style="max-width: 100px;display:inline-block;overflow: hidden;white-space: nowrap;text-overflow:ellipsis">{{ month.paibandatemonth }}</span>
+              </a-menu-item>
+            </a-sub-menu>
+          </a-menu>
+        </div>
       </a-layout-sider>
-      <a-layout-content :style="{ 'padding-left': '220px',overflow:'auto'}">
-        <task-table :staffListProp="staffList" :reqStaffListComplete="reqStaffListComplete" @onTitleChange="titleChange"@refresh="refresh"></task-table>
+      <a-layout-content :style="{ 'padding-left': '160px',overflow:'auto'}">
+        <task-table :selMonth="selMonth":staffListProp="staffList" :reqStaffListComplete="reqStaffListComplete" @onTitleChange="titleChange"@refresh="refresh" @changeTime="rmSelMonth"></task-table>
         <!--<test-table></test-table>-->
       </a-layout-content>
     </a-layout>
@@ -19,7 +41,7 @@
  import RoleMenu from './RoleMenu'
  import TaskTable from './TaskTable'
  import {loginAjj}from "@/api/login"
- import {reqStaffList,levelName,reqAllStaff} from './api'
+ import {reqPbYear,reqPbMonth,levelName,reqAllStaff} from './api'
 
   export default {
     name: 'Index',
@@ -30,6 +52,10 @@
     data () {
       return {
         pagename:'index',
+        years:[],
+        openKeys:[],
+        selMonth:'',
+        selKey:[],
         staffList:[
           {type:'一级',titleText:'',nameList:[]},
           {type:'二级',titleText:'',nameList:[]},
@@ -43,20 +69,72 @@
     created(){
 //        if(process.env.NODE_ENV === 'production'){console.log('departmentId:'+departmentId)}
       const parameter={
-        limit:'10000',
-        param1:departmentId
+        param1:sys_relateDepId2
 //        param1:process.env.NODE_ENV === 'production'? departmentId:'9361'
       }
+      this.initPbMonth()
       this.initStaffList()
     },
     methods: {
         refresh(){
-          this.initStaffList()
+          this.initPbMonth()
+          let a=0
+          this.yesars.forEach(year=>{
+            year.months.forEach(month=>{
+              a= month.paibandatemonth==this.openKeys[0] ? 1:0
+            })
+          })
+          if (a==0){
+            this.openKeys=[]
+          }
         },
+      clickMonth(record){
+        this.selMonth=record.key
+      },
+      rmSelMonth(){
+        this.selMonth='',
+          this.selKey=[]
+      },
+      titleClick(obj){
+        const temp=this.openKeys.findIndex(i=>i==obj.key)
+        temp==-1? this.openKeys.push(obj.key):this.openKeys.splice(temp,1)
+      },
+      initPbMonth(){
+        const parameter={
+          param1:sys_relateDepId2
+        }
+        reqPbYear(parameter)
+          .then((res)=>{
+            if (res.success){
+              res.data.forEach(item=>item.months=[])
+              this.years=res.data
+              // this.years.push(res.data[0])
+              this.years.forEach(year=>{
+                const parameter={
+                  param1:sys_relateDepId2,
+                  param2:year.paibandateyear
+                }
+                reqPbMonth(parameter)
+                  .then((res)=>{
+                    if(res.success){
+                      year.months=res.data
+                    }else{
+                      this.$message.error(res.message)
+                    }
+                  })
+                  .catch(err=>console.log(JSON.stringify(err)))
+              })
+              this.openKeys.push(this.years[0].paibandateyear)
+            }else{
+              this.$message.error(res.message)
+            }
+          })
+          .catch(err=>console.log(JSON.stringify(err)))
+      },
       initStaffList(){
         const parameter={
           limit:'10000',
-          param1:departmentId,
+          param1:sys_relateDepId2,
 //          param1:process.env.NODE_ENV === 'production'? departmentId:'9361'
         }
         reqAllStaff(parameter)
@@ -94,7 +172,7 @@
         nameData['lv'+ `${ Number(textIndex)+1 }` +'name']=text
         const parameter={
           jsonData:JSON.stringify(nameData),
-          param1:departmentId
+          param1:sys_relateDepId2
 //          param1:process.env.NODE_ENV === 'production'? departmentId:'9361'
         }
         const lastText=this.staffList[textIndex].titleText

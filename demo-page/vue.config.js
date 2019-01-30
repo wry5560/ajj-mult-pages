@@ -11,7 +11,8 @@ const settings={
   // pubilcUrl:'/asrsajj/90_asrs/sgkb/paiban_v/',        //排班打包地址
   // pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanuser_v/'     //排班人员设置打包地址
 
-  pubilcUrl:'/asrsajj/90_asrs/sgkb/sgkb/'     //事故快报设置打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/sgkb/sgkb/'     //事故快报打包地址
+  pubilcUrl:'/asrsajj/90_asrs/sgkb/sgkb_sh/'     //事故快报审核打包地址
 }
 
 function resolve (dir) {

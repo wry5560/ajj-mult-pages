@@ -18,6 +18,28 @@ export function reqSchedule(parameter) {
   })
 }
 
+//获取已排班的年份
+export function reqPbYear(parameter){
+  return axios({
+    url: process.env.NODE_ENV === 'production'
+      ?'/base/General.query.json'
+      // : '/base/General.query.json/reqStaffList',
+      : '/base/General.query.json',
+    method: 'get',
+    params:{"sqlId":'S360012',...parameter},
+  })
+}
+//获取已排班的月份
+export function reqPbMonth(parameter){
+  return axios({
+    url: process.env.NODE_ENV === 'production'
+      ?'/base/General.query.json'
+      // : '/base/General.query.json/reqStaffList',
+      : '/base/General.query.json',
+    method: 'get',
+    params:{"sqlId":'S360013',...parameter},
+  })
+}
 export function reqStaffList(parameter){
   return axios({
     url: process.env.NODE_ENV === 'production'

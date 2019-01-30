@@ -3,7 +3,8 @@
  */
 
 //不同页面的路由配置地址
-import { constantRouterMap } from '@/Pages/KuaiBao/router.config' //事故快报模块路由
+import { constantRouterMap } from '@/Pages/Yingji/router.config' //应急模块路由
+// import { constantRouterMap } from '@/Pages/KuaiBao/router.config' //事故快报模块路由
 // import { constantRouterMap } from './src/Pages/PaiBan/router.config'  //人员排班模块路由
 
 

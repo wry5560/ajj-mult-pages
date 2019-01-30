@@ -238,13 +238,12 @@
         console.log(current)
         console.log(size)
       },
-      routeChange(to,from){
-        if(from.path=='/sgsb'){
-          this.reqTableData()
-        }
-      },
     },
-
+    watch:{
+      '$route':function () {
+        this.reqTableData()
+      }
+    }
   }
 </script>
 

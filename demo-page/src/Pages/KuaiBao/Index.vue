@@ -26,9 +26,6 @@
         @expand="reqXbData"
         :expandedRowKeys="expandedRowKeys"
       >
-        <!--<template slot="centerCell" >-->
-          <!--<div style="text-align:center">事故名称</div>-->
-        <!--</template>-->
         <span slot="actionCell" slot-scope="text,record,index" >
           <a href="javascript:;" @click="gotoSgDetail(record)">查看详情</a>
           <a-divider v-if="record.xbid==0" type="vertical" />
@@ -37,24 +34,6 @@
         <template slot="status" slot-scope="isend">
           <a-badge :status="`${isend==0 ? 'processing':'success'}`" :text="`${isend==0 ? '审批中':'已审批'}`"/>
         </template>
-        <!--<a-table-->
-          <!--slot="expandedRowRender"-->
-          <!--slot-scope="record, index, indent, expanded"-->
-          <!--:columns="innerColumns"-->
-          <!--:dataSource="record.xbList"-->
-          <!--size="small"-->
-          <!--:pagination="false"-->
-          <!--:showHeader="false"-->
-
-        <!--&gt;-->
-          <!--<span slot="actionCell" slot-scope="text" >-->
-            <!--<a href="javascript:;">查看详情</a>-->
-          <!--</span>-->
-          <!--<template slot="status" slot-scope="isend">-->
-            <!--<a-badge :status="`${isend==0 ? 'processing':'success'}`" :text="`${isend==0 ? '审批中':'已审批'}`"/>-->
-          <!--</template>-->
-        <!--</a-table>-->
-
       </a-table>
       <a-pagination
         v-model="pagination.current"
@@ -292,8 +271,7 @@
         const parameter={
           param1:sys_relateDepId2,
           param5:1,
-          limit:this.pagination.pageSize,
-          start:(this.pagination.current -1)*this.pagination.pageSize
+
         }
         reqKuaiBaoList(parameter)
           .then((res)=>{

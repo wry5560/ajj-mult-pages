@@ -6,6 +6,7 @@ import user from './modules/user'
 import permission from './modules/permission'
 import getters from './getters'
 import kuaibao from '../Pages/KuaiBao/store'
+import yingji from '../Pages/Yingji/store'
 
 Vue.use(Vuex)
 
@@ -14,7 +15,8 @@ export default new Vuex.Store({
     app,
     user,
     permission,
-    kuaibao
+    kuaibao,
+    yingji
   },
   state: {
 

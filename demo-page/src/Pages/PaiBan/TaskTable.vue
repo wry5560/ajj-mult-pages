@@ -60,19 +60,19 @@
         <a-button size="small"@click="()=>clearArrange('lv5user',confirm)">清除排班</a-button>
       </div>
       <template slot="levelOneCell" slot-scope="text, record">
-        <editable-cell :text="text" :staffList="staffList[0]":tableKey="record.key" textTitle="lv1user" @change="onCellChange"/>
+        <editable-cell :text="text":disabled="record.disabled" :staffList="staffList[0]":tableKey="record.key" textTitle="lv1user" @change="onCellChange"/>
       </template>
       <template slot="levelTwoCell" slot-scope="text, record">
-        <editable-cell :text="text" :staffList="staffList[1]" :tableKey="record.key" textTitle="lv2user"@change="onCellChange"/>
+        <editable-cell :text="text" :disabled="record.disabled":staffList="staffList[1]" :tableKey="record.key" textTitle="lv2user"@change="onCellChange"/>
       </template>
       <template slot="levelThreeCell" slot-scope="text, record">
-        <editable-cell :text="text" :staffList="staffList[2]" :tableKey="record.key" textTitle="lv3user"@change="onCellChange"/>
+        <editable-cell :text="text" :disabled="record.disabled":staffList="staffList[2]" :tableKey="record.key" textTitle="lv3user"@change="onCellChange"/>
       </template>
       <template slot="levelFourCell" slot-scope="text, record">
-        <editable-cell :text="text" :staffList="staffList[3]" :tableKey="record.key" textTitle="lv4user"@change="onCellChange"/>
+        <editable-cell :text="text" :disabled="record.disabled":staffList="staffList[3]" :tableKey="record.key" textTitle="lv4user"@change="onCellChange"/>
       </template>
       <template slot="levelFiveCell" slot-scope="text, record">
-        <editable-cell :text="text" :staffList="staffList[4]" :tableKey="record.key" textTitle="lv5user"@change="onCellChange"/>
+        <editable-cell :text="text" :disabled="record.disabled":staffList="staffList[4]" :tableKey="record.key" textTitle="lv5user"@change="onCellChange"/>
       </template>
       <a-icon slot="filterIcon" slot-scope="filtered" type='ellipsis' :style="{ color: '#aaa' }" />
     </a-table>
@@ -103,7 +103,8 @@
           {type:'四级',titleText:' ',nameList:[]},
           {type:'五级',titleText:' ',nameList:[]}],
       },
-      reqStaffListComplete:Boolean
+      reqStaffListComplete:Boolean,
+      selMonth:String
     },
     data () {
       return {
@@ -115,7 +116,7 @@
           dateRangePickedValue:[]
         },
         scrollSize:{
-          x:910,
+          x:970,
           y:window.innerHeight - 85
         },
         tableIsLoading:false,
@@ -157,14 +158,14 @@
             {
               title: '日期',
               dataIndex: 'paibandate',
-              width: 122,
+              width: 132,
               align:'center',
             },
             {
               title:this.staffListProp[0].titleText,
               titleText:this.staffListProp[0].titleText,
               dataIndex: 'lv1user',
-              width: 155,
+              width: 165,
               align:'center',
               slots:{
                 title:'levelOneTitle'
@@ -179,7 +180,7 @@
               title:this.staffListProp[1].titleText,
               titleText:this.staffListProp[1].titleText,
               dataIndex: 'lv2user',
-              width: 155,
+              width: 165,
               align:'center',
               slots:{
                 title:'levelTwoTitle'
@@ -201,7 +202,7 @@
                 filterDropdown: 'levelThreeDropdown',
                 filterIcon: 'filterIcon',
               },
-              width: 155,
+              width: 165,
               align:'center'
             },
             {
@@ -216,7 +217,7 @@
                 filterDropdown: 'levelFourDropdown',
                 filterIcon: 'filterIcon',
               },
-              width: 155,
+              width: 165,
               align:'center'
             },
             {
@@ -231,7 +232,7 @@
                 filterDropdown: 'levelFiveDropdown',
                 filterIcon: 'filterIcon',
               },
-              width: 155,
+              width: 165,
               align:'center'
             },
             // {
@@ -279,6 +280,7 @@
         let dataSource=[]
         const staffListIndex=['lv1user','lv2user','lv3user','lv4user','lv5user'].findIndex((value)=>{return value==type})
         dataSource=this.dataSource.map((item,index,arr)=>{
+          if (item.disabled) return item
           if(item[type]==''||item[type]==' '|| null){
             if (index==0){item[type]=this.staffList[staffListIndex][0]}else{
               const preValue =arr[index-1][type]
@@ -296,6 +298,7 @@
         let dataSource=[]
         if(clearData=='all'){
           dataSource=this.dataSource.map((item,index)=>{
+            if (item.disabled) return item
             item.lv1user=' '
             item.lv2user=' '
             item.lv3user=' '
@@ -305,6 +308,7 @@
           })
         }else{
           dataSource=this.dataSource.map((item,index)=>{
+            if (item.disabled) return item
             item[clearData]=' '
             return item
           })
@@ -365,6 +369,7 @@
         this.dateRange.endDate=moment(date).endOf('month').format('YYYY-MM-DD')
         this.dateRange.dateRangePickedValue=[]
         this.reqTableData()
+        this.$emit('changeTime')
         // console.log(date, dateString);
       },
       onRangeChange(date,dateString){
@@ -373,6 +378,7 @@
         this.dateRange.endDate=dateString[1]
         this.dateRange.monthPickedValue=null
         this.reqTableData()
+        this.$emit('changeTime')
         // console.log(eachDay(date[0],date[1]))
       },
       refresh(){
@@ -385,7 +391,7 @@
         this.tableIsLoading=true
         const dateRange ={
           limit:'10000',
-          param1:departmentId,
+          param1:sys_relateDepId2,
 //          param1:process.env.NODE_ENV === 'production'? departmentId:'9361',
           param2:this.dateRange.startDate,
           param3:this.dateRange.endDate
@@ -405,6 +411,7 @@
                 lv3user:'',
                 lv4user:'',
                 lv5user:'',
+                disabled:moment(date,'YYYY-MM-DD').isBefore(moment().startOf('day')) ? true: false
               })
             })
 
@@ -452,31 +459,53 @@
 //        debugger
         const dataSource=[]
         this.dataSource.forEach((item)=>{
-          const data={}
+          if(!item.disabled){
+            const data={}
 //          debugger
-          data.paibandate=item.paibandate
-          data.lv1user=this.nameToId(item.lv1user,0)
-          data.lv2user=this.nameToId(item.lv2user,1)
-          data.lv3user=this.nameToId(item.lv3user,2)
-          data.lv4user=this.nameToId(item.lv4user,3)
-          data.lv5user=this.nameToId(item.lv5user,4)
-          dataSource.push(data)
+            data.paibandate=item.paibandate
+            data.lv1user=this.nameToId(item.lv1user,0)
+            data.lv2user=this.nameToId(item.lv2user,1)
+            data.lv3user=this.nameToId(item.lv3user,2)
+            data.lv4user=this.nameToId(item.lv4user,3)
+            data.lv5user=this.nameToId(item.lv5user,4)
+            dataSource.push(data)
+          }
         })
         const parameter={
         'jsonData':JSON.stringify({paiban:dataSource}),
-        'param1':departmentId
+        'param1':sys_relateDepId2
 //          param1:process.env.NODE_ENV === 'production'? departmentId:'9361',
         }
         postSchedule(parameter).then((res)=>{
-          if (res.success) {this.$message.success('提交成功');}else{
+          if (res.success) {
+            this.$message.success('提交成功');
+            this.refresh()
+            }else{
             this.$message.error(res.message)
           }
         })
       },
       rowClass(record,index){
-        if (index%2==1) return 'even-rows'
+        let className=''
+        if (index%2==1) className += 'even-rows'
+        if (record.disabled) className +=' disabled'
+        return className
       }
     },
+    watch:{
+      'selMonth':function(newMonth){
+        if(!newMonth || newMonth=='') {
+          return
+        }else{
+          this.dateRange.monthPickedValue=moment(newMonth)
+          const tmpData =moment(newMonth).startOf('month')
+          this.dateRange.startDate=  tmpData.format('YYYY-MM-DD')
+          this.dateRange.endDate=moment(newMonth).endOf('month').format('YYYY-MM-DD')
+          this.dateRange.dateRangePickedValue=[]
+          this.reqTableData()
+        }
+      }
+    }
   }
 </script>
 <style lang="scss">
