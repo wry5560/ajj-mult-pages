@@ -74,8 +74,9 @@
         :width="modalOption.width"
         :bodyStyle="modalOption.bodyStyle"
       >
-        <edit-form v-if="this.modalOption.modelType!='query'" :selectOptions="modalOption.selectOptions" :recordId="modalOption.recordId" :modelType="modalOption.modelType" ref="commitForm"></edit-form>
+        <edit-form v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'" :selectOptions="modalOption.selectOptions" :recordId="modalOption.recordId" :modelType="modalOption.modelType" ref="commitForm"></edit-form>
         <data-detail v-if="this.modalOption.modelType=='query'" :recordId="modalOption.recordId" ></data-detail>
+        <amap-model v-if="this.modalOption.modelType=='map'"></amap-model>
         <template slot="footer" >
           <a-button key="back" @click="modalCancel" size="small">返 回</a-button>
           <a-button v-show="this.modalOption.modelType!='query'" key="submit" type="primary" :loading="modalOption.commitLoading" @click="handleCommit" size="small">提 交</a-button>
@@ -89,7 +90,8 @@
   import {  mapGetters,mapActions } from 'vuex'
   import editForm from './editForm'
   import dataDetail from './dataDetail'
-  import{Ellipsis}from '../../../components/Ellipsis/Ellipsis'
+  import AmapModel from  './AmapModel.vue'
+  import Ellipsis from '../../../components/Ellipsis/Ellipsis'
 
 
   export default {
@@ -97,7 +99,8 @@
     components:{
       editForm,
       Ellipsis,
-      dataDetail
+      dataDetail,
+      AmapModel
     },
     data(){
       return{
@@ -109,13 +112,13 @@
           dataSource:[],
           columns:[
             {title: '序号', dataIndex: 'id', width: '50px', key:'id',align: 'center',style:{}},
-            {title: '名称',dataIndex: 'wzname', width: '120px',key:'wzname', align: 'center',scopedSlots: {customRender: 'ellipsis'}},
+            {title: '名称',dataIndex: 'wzname', width: '120px',key:'wzname', align: 'center'},
             {title: '物资保障编码', dataIndex: 'wzbzbm', width: '150px',key:'wzbzbm', align: 'center',},
             {title: '类型', dataIndex: 'wztype', width: '80px', key:'wztype',align: 'center',},
             {title: '级别', dataIndex: 'wzjb', width: '80px',key:'wzjb', align: 'center',},
-            {title: '主管部门', dataIndex: 'zgbm', width: '120px',key:'zgbm', align: 'center',scopedSlots: {customRender: 'ellipsis'}},
+            {title: '主管部门', dataIndex: 'zgbm', width: '120px',key:'zgbm', align: 'center'},
             {title: '行政区', dataIndex: 'xzqy', width: '80px', key:'xzqy',align: 'center',},
-            {title: '存放场所', dataIndex: 'wzcfcs', width: '120px', key:'wzcfcs',align: 'center',scopedSlots: {customRender: 'ellipsis'}},
+            {title: '存放场所', dataIndex: 'wzcfcs', width: '120px', key:'wzcfcs',align: 'center'},
             {title: '负责人', dataIndex: 'fzr', width: '75px', key:'fzr',align: 'center',},
             {title: '联系电话', dataIndex: 'fzrlx', width: '100px', key:'fzrlx',align: 'center',},
             {title: '传真', dataIndex: 'cz', width: '100px', key:'cz',align: 'center',},
@@ -214,7 +217,9 @@
             this.modalOption.recordId=record.id
                 break;
           case 'map':
-
+            this.modalOption.title='物资位置信息'
+            this.modalOption.modelType='map'
+            this.modalOption.recordId=record.id
                 break
         }
         this.modalOption.visible=true

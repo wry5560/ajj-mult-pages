@@ -43,6 +43,11 @@ module.exports = {
       // Ignore all locale files of moment.js
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     ],
+    externals: {
+      'AMap': 'AMap',
+      'Loca': 'Loca',
+      'AMapUI': 'AMapUI'
+    }
     // externals:process.env.NODE_ENV === 'production'
     // ?{'vue': 'Vue', 'vue-router': 'VueRouter',}
     // :{}
