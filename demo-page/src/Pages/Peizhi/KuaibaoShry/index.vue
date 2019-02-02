@@ -32,10 +32,10 @@
         :rowSelection="table.rowSelection"
       >
         <span slot="actionCell" slot-scope="text,record,index" >
-          <a href="javascript:;" @click="showModal('query',record)">查看</a>
+          <!--<a href="javascript:;" @click="showModal('query',record)">查看</a>-->
           <!--<a-divider v-if="" type="vertical" />-->
           <!--<a href="javascript:;" @click="showModal('map',record)">位置</a>-->
-          <a-divider v-if="" type="vertical" />
+          <!--<a-divider v-if="" type="vertical" />-->
           <a href="javascript:;" @click="showModal('edit',record)">修改</a>
           <a-divider v-if="" type="vertical" />
           <a-popconfirm title="您确认删除该条记录吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="deleteRowData(record)">
@@ -108,22 +108,22 @@
   import dataDetail from './dataDetail'
   import AmapModel from  '../../wryComps/AmapModel.vue'
 
-  const pageName='yingji_zhuanjia'
-  const modalTitle="专家"   //模态框的title标题
+  const pageName='peizhi_kuaibaoShry'
+  const modalTitle="审核人员"   //模态框的title标题
 
-  const selOptions=['zbtype']          //选择项所需要的配置，localstorage中的配置名称
-  const selOptionMutation='INIT_ZJ_SELECTED_OPTIONS'   //将选择项配置保存到store的mutation方法名
+  const selOptions=['userlevel']          //选择项所需要的配置，localstorage中的配置名称
+  const selOptionMutation='INIT_KBSHRY_SELECTED_OPTIONS'   //将选择项配置保存到store的mutation方法名
   //修改以下获取store数据的getters 配置
-  const getList='yingji_zj_list'                //获取table的list
-  const getSelOpitons='yingji_zj_selOptions'   //获取选择项的配置内容
-  const getDetailById='getZjById'              //获取某一具体记录的详情
+  const getList='peizhi_kbshry_list'                //获取table的list
+  const getSelOpitons='peizhi_kbshry_selOptions'   //获取选择项的配置内容
+  const getDetailById='getKbshryById'              //获取某一具体记录的详情
 
   //修改以下增删改查的Actions 方法名
-  const reqList='reqZjList'                   //查询列表
-  const createAction='createYjzj'             //新增记录
-  const editAction='editYjzj'                 //修改记录
-  const delAction='delYjzj'                   //删除
-  const editGpsAction=''           //修改Gps信息
+  const reqList='reqKbshryList'                   //查询列表
+  const createAction='createKbshry'             //新增记录
+  const editAction='editKbshry'                 //修改记录
+  const delAction='delKbshry'                   //删除
+  const editGpsAction=''                        //修改Gps信息
 
   export default {
     name:pageName,
@@ -143,17 +143,12 @@
         table:{
           dataSource:[],
           columns:[
-            {title: '序号', dataIndex: 'id', width: '50px', key:'id',align: 'center'},
-            {title: '姓名',dataIndex: 'xm', width: '80px',key:'xm', align: 'center'},
-            {title: '性别', dataIndex: 'xb', width: '60px',key:'xb', align: 'center'},
-            {title: '出生日期', dataIndex: 'csrq', width: '80px', key:'csrq',align: 'center'},
-            {title: '最高学历', dataIndex: 'zgxl', width: '80px', key:'zgxl',align: 'center',},
-            {title: '毕业学校', dataIndex: 'byxx', width: '120px', key:'byxx',align: 'center'},
-            {title: '毕业年月', dataIndex: 'bynf', width: '100px', key:'bynf',align: 'center'},
-            {title: '电话', dataIndex: 'mobilePhone', width: '90px', key:'mobilePhone',align: 'center',},
-            {title: '专业专长', dataIndex: 'zyzc', width: '100px', key:'zyzc',align: 'center',},
-            {title: '行业类别', dataIndex: 'hylb', width: '100px', key:'hylb',align: 'center',},
-            {title: '操作', dataIndex: 'actions', width: '180px', key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
+            {title: '序号', dataIndex: 'index', width: '50px', key:'index',align: 'center'},
+            {title: '姓名',dataIndex: 'userName', width: '120px',key:'userName', align: 'center'},
+            {title: '流程审核级别', dataIndex: 'userlevel', width: '80px', key:'userlevel',align: 'center',},
+            {title: '审核序号', dataIndex: 'sortNum', width: '80px', key:'sortNum',align: 'center',},
+            {title: '所属组织', dataIndex: 'departName', width: '150px', key:'departName',align: 'center'},
+            {title: '操作', dataIndex: 'actions', width: '150px', key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
           ],
           size:'small',
           tableIsLoading:false,
@@ -173,7 +168,7 @@
         },
         modalOption:{
           title:'',
-          width:'85%',
+          width:'55%',
           visible:false,
           bodyStyle:{
             "max-height":window.innerHeight-250 + 'px',
@@ -282,10 +277,6 @@
           if (!err) {
             //若存在选择项value和显示内容不相同，需转换内容后再提交
             this.modalOption.commitLoading=true
-            values.csrq=values.csrq.format('YYYY-MM-DD')
-            values.bynf=values.bynf.format('YYYY-MM')
-            values.qprq=values.qprq.format('YYYY-MM-DD')
-            values.ymrq=values.ymrq.format('YYYY-MM-DD')
             if (this.modalOption.modelType=='edit'){
               values.id=this.modalOption.recordId
               // values.bnscno=this.$store.getters[getDetailById](this.modalOption.recordId).bnscno
@@ -366,7 +357,10 @@
             this.pagination.total=res.totalCount
             this.table.tableIsLoading=false
           })
-          .catch(err=>console.log(JSON.stringify(err)))
+          .catch((err)=>{
+            console.log(JSON.stringify(err))
+            this.table.tableIsLoading=false
+          })
       },
 
       changeCurrentPage(page, pageSize){

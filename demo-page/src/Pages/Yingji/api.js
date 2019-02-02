@@ -41,6 +41,19 @@ export function editWz (parameter){
     }
   })
 }
+//编辑物资GPS
+//jsonData
+export function editWzGps (parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajyj.editYjwzGps.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
 
 //删除物资
 //jsonData
@@ -76,6 +89,19 @@ export function editZb(parameter){
   // this.tableIsLoading=true
   return axios({
     url: '/other/Ajyj.editYjzb.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+//编辑装备GPS
+//jsonData
+export function editZbGps (parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajyj.editYjzbGps.jsonp',
     method: 'post',
     data: parameter,
     headers: {
@@ -125,6 +151,19 @@ export function createTeam (parameter){
     }
   })
 }
+//编辑应急队伍GPS
+//jsonData
+  export function editTeamGps (parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajyj.editYjdwGps.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
 
 //删除应急队伍
 //jsonData
@@ -160,6 +199,19 @@ export function editPlace (parameter){
   // this.tableIsLoading=true
   return axios({
     url: '/other/Ajyj.editBncs.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+//编辑避难场所GPS
+//jsonData
+export function editPlaceGps (parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajyj.editBncsGps.jsonp',
     method: 'post',
     data: parameter,
     headers: {

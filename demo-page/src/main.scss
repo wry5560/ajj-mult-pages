@@ -40,6 +40,16 @@
   }
 }
 
+//含地图空间的modal需隐藏下方modal的footer，设置footer的padding为0，使用map组件内部自己的按钮
+.mapModal{
+  .ant-modal-body{
+    padding: 0;
+  }
+  .ant-modal-footer{
+    padding: 0;
+  }
+}
+
 //antd table 的滚动条
 .ant-table-fixed-header .ant-table-scroll .ant-table-header{
   overflow-x: scroll !important;
@@ -113,3 +123,4 @@
   top: 50px;
   left:calc(50% - 44px)
 }
+

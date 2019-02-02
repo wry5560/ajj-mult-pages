@@ -1,12 +1,12 @@
 <template>
-  <div class="yingji_zb" style="height: 100%">
+  <div :class="pageNmae" style="height: 100%">
     <!--下面是顶部的按钮栏-->
     <div  class="header-buttons-bar" style="padding-left: 5px">
-      <a-button type='primary' @click="showModal('add')"size="small">新增装备</a-button>
+      <a-button type='primary' @click="showModal('add')"size="small">新增{{this.pageTitle}}</a-button>
       <a-popconfirm title="您确认删除该条记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
         <!--<a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>-->
       </a-popconfirm>
-      <a-button @click="refresh"size="small">刷 新</a-button>
+      <a-button @click="refresh"size="small">刷新</a-button>
 
       <!--搜索条-->
       <!--<a-input-search-->
@@ -31,11 +31,6 @@
         :scroll="table.scrollSize"
         :rowSelection="table.rowSelection"
       >
-        <template slot="ellipsis" slot-scope="text,record,index">
-          <ellipsis tooltip :length="10">
-            {{text}}
-          </ellipsis>
-        </template>
         <span slot="actionCell" slot-scope="text,record,index" >
           <a href="javascript:;" @click="showModal('query',record)">查看</a>
           <a-divider v-if="" type="vertical" />
@@ -70,15 +65,37 @@
         :visible="modalOption.visible"
         :destroyOnClose="true"
         :maskClosable="false"
-        wrapClassName="nomal-modal"
+        :wrapClassName="modalOption.modalClass"
         :width="modalOption.width"
         :bodyStyle="modalOption.bodyStyle"
       >
-        <edit-form v-if="this.modalOption.modelType!='query'" :selectOptions="modalOption.selectOptions" :recordId="modalOption.recordId" :modelType="modalOption.modelType" ref="commitForm"></edit-form>
-        <data-detail v-if="this.modalOption.modelType=='query'" :recordId="modalOption.recordId" ></data-detail>
+
+        <edit-form
+          v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"
+          :selectOptions="modalOption.selectOptions"
+          :recordId="modalOption.recordId"
+          :modelType="modalOption.modelType"
+          ref="commitForm"/>
+
+        <data-detail
+          v-if="this.modalOption.modelType=='query'"
+          :recordId="modalOption.recordId" />
+
+        <amap-model
+          v-if="modalOption.modelType=='map'"
+          :recordId="modalOption.recordId"
+          :recordGps="{lng:recordData.lng,lat:recordData.lat}"
+          :height="modalOption.bodyStyle['max-height']"
+          @closeMap="closeMap"
+          :city="modalOption.mapCity"
+          :default-center="modalOption.defaultCenter"
+          :commitGpsAction="modalOption.commitGpsAction"/>
+
         <template slot="footer" >
-          <a-button key="back" @click="modalCancel" size="small">返 回</a-button>
-          <a-button v-show="this.modalOption.modelType!='query'" key="submit" type="primary" :loading="modalOption.commitLoading" @click="handleCommit" size="small">提 交</a-button>
+          <a-button v-show="this.modalOption.modelType!='map'" key="back" @click="modalCancel" size="small">返 回</a-button>
+          <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
+            <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='map'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
+          </a-popconfirm>
         </template>
       </a-modal>
     </div>
@@ -89,18 +106,36 @@
   import {  mapGetters,mapActions } from 'vuex'
   import editForm from './editForm'
   import dataDetail from './dataDetail'
-  import{Ellipsis}from '../../../components/Ellipsis/Ellipsis'
+  import AmapModel from  '../../wryComps/AmapModel.vue'
 
+  const pageName='yingji_zb'
+  const modalTitle="应急装备"   //模态框的title标题
+
+  const selOptions=['zbtype','zbjb']          //选择项所需要的配置，localstorage中的配置名称
+  const selOptionMutation='INIT_ZB_SELECTED_OPTIONS'   //将选择项配置保存到store的mutation方法名
+  //修改以下获取store数据的getters 配置
+  const getList='yingji_zb_list'                //获取table的list
+  const getSelOpitons='yingji_zb_selOptions'   //获取选择项的配置内容
+  const getDetailById='getZbById'              //获取某一具体记录的详情
+
+  //修改以下增删改查的Actions 方法名
+  const reqList='reqZbList'                   //查询列表
+  const createAction='createYjzb'             //新增记录
+  const editAction='editYjzb'                 //修改记录
+  const delAction='delYjzb'                   //删除
+  const editGpsAction='editYjzbGps'           //修改Gps信息
 
   export default {
-    name:'yingji_zb',
+    name:pageName,
     components:{
       editForm,
-      Ellipsis,
-      dataDetail
+      dataDetail,
+      AmapModel
     },
     data(){
       return{
+        pageTitle:modalTitle,
+        pageNmae:pageName,
         search:{
           placeholder:'',
           searchValue:''
@@ -109,12 +144,12 @@
           dataSource:[],
           columns:[
             {title: '序号', dataIndex: 'id', width: '50px', key:'id',align: 'center',style:{}},
-            {title: '装备名称',dataIndex: 'zbname', width: '120px',key:'zbname', align: 'center',scopedSlots: {customRender: 'ellipsis'}},
-            {title: '装备级别', dataIndex: 'zbjb', width: '120px',key:'zbjb', align: 'center',scopedSlots: {customRender: 'ellipsis'}},
+            {title: '装备名称',dataIndex: 'zbname', width: '120px',key:'zbname', align: 'center'},
+            {title: '装备级别', dataIndex: 'zbjb', width: '120px',key:'zbjb', align: 'center'},
             {title: '类型', dataIndex: 'zbtype', width: '80px', key:'zbtype',align: 'center',},
             {title: '主管部门', dataIndex: 'zgbm', width: '80px', key:'zgbm',align: 'center',},
             {title: '行政区', dataIndex: 'xzqy', width: '80px', key:'xzqy',align: 'center',},
-            {title: '存放场所', dataIndex: 'zbcfcs', width: '120px', key:'zbcfcs',align: 'center',scopedSlots: {customRender: 'ellipsis'}},
+            {title: '存放场所', dataIndex: 'zbcfcs', width: '120px', key:'zbcfcs',align: 'center'},
             {title: '负责人', dataIndex: 'fzr', width: '75px', key:'fzr',align: 'center',},
             {title: '联系电话', dataIndex: 'fzrlx', width: '100px', key:'fzrlx',align: 'center',},
             {title: '装备数量', dataIndex: 'zbsl', width: '100px', key:'zbsl',align: 'center',},
@@ -142,17 +177,28 @@
           width:'85%',
           visible:false,
           bodyStyle:{
-            "max-height":window.innerHeight-250+'px',
+            "max-height":window.innerHeight-250 + 'px',
             "min-height":100
           },
           commitLoading:false,
+          mapCity:'珠海',
+          commitGpsAction:editGpsAction,
+          defaultCenter:{
+            lng:113.536232,
+            lat:22.120977
+          },
           selectOptions:{},
           recordId:'',
-          modelType:''
+          modelType:'',
+          modalClass:'nomal-modal'
         }
       }
     },
-
+    computed:{
+      recordData(){
+        return this.$store.getters[getDetailById](this.modalOption.recordId)
+      }
+    },
     beforeCreate(){
 //        debugger
       //如果是测试环境，则设置以下localstorage
@@ -166,23 +212,24 @@
       this.reqTableData()
     },
     mounted(){
-      let _this=this
-      window.onresize = function(){
-        _this.modalOption.bodyStyle['max-height']= window.innerHeight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     -250+'px'
-      }
-      document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
+      this.$nextTick(function () {
+        let _this=this
+        window.onresize = function(){
+          _this.modalOption.bodyStyle['max-height']= window.innerHeight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  -250+'px'
+        }
+        document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
 
-      //初始化选择项,存入vuex相应store的state中
-      const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
-      this.$store.commit('INIT_ZB_SELECTED_OPTIONS',[
-        {name:'zbtype',value:ls['zbtype']},
-        {name:'zbjb',value:ls['zbjb']},
-      ])
-      this.modalOption.selectOptions=this.yingji_zb_selOptions()
+        //初始化选择项,存入vuex相应store的state中
+        const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
+        const tmp=[]
+        selOptions.forEach(item=>{tmp.push({name:item,value:ls[item]})})
+        this.$store.commit(selOptionMutation,tmp)
+        this.modalOption.selectOptions=this.$store.getters[getSelOpitons]
+      })
     },
     methods:{
-      ...mapGetters(['yingji_zb_list','yingji_zb_selOptions','getZbById']),
-      ...mapActions(['reqZbList','createYjzb','editYjzb','delYjzb']),
+      // ...mapGetters(['yingji_wz_list','yingji_wz_selOptions','getWzById']),
+      // ...mapActions(['reqWzList','createYjwz','editYjwz','delYjwz','editYjwzGps']),
       rowClass(record,index){
         if (index%2==1) return 'even-rows'
       },
@@ -198,26 +245,37 @@
       showModal(type,record){
         switch (type) {
           case 'add':
-            this.modalOption.title='新增装备'
+            this.modalOption.title='新增'+ modalTitle
             this.modalOption.modelType='add'
+            this.modalOption.modalClass ='nomal-modal '
             break;
           case 'query':
-            this.modalOption.title='装备详情'
+            this.modalOption.title=modalTitle+'详情'
             this.modalOption.modelType='query'
             this.modalOption.recordId=record.id
+            this.modalOption.modalClass ='nomal-modal '
             break;
           case 'edit':
-            this.modalOption.title='修改装备信息'
+            this.modalOption.title='修改'+ modalTitle+'信息'
             this.modalOption.modelType='edit'
             this.modalOption.recordId=record.id
+            this.modalOption.modalClass ='nomal-modal '
             break;
           case 'map':
-
+            this.modalOption.title=modalTitle+'位置信息'
+            this.modalOption.modelType='map'
+            this.modalOption.recordId=record.id
+            this.modalOption.modalClass ='nomal-modal mapModal'
             break
         }
         this.modalOption.visible=true
       },
       modalCancel(){
+        this.modalOption.commitLoading=false
+        this.modalOption.visible=false
+      },
+      closeMap(data){
+        if (data=='post')this.reqTableData()
         this.modalOption.visible=false
       },
       handleCommit(){
@@ -227,14 +285,14 @@
             this.modalOption.commitLoading=true
             if (this.modalOption.modelType=='edit'){
               values.id=this.modalOption.recordId
-              // values.bnscno=this.getZbById()(this.modalOption.recordId).bnscno
+              // values.bnscno=this.$store.getters[getDetailById](this.modalOption.recordId).bnscno
             }
             let parameter={
               jsonData:JSON.stringify(values),
             }
             switch (this.modalOption.modelType) {
               case 'add':
-                this.createYjzb(parameter).then((res)=>{
+                this.$store.dispatch(createAction,parameter).then((res)=>{
                   if (res.success==true){
                     this.$message.success('提交成功！')
                     this.reqTableData()
@@ -251,7 +309,8 @@
                 })
                 break
               case 'edit':
-                this.editYjzb(parameter).then((res)=>{
+
+                this.$store.dispatch(editAction,parameter).then((res)=>{
                   if (res.success==true){
                     this.$message.success('提交成功！')
                     this.reqTableData()
@@ -273,14 +332,15 @@
       },
       deleteRowData(record){
         let parameter={
-          jsonData:JSON.stringify(this.getZbById()(record.id)),
+          jsonData:JSON.stringify(this.$store.getters[getDetailById](record.id)),
         }
         this.table.tableIsLoading=true
-        this.delYjzb(parameter)
+        this.$store.dispatch(delAction,parameter)
           .then((res)=>{
             if (res.success==true){
               this.$message.success('删除成功！')
               this.reqTableData()
+              this.table.tableIsLoading=false
             }else{
               this.$message.error(res.message+'请稍后再试！')
               this.table.tableIsLoading=false
@@ -297,9 +357,9 @@
           limit:this.pagination.pageSize,
           start:(this.pagination.current -1)*this.pagination.pageSize
         }
-        this.reqZbList(parameter)
+        this.$store.dispatch(reqList,parameter)
           .then((res)=>{
-            this.table.dataSource=this.yingji_zb_list()
+            this.table.dataSource=this.$store.getters[getList]
             this.pagination.total=res.totalCount
             this.table.tableIsLoading=false
           })
@@ -323,4 +383,5 @@
       },
     }
   }
+
 </script>

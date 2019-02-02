@@ -1,4 +1,4 @@
-import {GeneralQuery,createWz,editWz,delWz,createZb,editZb,delZb,createTeam,editTeam,delTeam,createPlace,editPlace,delPlace,createZs,editZs,delZs,createZj,editZj,delZj} from './api'
+import {GeneralQuery,createWz,editWz,delWz,createZb,editZb,delZb,createTeam,editTeam,delTeam,createPlace,editPlace,delPlace,createZs,editZs,delZs,createZj,editZj,delZj,editPlaceGps,editTeamGps,editWzGps,editZbGps} from './api'
 import message from 'ant-design-vue/es/message'
 const yingji = {
   state:{
@@ -97,6 +97,19 @@ const yingji = {
           })
       })
     },
+    //修改物资Gps信息
+    editYjwzGps:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          ...params
+        }
+        editWzGps(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
     //删除物资
     delYjwz:(store,params)=>{
       return new Promise((resolve, reject) => {
@@ -151,6 +164,19 @@ const yingji = {
           ...params
         }
         editZb(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+    //修改装备Gps信息
+    editYjzbGps:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          ...params
+        }
+        editZbGps(parameter)
           .then((res)=>{
             resolve(res)
           })
@@ -215,6 +241,19 @@ const yingji = {
           })
       })
     },
+    //修改应急队伍Gps信息
+    editTeamGps:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          ...params
+        }
+        editTeamGps(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
     //删除应急队伍
     delTeam:(store,params)=>{
       return new Promise((resolve, reject) => {
@@ -269,6 +308,19 @@ const yingji = {
           ...params
         }
         editPlace(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+    //修改避难场所Gps信息
+    editPlaceGps:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          ...params
+        }
+        editPlaceGps(parameter)
           .then((res)=>{
             resolve(res)
           })
@@ -416,9 +468,9 @@ const yingji = {
       const selOptions={}
       state.wz.selectedOptions.forEach(option=>{
         selOptions[option.name]=[]
-        option.value.forEach(item=>{
+        if(option.value&&option.value.length>0){option.value.forEach(item=>{
           selOptions[option.name].push(item.label)
-        })
+        })}
       })
       return selOptions
     },
@@ -431,9 +483,9 @@ const yingji = {
       const selOptions={}
       state.zb.selectedOptions.forEach(option=>{
         selOptions[option.name]=[]
-        option.value.forEach(item=>{
+        if(option.value&&option.value.length>0){option.value.forEach(item=>{
           selOptions[option.name].push(item.label)
-        })
+        })}
       })
       return selOptions
     },
@@ -446,9 +498,9 @@ const yingji = {
       const selOptions={}
       state.team.selectedOptions.forEach(option=>{
         selOptions[option.name]=[]
-        option.value.forEach(item=>{
+        if(option.value&&option.value.length>0){option.value.forEach(item=>{
           selOptions[option.name].push(item.label)
-        })
+        })}
       })
       return selOptions
     },
@@ -461,9 +513,9 @@ const yingji = {
       const selOptions={}
       state.place.selectedOptions.forEach(option=>{
         selOptions[option.name]=[]
-        option.value.forEach(item=>{
+        if(option.value&&option.value.length>0){option.value.forEach(item=>{
           selOptions[option.name].push(item.label)
-        })
+        })}
       })
       return selOptions
     },
@@ -476,9 +528,9 @@ const yingji = {
       const selOptions={}
       state.zhuanjia.selectedOptions.forEach(option=>{
         selOptions[option.name]=[]
-        option.value.forEach(item=>{
+        if(option.value&&option.value.length>0){option.value.forEach(item=>{
           selOptions[option.name].push(item.label)
-        })
+        })}
       })
       return selOptions
     },
@@ -491,9 +543,9 @@ const yingji = {
       const selOptions={}
       state.zhishi.selectedOptions.forEach(option=>{
         selOptions[option.name]=[]
-        option.value.forEach(item=>{
+        if(option.value&&option.value.length>0){option.value.forEach(item=>{
           selOptions[option.name].push(item.label)
-        })
+        })}
       })
       return selOptions
     },

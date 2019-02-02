@@ -266,6 +266,13 @@ export const asrsajjdic = {
     {label: "自然灾害", value: "自然灾害"},
     {label: "突发事件", value: "突发事件"},
     {label: "其他", value: "其他"}
+  ],
+  "userlevel":[
+    {label: "一级", value: "一级"},
+    {label: "二级", value: "二级"},
+    {label: "三级", value: "三级"},
+    {label: "四级", value: "四级"},
+    {label: "五级", value: "五级"}
   ]
 }
 

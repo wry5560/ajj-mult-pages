@@ -3,6 +3,7 @@
 
 		 <script>
      	var sys_relateDepId2 = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getRelateDep2()%>';
+     	var sys_relateDepId5 = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getRelateDep5()%>';
      	var departmentId = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getDepartmentId()%>';
      	var departmentNm = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getDepartmentNm()%>';
      	var userId = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getUserId()%>';
