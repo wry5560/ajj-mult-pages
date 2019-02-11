@@ -8,6 +8,7 @@ import getters from './getters'
 import kuaibao from '../Pages/KuaiBao/store'
 import yingji from '../Pages/Yingji/store'
 import peizhi from '../Pages/Peizhi/store'
+import jxgl from '../Pages/Jxgl/store'
 
 Vue.use(Vuex)
 
@@ -18,7 +19,8 @@ export default new Vuex.Store({
     permission,
     kuaibao,
     yingji,
-    peizhi
+    peizhi,
+    jxgl
   },
   state: {
 

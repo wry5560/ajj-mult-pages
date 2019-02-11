@@ -273,6 +273,23 @@ export const asrsajjdic = {
     {label: "三级", value: "三级"},
     {label: "四级", value: "四级"},
     {label: "五级", value: "五级"}
+  ],
+  "tmlx":[
+    {label: "日常", value: "日常"},
+    {label: "专项", value: "专项"},
+    {label: "通用", value: "通用"}
+  ],
+  "jclx":[
+    {label: "作业场所", value: "作业场所"},
+    {label: "设备设施", value: "设备设施"},
+    {label: "防护、保险、信号等装置装备", value: "防护、保险、信号等装置装备"},
+    {label: "原辅物料、产品", value: "原辅物料、产品 "},
+    {label: "职业病危害", value: "职业病危害"},
+    {label: "相关方作业", value: "相关方作业"},
+    {label: "安全技能", value: "安全技能"},
+    {label: "个体防护", value: "个体防护"},
+    {label: "作业许可", value: "作业许可"},
+    {label: "其他现场管理", value: "其他现场管理"}
   ]
 }
 

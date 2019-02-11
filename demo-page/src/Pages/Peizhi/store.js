@@ -119,13 +119,24 @@ const peizhi = {
         tmp.departName=item.__ddepartmentid.departName
         tmp.userId=item.__uuserid.userId
         tmp.key=item.id
+        tmp.id=item.id
+        tmp.departId=item.__ddepartmentid.departId
         list.push(tmp)
       })
       return list
     },
     getKbshryById:(state,getters)=>(id)=> {
-      return getters.peizhi_kbshry_list[id]
-      // return state.kuaibaoShry.list.find( todo=> todo.id==id)
+      const target=state.kuaibaoShry.list.find( todo=> todo.id==id)
+      const tmp={}
+      tmp.userName=target.__uuserid.userName
+      tmp.userlevel=target.userlevel
+      tmp.sortNum=target.sortNum
+      tmp.departName=target.__ddepartmentid.departName
+      tmp.userId=target.__uuserid.userId
+      tmp.key=target.id
+      tmp.id=target.id
+      tmp.departId=target.__ddepartmentid.departId
+      return tmp
     },
     peizhi_kbshry_selOptions:(state)=>{
       const selOptions={}

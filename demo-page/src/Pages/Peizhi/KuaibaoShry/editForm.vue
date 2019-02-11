@@ -4,8 +4,8 @@
       <a-row :gutter="16" :style="{'margin-bottom':'20px'}">
         <a-col :lg="11" :md="12" :sm="24">
           <a-form-item label="选择人员" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-            <a-select  placeholder="请选择人员" mode="multiple" :disabled="modelType=='edit'" allowClear @focus="reqNames"
-              v-decorator="[ 'userNames',{rules: [{ required: true, message: '请选择人员', whitespace: true,type:'array',validateTrigger:'blur'}],initialValue: initialValues.userName}]" >
+            <a-select  placeholder="请选择人员" mode="multiple" :disabled="modelType=='edit'" allowClear @focus="reqNames" :labelInValue="true"
+              v-decorator="[ 'userNames',{rules: [{ required: true, message: '请选择人员', whitespace: true,type:'array',validateTrigger:'blur'}],initialValue: initialValues.user}]" >
               <a-select-option v-for="(item) in privateSelectOptions.userNames" :key="item.id" :value="item.id" >{{item.name}}</a-select-option>
             </a-select>
           </a-form-item>
@@ -27,8 +27,8 @@
         </a-col>
         <a-col :lg="11">
           <a-form-item label="所属部门" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-            <a-select   placeholder="请选择所属部门" allowClear @focus="reqDepartments"
-                        v-decorator="['departName',{rules: [{ required: true, message: '请选择所属部门', whitespace: true,validateTrigger:'blur',type:'number'}],initialValue: initialValues.departName}]" >
+            <a-select   placeholder="请选择所属部门" allowClear @focus="reqDepartments" :labelInValue="true"
+                        v-decorator="['departName',{rules: [{ required: true, message: '请选择所属部门', whitespace: true,validateTrigger:'blur',type:'object'}],initialValue: initialValues.depart}]" >
               <a-select-option v-for="(item) in privateSelectOptions.departNames" :key="item.id" :value="item.id">{{item.name}}</a-select-option>
             </a-select>
           </a-form-item>
@@ -44,7 +44,7 @@
   import {mapGetters,mapActions} from 'vuex'
 
   export default{
-    name:'zsForm',
+    name:'kuaibaoShryForm',
     props:{
       selectOptions:Object,
       recordId:String,
@@ -67,7 +67,16 @@
         let initialValues={}
         if(this.modelType=='edit') {
           //若进行日期转换等操作，须深拷贝
-          initialValues ={...this.getZsById()(this.recordId)}
+          initialValues ={...this.getKbshryById()(this.recordId)}
+          initialValues.user=[{
+            key:initialValues.userId,
+            label:initialValues.userName
+          }]
+//          initialValues.user=initialValues.userName
+          initialValues.depart={
+            key:initialValues.departId,
+            label:initialValues.departName
+          }
         }
         return initialValues
       },
@@ -78,7 +87,7 @@
       this.reqDepartments();
     },
     methods:{
-      ...mapGetters(['getZsById']),
+      ...mapGetters(['getKbshryById']),
       ...mapActions(['reqNameList','reqDepartmentList']),
       reqNames(){
         this.reqNameList()

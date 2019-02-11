@@ -10,11 +10,11 @@
 
       <!--搜索条-->
       <!--<a-input-search-->
-      <!--:placeholder="search.placeholder"-->
-      <!--style="width: 220px"-->
-      <!--v-model="search.searchValue"-->
-      <!--size="small"-->
-      <!--@search="onSearch"-->
+        <!--:placeholder="search.placeholder"-->
+        <!--style="width: 220px"-->
+        <!--v-model="search.searchValue"-->
+        <!--size="small"-->
+        <!--@search="onSearch"-->
       <!--/>-->
     </div>
 
@@ -32,15 +32,25 @@
         :rowSelection="table.rowSelection"
       >
         <span slot="actionCell" slot-scope="text,record,index" >
-          <!--<a href="javascript:;" @click="showModal('query',record)">查看</a>-->
+          <a href="javascript:;" @click="showModal('query',record)">查看</a>
           <!--<a-divider v-if="" type="vertical" />-->
           <!--<a href="javascript:;" @click="showModal('map',record)">位置</a>-->
-          <!--<a-divider v-if="" type="vertical" />-->
+          <a-divider v-if="" type="vertical" />
           <a href="javascript:;" @click="showModal('edit',record)">修改</a>
           <a-divider v-if="" type="vertical" />
           <a-popconfirm title="您确认删除该条记录吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="deleteRowData(record)">
             <a href="javascript:;">删除</a>
           </a-popconfirm>
+        </span>
+        <span slot="defaultcustomRender" slot-scope="text,record,index">
+          <template>
+            <a-tooltip :mouseEnterDelay="0.8">
+              <template slot='title'>
+                {{text}}
+              </template>
+              <div style="width: 100%">{{text}}</div>
+            </a-tooltip>
+          </template>
         </span>
       </a-table>
       <a-pagination
@@ -94,7 +104,7 @@
         <template slot="footer" >
           <a-button v-show="this.modalOption.modelType!='map'" key="back" @click="modalCancel" size="small">返 回</a-button>
           <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
-            <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='map'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
+          <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='map'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
           </a-popconfirm>
         </template>
       </a-modal>
@@ -107,23 +117,24 @@
   import editForm from './editForm'
   import dataDetail from './dataDetail'
   import AmapModel from  '../../wryComps/AmapModel.vue'
+  import { initColumn } from '@/utils/tableColumnInit'
 
-  const pageName='peizhi_kuaibaoShry'
-  const modalTitle="审核人员"   //模态框的title标题
+  const pageName='jxgl_jcxgl'
+  const modalTitle="检查条目"   //模态框的title标题
 
-  const selOptions=['userlevel']          //选择项所需要的配置，localstorage中的配置名称
-  const selOptionMutation='INIT_KBSHRY_SELECTED_OPTIONS'   //将选择项配置保存到store的mutation方法名
+  const selOptions=['tmlx','jclx']          //选择项所需要的配置，localstorage中的配置名称
+  const selOptionMutation='INIT_JCX_SELECTED_OPTIONS'   //将选择项配置保存到store的mutation方法名
   //修改以下获取store数据的getters 配置
-  const getList='peizhi_kbshry_list'                //获取table的list
-  const getSelOpitons='peizhi_kbshry_selOptions'   //获取选择项的配置内容
-  const getDetailById='getKbshryById'              //获取某一具体记录的详情
+  const getList='jxgl_jcx_list'                //获取table的list
+  const getSelOpitons='jxgl_jcx_selOptions'   //获取选择项的配置内容
+  const getDetailById='getJcxById'              //获取某一具体记录的详情
 
   //修改以下增删改查的Actions 方法名
-  const reqList='reqKbshryList'                   //查询列表
-  const createAction='createKbshry'             //新增记录
-  const editAction='editKbshry'                 //修改记录
-  const delAction='delKbshry'                   //删除
-  const editGpsAction=''                        //修改Gps信息
+  const reqList='reqJcxList'                   //查询列表
+  const createAction='createJcx'             //新增记录
+  const editAction='editJcx'                 //修改记录
+  const delAction='delJcx'                   //删除
+  const editGpsAction=''                  //修改Gps信息
 
   export default {
     name:pageName,
@@ -143,16 +154,19 @@
         table:{
           dataSource:[],
           columns:[
-            {title: '序号', dataIndex: 'index', width: '50px', key:'index',align: 'center'},
-            {title: '姓名',dataIndex: 'userName', width: '120px',key:'userName', align: 'center'},
-            {title: '流程审核级别', dataIndex: 'userlevel', width: '80px', key:'userlevel',align: 'center',},
-            {title: '审核序号', dataIndex: 'sortNum', width: '80px', key:'sortNum',align: 'center',},
-            {title: '所属组织', dataIndex: 'departName', width: '150px', key:'departName',align: 'center'},
-            {title: '操作', dataIndex: 'actions', width: '150px', key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
+            {title: '序号', dataIndex: 'index', width: '50px',align: 'center'},
+            {title: '条目类型',dataIndex: 'tmlx', width: '80px', align: 'center'},
+            {title: '检查类型', dataIndex: 'jclx', width: '100px', align: 'center'},
+            {title: '检查内容', dataIndex: 'jcnr', width: '150px', align: 'center',},
+            {title: '检查依据', dataIndex: 'jcyj', width: '150px', align: 'center',},
+            {title: '隐患提示', dataIndex: 'yhts', width: '150px',align: 'center'},
+            {title: '系统未落实提示', dataIndex: 'systs', width: '150px', align: 'center',},
+            {title: '所属组织', dataIndex: 'departName', width: '120px',align: 'center'},
+            {title: '操作', dataIndex: 'actions', width: '150px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
           ],
           size:'small',
           tableIsLoading:false,
-          scrollSize: { x:500, y: window.innerHeight - 120},
+          scrollSize: { x:1120, y: window.innerHeight - 120},
           // rowSelection:{
           //   selectedRowKeys: [],
           //   onChange: this.onSelectChange,
@@ -168,7 +182,7 @@
         },
         modalOption:{
           title:'',
-          width:'55%',
+          width:'65%',
           visible:false,
           bodyStyle:{
             "max-height":window.innerHeight-250 + 'px',
@@ -204,6 +218,7 @@
 
     created(){
       this.reqTableData()
+      this.table.columns=initColumn(this.table.columns)
     },
     mounted(){
       this.$nextTick(function () {
@@ -236,31 +251,31 @@
       onSearch(){
         alert('onSearch')
       },
-      showModal(type,record,index){
+      showModal(type,record){
         switch (type) {
           case 'add':
             this.modalOption.title='新增'+ modalTitle
             this.modalOption.modelType='add'
             this.modalOption.modalClass ='nomal-modal '
-            break;
+                break;
           case 'query':
             this.modalOption.title=modalTitle+'详情'
             this.modalOption.modelType='query'
             this.modalOption.recordId=record.id
             this.modalOption.modalClass ='nomal-modal '
-            break;
+                break;
           case 'edit':
             this.modalOption.title='修改'+ modalTitle+'信息'
             this.modalOption.modelType='edit'
             this.modalOption.recordId=record.id
             this.modalOption.modalClass ='nomal-modal '
-            break;
+                break;
           case 'map':
             this.modalOption.title=modalTitle+'位置信息'
             this.modalOption.modelType='map'
             this.modalOption.recordId=record.id
             this.modalOption.modalClass ='nomal-modal mapModal'
-            break
+                break
         }
         this.modalOption.visible=true
       },
@@ -277,23 +292,16 @@
           if (!err) {
             //若存在选择项value和显示内容不相同，需转换内容后再提交
             this.modalOption.commitLoading=true
-            let jsonData={}
-            let parameter={}
+            if (this.modalOption.modelType=='edit'){
+              values.id=this.modalOption.recordId
+//              values.wzbzbm=this.$store.getters[getDetailById](this.modalOption.recordId).wzbzbm
+            }
+            values.departmentid=sys_relateDepId2
+            let parameter={
+              jsonData:JSON.stringify(values),
+            }
             switch (this.modalOption.modelType) {
               case 'add':
-                jsonData={
-                  users:[]
-                }
-                values.userNames.forEach((item)=>{
-                  jsonData.users.push({id:item.key,name:item.label})
-                })
-                console.log(JSON.stringify(values))
-                parameter={
-                  jsonData:JSON.stringify(jsonData),
-                  param1: values.departName.key,
-                  param2: values.userlevel,
-                  param3: values.sortNum
-                }
                 this.$store.dispatch(createAction,parameter).then((res)=>{
                   if (res.success==true){
                     this.$message.success('提交成功！')
@@ -309,19 +317,9 @@
                     this.modalOption.commitLoading=false
                   }
                 })
-                break
+                    break
               case 'edit':
-                const tmp =this.$store.getters[getDetailById](this.modalOption.recordId)
-                jsonData={
-                  "id":tmp.id,
-                  "departmentid":values.departName.key,
-                  "userlevel": values.userlevel,
-                  "userid":values.userNames[0].key,
-                  "sortNum": values.sortNum
-                }
-                 parameter={
-                  jsonData:JSON.stringify(jsonData),
-                }
+
                 this.$store.dispatch(editAction,parameter).then((res)=>{
                   if (res.success==true){
                     this.$message.success('提交成功！')
@@ -344,20 +342,20 @@
       },
       deleteRowData(record){
         let parameter={
-          param1:record.id
+          jsonData:JSON.stringify(this.$store.getters[getDetailById](record.id)),
         }
         this.table.tableIsLoading=true
         this.$store.dispatch(delAction,parameter)
           .then((res)=>{
-            if (res.success==true){
-              this.$message.success('删除成功！')
-              this.reqTableData()
-              this.table.tableIsLoading=false
-            }else{
-              this.$message.error(res.message+'请稍后再试！')
-              this.table.tableIsLoading=false
-            }
-          })
+          if (res.success==true){
+            this.$message.success('删除成功！')
+            this.reqTableData()
+            this.table.tableIsLoading=false
+          }else{
+            this.$message.error(res.message+'请稍后再试！')
+            this.table.tableIsLoading=false
+          }
+        })
           .catch((err)=>{
             console.log(JSON.stringify(err))
             this.table.tableIsLoading=false
@@ -372,13 +370,13 @@
         this.$store.dispatch(reqList,parameter)
           .then((res)=>{
             this.table.dataSource=this.$store.getters[getList]
+            this.table.dataSource.forEach((item,index)=>{
+                item.index=index+(this.pagination.current -1)*this.pagination.pageSize+1
+            })
             this.pagination.total=res.totalCount
             this.table.tableIsLoading=false
           })
-          .catch((err)=>{
-            console.log(JSON.stringify(err))
-            this.table.tableIsLoading=false
-          })
+          .catch(err=>console.log(JSON.stringify(err)))
       },
 
       changeCurrentPage(page, pageSize){
