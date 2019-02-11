@@ -77,34 +77,33 @@
         :maskClosable="false"
         :wrapClassName="modalOption.modalClass"
         :width="modalOption.width"
-        :bodyStyle="modalOption.bodyStyle"
+        :bodyStyle="modalHeight"
       >
 
         <edit-form
           v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"
-          :selectOptions="modalOption.selectOptions"
-          :recordId="modalOption.recordId"
-          :modelType="modalOption.modelType"
-          ref="commitForm"/>
+          :tableHeight="modalTableHeight"
+          />
 
-        <data-detail
-          v-if="this.modalOption.modelType=='query'"
-          :recordId="modalOption.recordId" />
+        <!--<data-detail-->
+          <!--v-if="this.modalOption.modelType=='query'"-->
+          <!--:recordId="modalOption.recordId" />-->
 
-        <amap-model
-          v-if="modalOption.modelType=='map'"
-          :recordId="modalOption.recordId"
-          :recordGps="{lng:recordData.lng,lat:recordData.lat}"
-          :height="modalOption.bodyStyle['max-height']"
-          @closeMap="closeMap"
-          :city="modalOption.mapCity"
-          :default-center="modalOption.defaultCenter"
-          :commitGpsAction="modalOption.commitGpsAction"/>
+        <!--<amap-model-->
+          <!--v-if="modalOption.modelType=='map'"-->
+          <!--:recordId="modalOption.recordId"-->
+          <!--:recordGps="{lng:recordData.lng,lat:recordData.lat}"-->
+          <!--:height="modalOption.bodyStyle['max-height']"-->
+          <!--@closeMap="closeMap"-->
+          <!--:city="modalOption.mapCity"-->
+          <!--:default-center="modalOption.defaultCenter"-->
+          <!--:commitGpsAction="modalOption.commitGpsAction"/>-->
 
-        <template slot="footer" >
-          <a-button v-show="this.modalOption.modelType!='map'" key="back" @click="modalCancel" size="small">返 回</a-button>
+        <!--弹出框内是table，使用modal内部的footer，以下隐藏-->
+        <template  slot="footer">
+          <a-button v-show="this.modalOption.modelType!='add'" key="back" @click="modalCancel" size="small">返 回</a-button>
           <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
-          <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='map'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
+          <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='add'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
           </a-popconfirm>
         </template>
       </a-modal>
@@ -154,15 +153,15 @@
         table:{
           dataSource:[],
           columns:[
-            {title: '序号', dataIndex: 'index', width: '50px',align: 'center'},
-            {title: '条目类型',dataIndex: 'tmlx', width: '80px', align: 'center'},
-            {title: '检查类型', dataIndex: 'jclx', width: '100px', align: 'center'},
-            {title: '检查内容', dataIndex: 'jcnr', width: '150px', align: 'center',},
-            {title: '检查依据', dataIndex: 'jcyj', width: '150px', align: 'center',},
-            {title: '隐患提示', dataIndex: 'yhts', width: '150px',align: 'center'},
-            {title: '系统未落实提示', dataIndex: 'systs', width: '150px', align: 'center',},
-            {title: '所属组织', dataIndex: 'departName', width: '120px',align: 'center'},
-            {title: '操作', dataIndex: 'actions', width: '150px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
+            {title: '序号', dataIndex: 'index', width: '40px',align: 'center'},
+            {title: '条目类型',dataIndex: 'tmlx', width: '60px', align: 'center'},
+            {title: '检查类型', dataIndex: 'jclx', width: '80px', align: 'center'},
+            {title: '检查内容', dataIndex: 'jcnr', width: '120px', align: 'center',},
+            {title: '检查依据', dataIndex: 'jcyj', width: '120px', align: 'center',},
+            {title: '隐患提示', dataIndex: 'yhts', width: '120px',align: 'center'},
+            {title: '系统未落实提示', dataIndex: 'systs', width: '120px', align: 'center',},
+            {title: '所属组织', dataIndex: 'departName', width: '100px',align: 'center'},
+            {title: '操作', dataIndex: 'actions', width: '80px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
           ],
           size:'small',
           tableIsLoading:false,
@@ -182,11 +181,12 @@
         },
         modalOption:{
           title:'',
-          width:'65%',
+          width:'85%',
           visible:false,
           bodyStyle:{
-            "max-height":window.innerHeight-250 + 'px',
-            "min-height":100
+            // "max-height":window.innerHeight-250 + 'px',
+            "height":this.modalHeight,
+            // "min-height":window.innerHeight-250 + 'px',
           },
           commitLoading:false,
           mapCity:'珠海',
@@ -198,13 +198,21 @@
           selectOptions:{},
           recordId:'',
           modelType:'',
-          modalClass:'nomal-modal'
+          modalClass:'nomal-modal '
         }
       }
     },
     computed:{
       recordData(){
         return this.$store.getters[getDetailById](this.modalOption.recordId)
+      },
+      modalTableHeight(){
+        return window.innerHeight-322 + 'px'
+      },
+      modalHeight(){
+        return {
+          height:window.innerHeight-250 + 'px'
+        }
       }
     },
     beforeCreate(){
@@ -256,7 +264,7 @@
           case 'add':
             this.modalOption.title='新增'+ modalTitle
             this.modalOption.modelType='add'
-            this.modalOption.modalClass ='nomal-modal '
+            this.modalOption.modalClass ='nomal-modal table-modal'
                 break;
           case 'query':
             this.modalOption.title=modalTitle+'详情'
@@ -412,3 +420,17 @@
   }
 
 </script>
+<style lang="scss">
+  .table-modal{
+    .ant-table-wrapper{
+      height: calc(100% - 40px);
+    }
+    .ant-modal-body{
+      padding: 0 !important;
+    }
+    .ant-modal-footer{
+      padding: 0 !important;
+    }
+  }
+
+</style>
