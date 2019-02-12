@@ -15,6 +15,13 @@ export const constantRouterMap = [
     // redirect: '/index.html',
   },
   {
+    path: '/zxjcplan',
+    name: 'zxjcplan',
+    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Jxgl/Zxjcplan/index'),
+    meta: {},
+    // redirect: '/index.html',
+  },
+  {
     path: '*', redirect: '/index', hidden: true
   },
   {

@@ -66,7 +66,7 @@ export function delJcx (parameter){
   })
 }
 
-//删除检查表
+//添加检查表
 //jsonData
 export function addJcb (parameter,type){
   // this.tableIsLoading=true
@@ -93,3 +93,44 @@ export function delJcb (parameter,type){
   })
 }
 
+//新增专项检查计划
+//jsonData
+export function createZxjcplan (parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.createJcplan.json',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+//编辑专项检查计划
+//jsonData
+export function editZxjcplan(parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.editJcplan.json',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+//删除专项检查计划
+//jsonData
+export function delZxjcplan(parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.delJcplan.json',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
