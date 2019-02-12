@@ -1,9 +1,9 @@
-import {GeneralQuery,GeneralPostQuery,createJcx,editJcx,delJcx,delJcb} from './api'
+import {GeneralQuery,GeneralPostQuery,createJcx,editJcx,delJcx,addJcb,delJcb} from './api'
 import message from 'ant-design-vue/es/message'
 const jixiao = {
   state:{
     jcx:{list:[],selectedOptions:[]},
-    jcb:{list:[],selectedOptions:[]},
+    jcb:{list:[],selectedOptions:[],selList:[]},
   },
   mutations: {
 
@@ -16,6 +16,9 @@ const jixiao = {
     },
     INIT_JCB_LIST: (state, payload) => {
       state.jcb.list=payload
+    },
+    INIT_JCBSEL_LIST: (state, payload) => {
+      state.jcb.selList=payload
     },
   },
   actions: {
@@ -104,6 +107,41 @@ const jixiao = {
           })
       })
     },
+    reqJcbSelList:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId:'S350014',
+          param1:sys_relateDepId2,
+          param2:'日常',
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            if(res.success){
+              res.data.forEach((item)=>{
+                item.key=item.id
+              })
+              commit('INIT_JCBSEL_LIST',res.data)
+              resolve(res)
+            }else{
+              message.error(res.message)
+            }
+          })
+      })
+    },
+    addJcbxm:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          param1:sys_relateDepId2,
+          ...params
+        }
+        addJcb(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
     //删除日常检查表项目
     delJcbxm:(store,payload)=>{
       return new Promise((resolve, reject) => {
@@ -141,6 +179,10 @@ const jixiao = {
     jxgl_jcb_list:(state) => {
       state.jcb.list.forEach(item=>item.departName=item.__ddepartmentid.departName)
       return state.jcb.list
+    },
+    jxgl_jcbsel_list:(state) => {
+      state.jcb.selList.forEach(item=>item.departName=item.__ddepartmentid.departName)
+      return state.jcb.selList
     },
   }
 }

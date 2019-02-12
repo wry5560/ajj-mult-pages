@@ -30,23 +30,28 @@
               <template slot='title'>
                 {{text}}
               </template>
-              <div style="width: 100%">{{text}}</div>
+              <div style="width: 100%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{text}}</div>
             </a-tooltip>
           </template>
         </span>
       </a-table>
-      <a-pagination
-        v-model="pagination.current"
-        style="margin-top: 8px; padding-left: 16px;"
-        :total="pagination.total"
-        :pageSizeOptions="pagination.pageSizeOptions"
-        :pageSize="pagination.pageSize"
-        showSizeChanger
-        showQuickJumper
-        :showTotal="total =>`共${total}条数据`"
-        @change="changeCurrentPage"
-        @showSizeChange="showSizeChange"
-        size="small"/>
+      <div >
+        <a-pagination
+          v-model="pagination.current"
+          style="margin-top: 8px; padding-left: 16px;float: left"
+          :total="pagination.total"
+          :pageSizeOptions="pagination.pageSizeOptions"
+          :pageSize="pagination.pageSize"
+          showSizeChanger
+          showQuickJumper
+          :showTotal="total =>`共${total}条数据`"
+          @change="changeCurrentPage"
+          @showSizeChange="showSizeChange"
+          size="small"/>
+        <a-button type="primary" style="float: right;margin-top: 8px;margin-right: 16px" size="small" @click="showModal('add')">确定选择</a-button>
+        <p style="float: right;margin-top: 8px;margin-right: 16px" >共选择 {{table.rowSelection.selectedRowKeys.length}} 条</p>
+        <div style="clear: both"></div>
+      </div>
     </div>
 
     <!--下面是弹出框-->
@@ -61,19 +66,48 @@
         :width="modalOption.width"
         :bodyStyle="modalOption.bodyStyle"
       >
+        <div id="innerTable">
+          <a-table
+            bordered
+            :rowClassName="rowClass"
+            :dataSource="modalOption.table.dataSource"
+            :columns="modalOption.table.columns"
+            :pagination= "false"
+            :size="modalOption.table.size"
+            :loading="modalOption.table.tableIsLoading"
+            :scroll="modalOption.table.scrollSize"
+            :rowSelection="modalOption.table.rowSelection"
+          >
+        <span slot="actionCell" slot-scope="text,record,index" >
+          <!--<a href="javascript:;" @click="showModal('query',record)">查看</a>-->
+          <!--<a-divider v-if="" type="vertical" />-->
+          <!--<a href="javascript:;" @click="showModal('map',record)">位置</a>-->
+          <!--<a-divider v-if="" type="vertical" />-->
+          <!--<a href="javascript:;" @click="showModal('edit',record)">修改</a>-->
+          <!--<a-divider v-if="" type="vertical" />-->
+          <a-popconfirm title="您确认删除该条记录吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="deleteRowData(record)">
+            <a href="javascript:;">删除</a>
+          </a-popconfirm>
+        </span>
+            <span slot="defaultcustomRender" slot-scope="text,record,index">
+          <template>
+            <a-tooltip :mouseEnterDelay="0.8">
+              <template slot='title'>
+                {{text}}
+              </template>
+              <div style="width: 100%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{text}}</div>
+            </a-tooltip>
+          </template>
+        </span>
+          </a-table>
+        </div>
 
-        <edit-form
-          v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"
-          :selectOptions="modalOption.selectOptions"
-          :recordId="modalOption.recordId"
-          :modelType="modalOption.modelType"
-          ref="commitForm"/>
 
         <template  slot="footer" style="padding: 0 !important;">
-          <a-button v-show="this.modalOption.modelType!='add'" key="back" @click="modalCancel" size="small">返 回</a-button>
-          <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
-            <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='add'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
-          </a-popconfirm>
+          <a-button  key="back" @click="modalCancel" size="small">返 回</a-button>
+          <!--<a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">-->
+            <a-button  key="submit" type="primary" :loading="modalOption.commitLoading"  size="small" @click="handleCommit">提 交</a-button>
+          <!--</a-popconfirm>-->
         </template>
       </a-modal>
     </div>
@@ -93,21 +127,21 @@
   const selOptions=[]          //选择项所需要的配置，localstorage中的配置名称
   const selOptionMutation=''   //将选择项配置保存到store的mutation方法名
   //修改以下获取store数据的getters 配置
-  const getList='jxgl_jcb_list'                //获取table的list
-  const getSelOpitons='jxgl_jcx_selOptions'   //获取选择项的配置内容
-  const getDetailById='getJcxById'              //获取某一具体记录的详情
+  const getList='jxgl_jcbsel_list'                //获取table的list
+  const getSelOpitons=''   //获取选择项的配置内容
+  const getDetailById=''              //获取某一具体记录的详情
 
   //修改以下增删改查的Actions 方法名
-  const reqList='reqJcbList'                   //查询列表
-  const createAction='createJcx'             //新增记录
+  const reqList='reqJcbSelList'                   //查询列表
+  const createAction='addJcbxm'             //新增记录
   const editAction=''                 //修改记录
-  const delAction='delJcbxm'                   //删除
+  const delAction=''                   //删除
   const editGpsAction=''                  //修改Gps信息
 
   export default {
     name:pageName,
     props:{
-      tableHeight:String,
+      tableHeight:Number,
     },
     components:{
       editForm,
@@ -169,7 +203,30 @@
           selectOptions:{},
           recordId:'',
           modelType:'',
-          modalClass:'nomal-modal'
+          modalClass:'nomal-modal',
+          table:{
+            dataSource:[],
+            columns:[
+              {title: '序号', dataIndex: 'index', width: '50px',align: 'center'},
+              {title: '操作', dataIndex: 'actions', width: '50px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
+              {title: '条目类型',dataIndex: 'tmlx', width: '80px', align: 'center'},
+              {title: '检查类型', dataIndex: 'jclx', width: '100px', align: 'center'},
+              {title: '检查内容', dataIndex: 'jcnr', width: '150px', align: 'center',},
+              {title: '检查依据', dataIndex: 'jcyj', width: '150px', align: 'center',},
+              {title: '隐患提示', dataIndex: 'yhts', width: '150px',align: 'center'},
+              {title: '系统未落实提示', dataIndex: 'systs', width: '150px', align: 'center',},
+              {title: '所属组织', dataIndex: 'departName', width: '120px',align: 'center'},
+            ],
+            size:'small',
+            tableIsLoading:false,
+            scrollSize: { x:1120, y: window.innerHeight - 120},
+//            rowSelection:{
+//              selectedRowKeys: [],
+//              onChange: this.onSelectChange,
+//              columnWidth:'20px',
+//            },
+          rowSelection:null
+          },
         }
       }
     },
@@ -190,18 +247,16 @@
     created(){
       this.reqTableData()
       this.table.columns=initColumn(this.table.columns)
+      this.modalOption.table.columns=initColumn( this.modalOption.table.columns)
     },
     mounted(){
       this.$nextTick(function () {
         let _this=this
         window.onresize = function(){
-          _this.modalOption.bodyStyle['max-height']= window.innerHeight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  -250+'px'
-        }
+        _this.modalOption.bodyStyle['max-height']= window.innerHeight -250+'px'
+      }
         let modalHtml=document.getElementById('tableModal')
-        console.log(modalHtml)
-        let aaa= modalHtml.getElementsByClassName('ant-table-body')[0].style
-        modalHtml.getElementsByClassName('ant-table-body')[0].style.height=`${this.tableHeight}px`
-        console.log('aaa'+JSON.stringify(aaa))
+        modalHtml.getElementsByClassName('ant-table-body')[0].style.height=`${this.tableHeight-12}px`
         //初始化选择项,存入vuex相应store的state中
         const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
         const tmp=[]
@@ -218,6 +273,13 @@
       },
       onSelectChange(selectedRowKeys){
         this.table.rowSelection.selectedRowKeys = selectedRowKeys
+        this.modalOption.table.dataSource=[]
+        selectedRowKeys.forEach((key)=>{
+            const tmp={...this.table.dataSource.find(item=>item.key==key)}
+            this.modalOption.table.dataSource.push(tmp)
+        })
+        this.modalOption.table.dataSource.sort((a,b)=>a.index-b.index)
+        this.modalOption.table.dataSource.forEach((item,index) =>item.index=index+1)
       },
       refresh(){
         this.reqTableData()
@@ -228,9 +290,9 @@
       showModal(type,record){
         switch (type) {
           case 'add':
-            this.modalOption.title='新增'+ modalTitle
+            this.modalOption.title='已选择'+this.table.rowSelection.selectedRowKeys.length +'条'
             this.modalOption.modelType='add'
-            this.modalOption.modalClass ='nomal-modal '
+            this.modalOption.modalClass ='nomal-modal table-modal'
             break;
           case 'query':
             this.modalOption.title=modalTitle+'详情'
@@ -252,6 +314,14 @@
             break
         }
         this.modalOption.visible=true
+//        debugger
+        let height=this.tableHeight
+        setTimeout(function () {
+//            debugger
+          let modalHtml=document.getElementById('innerTable')
+          let table=modalHtml.getElementsByClassName('ant-table-body')[0].style.height=height-12+'px'
+        },100)
+
       },
       modalCancel(){
         this.modalOption.commitLoading=false
@@ -262,92 +332,60 @@
         this.modalOption.visible=false
       },
       handleCommit(){
-        this.$refs.commitForm.form.validateFields((err, values) => {
-          if (!err) {
-            //若存在选择项value和显示内容不相同，需转换内容后再提交
-            this.modalOption.commitLoading=true
-            if (this.modalOption.modelType=='edit'){
-              values.id=this.modalOption.recordId
-//              values.wzbzbm=this.$store.getters[getDetailById](this.modalOption.recordId).wzbzbm
-            }
-            values.departmentid=sys_relateDepId2
-            let parameter={
-              jsonData:JSON.stringify(values),
-            }
-            switch (this.modalOption.modelType) {
-              case 'add':
-                this.$store.dispatch(createAction,parameter).then((res)=>{
-                  if (res.success==true){
-                    this.$message.success('提交成功！')
-                    this.reqTableData()
-                    setTimeout(()=>{
-                        this.modalOption.commitLoading=false
-                        this.modalOption.visible=false
-                      }
-                      ,300
-                    )
-                  }else{
-                    this.$message.error(res.message+'请稍后再试！')
-                    this.modalOption.commitLoading=false
-                  }
-                })
-                break
-              case 'edit':
-
-                this.$store.dispatch(editAction,parameter).then((res)=>{
-                  if (res.success==true){
-                    this.$message.success('提交成功！')
-                    this.reqTableData()
-                    setTimeout(()=>{
-                        this.modalOption.commitLoading=false
-                        this.modalOption.visible=false
-                      }
-                      ,300
-                    )
-                  }else{
-                    this.$message.error(res.message+'请稍后再试！')
-                    this.modalOption.commitLoading=false
-                  }
-                })
-                break
-            }
+        let parameter={
+          jsonData:JSON.stringify({
+            jcb:this.modalOption.table.dataSource
+          }),
+        }
+        this.$store.dispatch(createAction,parameter).then((res)=>{
+          if (res.success==true){
+            this.$message.success('提交成功！')
+           this.$emit('addSuccess')
+          }else{
+            this.$message.error(res.message+'请稍后再试！')
+            this.modalOption.commitLoading=false
           }
         })
       },
       deleteRowData(record){
-
-        let parameter={
-          param1:'',
-        }
-        let payload={
-          parameter:parameter,
-          type:''
-        }
-        if (record=='multi'){
-          payload.type='multi'
-          for (let i=0;i<this.table.rowSelection.selectedRowKeys.length-1;i++){
-            parameter.param1 +=this.table.rowSelection.selectedRowKeys[i]+','
-          }
-          parameter.param1 +=this.table.rowSelection.selectedRowKeys[this.table.rowSelection.selectedRowKeys.length-1]
-        }else{
-          parameter.param1=record.id
-        }
-        this.table.tableIsLoading=true
-        this.$store.dispatch(delAction,payload)
-          .then((res)=>{
-            if (res.success==true){
-              this.$message.success('删除成功！')
-              this.reqTableData()
-              this.table.tableIsLoading=false
-            }else{
-              this.$message.error(res.message+'请稍后再试！')
-              this.table.tableIsLoading=false
-            }
-          })
-          .catch((err)=>{
-            console.log(JSON.stringify(err))
-            this.table.tableIsLoading=false
-          })
+//          debugger
+          const index1=this.modalOption.table.dataSource.findIndex(item=>item.key==record.key)
+          this.modalOption.table.dataSource.splice(index1,1)
+          this.modalOption.table.dataSource.forEach((item,index)=>item.index=index+1)
+          const index2=this.table.rowSelection.selectedRowKeys.findIndex(item=>item==record.key)
+          this.table.rowSelection.selectedRowKeys.splice(index2,1)
+//        let parameter={
+//          param1:'',
+//        }
+//        let payload={
+//          parameter:parameter,
+//          type:''
+//        }
+//        if (record=='multi'){
+//          payload.type='multi'
+//          for (let i=0;i<this.table.rowSelection.selectedRowKeys.length-1;i++){
+//            parameter.param1 +=this.table.rowSelection.selectedRowKeys[i]+','
+//          }
+//          parameter.param1 +=this.table.rowSelection.selectedRowKeys[this.table.rowSelection.selectedRowKeys.length-1]
+//        }else{
+//          parameter.param1=record.id
+//        }
+//        this.table.tableIsLoading=true
+//        this.$store.dispatch(delAction,payload)
+//          .then((res)=>{
+//            if (res.success==true){
+//              this.$message.success('删除成功！')
+//              this.reqTableData()
+//              this.table.tableIsLoading=false
+//            }else{
+//              this.$message.error(res.message+'请稍后再试！')
+//              this.table.tableIsLoading=false
+//            }
+//          })
+//          .catch((err)=>{
+//            console.log(JSON.stringify(err))
+//            this.table.tableIsLoading=false
+//          })
       },
       reqTableData(){
         this.table.tableIsLoading=true

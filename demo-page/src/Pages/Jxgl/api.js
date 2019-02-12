@@ -66,7 +66,19 @@ export function delJcx (parameter){
   })
 }
 
-
+//删除检查表
+//jsonData
+export function addJcb (parameter,type){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.saveJcb.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
 //删除检查表
 //jsonData
 export function delJcb (parameter,type){

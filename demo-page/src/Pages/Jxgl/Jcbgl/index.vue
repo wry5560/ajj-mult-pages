@@ -77,12 +77,13 @@
         :maskClosable="false"
         :wrapClassName="modalOption.modalClass"
         :width="modalOption.width"
-        :bodyStyle="modalHeight"
+        :bodyStyle="modalOption.bodyStyle"
       >
 
         <edit-form
           v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"
           :tableHeight="modalTableHeight"
+          @addSuccess="addSuccess"
           />
 
         <!--<data-detail-->
@@ -102,9 +103,9 @@
         <!--弹出框内是table，使用modal内部的footer，以下隐藏-->
         <template  slot="footer">
           <a-button v-show="this.modalOption.modelType!='add'" key="back" @click="modalCancel" size="small">返 回</a-button>
-          <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
+          <!--<a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">-->
           <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='add'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
-          </a-popconfirm>
+          <!--</a-popconfirm>-->
         </template>
       </a-modal>
     </div>
@@ -125,12 +126,12 @@
   const selOptionMutation=''   //将选择项配置保存到store的mutation方法名
   //修改以下获取store数据的getters 配置
   const getList='jxgl_jcb_list'                //获取table的list
-  const getSelOpitons='jxgl_jcx_selOptions'   //获取选择项的配置内容
-  const getDetailById='getJcxById'              //获取某一具体记录的详情
+  const getSelOpitons=''   //获取选择项的配置内容
+  const getDetailById=''              //获取某一具体记录的详情
 
   //修改以下增删改查的Actions 方法名
   const reqList='reqJcbList'                   //查询列表
-  const createAction='createJcx'             //新增记录
+  const createAction=''             //新增记录
   const editAction=''                 //修改记录
   const delAction='delJcbxm'                   //删除
   const editGpsAction=''                  //修改Gps信息
@@ -184,8 +185,8 @@
           width:'85%',
           visible:false,
           bodyStyle:{
-            // "max-height":window.innerHeight-250 + 'px',
-            "height":this.modalHeight,
+             "max-height":window.innerHeight-250 + 'px',
+              height:window.innerHeight-250 + 'px'
             // "min-height":window.innerHeight-250 + 'px',
           },
           commitLoading:false,
@@ -207,13 +208,8 @@
         return this.$store.getters[getDetailById](this.modalOption.recordId)
       },
       modalTableHeight(){
-        return window.innerHeight-322 + 'px'
+        return window.innerHeight-322
       },
-      modalHeight(){
-        return {
-          height:window.innerHeight-250 + 'px'
-        }
-      }
     },
     beforeCreate(){
 //        debugger
@@ -232,16 +228,18 @@
       this.$nextTick(function () {
         let _this=this
         window.onresize = function(){
-          _this.modalOption.bodyStyle['max-height']= window.innerHeight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  -250+'px'
+          _this.modalOption.bodyStyle['max-height']= window.innerHeight -250+'px'
+          _this.modalOption.bodyStyle['height']= window.innerHeight -250+'px'
+
         }
         document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
 
         //初始化选择项,存入vuex相应store的state中
-        const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
-        const tmp=[]
-        selOptions.forEach(item=>{tmp.push({name:item,value:ls[item]})})
-        this.$store.commit(selOptionMutation,tmp)
-        this.modalOption.selectOptions=this.$store.getters[getSelOpitons]
+//        const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
+//        const tmp=[]
+//        selOptions.forEach(item=>{tmp.push({name:item,value:ls[item]})})
+//        this.$store.commit(selOptionMutation,tmp)
+//        this.modalOption.selectOptions=this.$store.getters[getSelOpitons]
       })
     },
     methods:{
@@ -264,26 +262,26 @@
           case 'add':
             this.modalOption.title='新增'+ modalTitle
             this.modalOption.modelType='add'
-            this.modalOption.modalClass ='nomal-modal table-modal'
+            this.modalOption.modalClass ='nomal-modal table-modal no-footer'
                 break;
-          case 'query':
-            this.modalOption.title=modalTitle+'详情'
-            this.modalOption.modelType='query'
-            this.modalOption.recordId=record.id
-            this.modalOption.modalClass ='nomal-modal '
-                break;
-          case 'edit':
-            this.modalOption.title='修改'+ modalTitle+'信息'
-            this.modalOption.modelType='edit'
-            this.modalOption.recordId=record.id
-            this.modalOption.modalClass ='nomal-modal '
-                break;
-          case 'map':
-            this.modalOption.title=modalTitle+'位置信息'
-            this.modalOption.modelType='map'
-            this.modalOption.recordId=record.id
-            this.modalOption.modalClass ='nomal-modal mapModal'
-                break
+//          case 'query':
+//            this.modalOption.title=modalTitle+'详情'
+//            this.modalOption.modelType='query'
+//            this.modalOption.recordId=record.id
+//            this.modalOption.modalClass ='nomal-modal '
+//                break;
+//          case 'edit':
+//            this.modalOption.title='修改'+ modalTitle+'信息'
+//            this.modalOption.modelType='edit'
+//            this.modalOption.recordId=record.id
+//            this.modalOption.modalClass ='nomal-modal '
+//                break;
+//          case 'map':
+//            this.modalOption.title=modalTitle+'位置信息'
+//            this.modalOption.modelType='map'
+//            this.modalOption.recordId=record.id
+//            this.modalOption.modalClass ='nomal-modal mapModal'
+//                break
         }
         this.modalOption.visible=true
       },
@@ -295,61 +293,64 @@
         if (data=='post')this.reqTableData()
         this.modalOption.visible=false
       },
-      handleCommit(){
-        this.$refs.commitForm.form.validateFields((err, values) => {
-          if (!err) {
-            //若存在选择项value和显示内容不相同，需转换内容后再提交
-            this.modalOption.commitLoading=true
-            if (this.modalOption.modelType=='edit'){
-              values.id=this.modalOption.recordId
-//              values.wzbzbm=this.$store.getters[getDetailById](this.modalOption.recordId).wzbzbm
-            }
-            values.departmentid=sys_relateDepId2
-            let parameter={
-              jsonData:JSON.stringify(values),
-            }
-            switch (this.modalOption.modelType) {
-              case 'add':
-                this.$store.dispatch(createAction,parameter).then((res)=>{
-                  if (res.success==true){
-                    this.$message.success('提交成功！')
-                    this.reqTableData()
-                    setTimeout(()=>{
-                        this.modalOption.commitLoading=false
-                        this.modalOption.visible=false
-                      }
-                      ,300
-                    )
-                  }else{
-                    this.$message.error(res.message+'请稍后再试！')
-                    this.modalOption.commitLoading=false
-                  }
-                })
-                    break
-              case 'edit':
-
-                this.$store.dispatch(editAction,parameter).then((res)=>{
-                  if (res.success==true){
-                    this.$message.success('提交成功！')
-                    this.reqTableData()
-                    setTimeout(()=>{
-                        this.modalOption.commitLoading=false
-                        this.modalOption.visible=false
-                      }
-                      ,300
-                    )
-                  }else{
-                    this.$message.error(res.message+'请稍后再试！')
-                    this.modalOption.commitLoading=false
-                  }
-                })
-                break
-            }
-          }
-        })
+      addSuccess(){
+        this.modalOption.visible=false
+        this.refresh()
       },
+//      handleCommit(){
+//        this.$refs.commitForm.form.validateFields((err, values) => {
+//          if (!err) {
+//            //若存在选择项value和显示内容不相同，需转换内容后再提交
+//            this.modalOption.commitLoading=true
+//            if (this.modalOption.modelType=='edit'){
+//              values.id=this.modalOption.recordId
+////              values.wzbzbm=this.$store.getters[getDetailById](this.modalOption.recordId).wzbzbm
+//            }
+//            values.departmentid=sys_relateDepId2
+//            let parameter={
+//              jsonData:JSON.stringify(values),
+//            }
+//            switch (this.modalOption.modelType) {
+//              case 'add':
+//                this.$store.dispatch(createAction,parameter).then((res)=>{
+//                  if (res.success==true){
+//                    this.$message.success('提交成功！')
+//                    this.reqTableData()
+//                    setTimeout(()=>{
+//                        this.modalOption.commitLoading=false
+//                        this.modalOption.visible=false
+//                      }
+//                      ,300
+//                    )
+//                  }else{
+//                    this.$message.error(res.message+'请稍后再试！')
+//                    this.modalOption.commitLoading=false
+//                  }
+//                })
+//                    break
+//              case 'edit':
+//
+//                this.$store.dispatch(editAction,parameter).then((res)=>{
+//                  if (res.success==true){
+//                    this.$message.success('提交成功！')
+//                    this.reqTableData()
+//                    setTimeout(()=>{
+//                        this.modalOption.commitLoading=false
+//                        this.modalOption.visible=false
+//                      }
+//                      ,300
+//                    )
+//                  }else{
+//                    this.$message.error(res.message+'请稍后再试！')
+//                    this.modalOption.commitLoading=false
+//                  }
+//                })
+//                break
+//            }
+//          }
+//        })
+//      },
       deleteRowData(record){
-
         let parameter={
           param1:'',
         }
@@ -371,6 +372,12 @@
           .then((res)=>{
           if (res.success==true){
             this.$message.success('删除成功！')
+            if (record=='multi'){
+              this.table.rowSelection.selectedRowKeys=[]
+            }else{
+              const index=this.table.rowSelection.selectedRowKeys.findIndex(item=>item==record.key)
+              this.table.rowSelection.selectedRowKeys.splice(index,1)
+            }
             this.reqTableData()
             this.table.tableIsLoading=false
           }else{
@@ -428,6 +435,8 @@
     .ant-modal-body{
       padding: 0 !important;
     }
+  }
+  .no-footer{
     .ant-modal-footer{
       padding: 0 !important;
     }
