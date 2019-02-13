@@ -47,7 +47,7 @@
           <a-divider v-if="" type="vertical" />
           <a href="javascript:;" @click="showModal('jcx',record)">检查项</a>
           <a-divider v-if="" type="vertical" />
-          <a href="javascript:;" @click="showModal('selQy',record)">检查企业</a>
+          <a href="javascript:;" @click="showModal('qy',record)">检查企业</a>
 
         </span>
         <span slot="defaultcustomRender" slot-scope="text,record,index">
@@ -89,18 +89,29 @@
       >
 
         <edit-form
-          v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"
+          v-if="this.modalOption.modalType =='add'||this.modalOption.modalType =='edit'"
           :selectOptions="modalOption.selectOptions"
           :recordId="modalOption.recordId"
-          :modelType="modalOption.modelType"
+          :modalType="modalOption.modalType"
           ref="commitForm"/>
-
+        <jcx-table-form
+          v-if="this.modalOption.modalType =='jcx'"
+          @cancel="modalCancel"
+          :recordId="modalOption.recordId"
+          :tableHeight="modalTableHeight"
+        />
+        <qy-table-form
+          v-if="this.modalOption.modalType =='qy'"
+          @cancel="modalCancel"
+          :recordId="modalOption.recordId"
+          :tableHeight="modalTableHeight"
+        />
         <data-detail
-          v-if="this.modalOption.modelType=='query'"
+          v-if="this.modalOption.modalType=='query'"
           :recordId="modalOption.recordId" />
 
-        <amap-model
-          v-if="modalOption.modelType=='map'"
+        <amap-modal
+          v-if="modalOption.modalType=='map'"
           :recordId="modalOption.recordId"
           :recordGps="{lng:recordData.lng,lat:recordData.lat}"
           :height="modalOption.bodyStyle['max-height']"
@@ -110,9 +121,9 @@
           :commitGpsAction="modalOption.commitGpsAction"/>
 
         <template slot="footer" >
-          <a-button v-show="this.modalOption.modelType!='map'" key="back" @click="modalCancel" size="small">返 回</a-button>
+          <a-button v-show="this.modalOption.modalType=='add' || this.modalOption.modalType=='edit' || this.modalOption.modalType=='query'" key="back" @click="modalCancel" size="small">返 回</a-button>
           <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
-          <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='map'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
+          <a-button v-show="this.modalOption.modalType=='add' || this.modalOption.modalType=='edit'"  key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
           </a-popconfirm>
         </template>
       </a-modal>
@@ -123,8 +134,10 @@
 <script>
   import {  mapGetters,mapActions } from 'vuex'
   import editForm from './editForm'
+  import jcxTableForm from './jcxTableForm'
+  import qyTableForm from './qyTableForm'
   import dataDetail from './dataDetail'
-  import AmapModel from  '../../wryComps/AmapModel.vue'
+  import AmapModal from  '../../wryComps/AmapModal.vue'
   import { initColumn } from '@/utils/tableColumnInit'
 
   const pageName='jxgl_zxjcplan'
@@ -149,7 +162,9 @@
     components:{
       editForm,
       dataDetail,
-      AmapModel
+      AmapModal,
+      jcxTableForm,
+      qyTableForm
     },
     data(){
       return{
@@ -204,7 +219,7 @@
           },
           selectOptions:{},
           recordId:'',
-          modelType:'',
+          modalType:'',
           modalClass:'nomal-modal'
         }
       }
@@ -212,7 +227,10 @@
     computed:{
       recordData(){
         return this.$store.getters[getDetailById](this.modalOption.recordId)
-      }
+      },
+      modalTableHeight(){
+        return window.innerHeight-322
+      },
     },
     beforeCreate(){
 //        debugger
@@ -262,27 +280,46 @@
         switch (type) {
           case 'add':
             this.modalOption.title='新增'+ modalTitle
-            this.modalOption.modelType='add'
+            this.modalOption.modalType='add'
             this.modalOption.modalClass ='nomal-modal '
+            this.modalOption.width='60%'
                 break;
           case 'query':
             this.modalOption.title=modalTitle+'详情'
-            this.modalOption.modelType='query'
+            this.modalOption.modalType='query'
             this.modalOption.recordId=record.id
             this.modalOption.modalClass ='nomal-modal '
+            this.modalOption.width='60%'
                 break;
           case 'edit':
             this.modalOption.title='修改'+ modalTitle+'信息'
-            this.modalOption.modelType='edit'
+            this.modalOption.modalType='edit'
             this.modalOption.recordId=record.id
             this.modalOption.modalClass ='nomal-modal '
+            this.modalOption.width='60%'
                 break;
-          case 'map':
-            this.modalOption.title=modalTitle+'位置信息'
-            this.modalOption.modelType='map'
+
+          case 'jcx':
+            this.modalOption.title='检查项管理'
+            this.modalOption.modalType='jcx'
             this.modalOption.recordId=record.id
-            this.modalOption.modalClass ='nomal-modal mapModal'
-                break
+            this.modalOption.modalClass ='nomal-modal  table-modal no-footer'
+            this.modalOption.width='85%'
+            break;
+
+          case 'qy':
+            this.modalOption.title='检查企业管理'
+            this.modalOption.modalType='qy'
+            this.modalOption.recordId=record.id
+            this.modalOption.modalClass ='nomal-modal  table-modal no-footer'
+            this.modalOption.width='85%'
+            break;
+//          case 'map':
+//            this.modalOption.title=modalTitle+'位置信息'
+//            this.modalOption.modalType='map'
+//            this.modalOption.recordId=record.id
+//            this.modalOption.modalClass ='nomal-modal mapModal'
+//                break
         }
         this.modalOption.visible=true
       },
@@ -303,14 +340,14 @@
             values.planstartDate=values.planstartDate.format('YYYY-MM-DD')
             values.planendDate=values.planendDate.format('YYYY-MM-DD')
             values.departmentid=sys_relateDepId2
-            if (this.modalOption.modelType=='edit'){
+            if (this.modalOption.modalType=='edit'){
               values.id=this.modalOption.recordId
               // values.wzbzbm=this.$store.getters[getDetailById](this.modalOption.recordId).wzbzbm
             }
             let parameter={
               jsonData:JSON.stringify(values),
             }
-            switch (this.modalOption.modelType) {
+            switch (this.modalOption.modalType) {
               case 'add':
                 this.$store.dispatch(createAction,parameter).then((res)=>{
                   if (res.success==true){

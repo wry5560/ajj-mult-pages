@@ -1,10 +1,10 @@
-import {GeneralQuery,GeneralPostQuery,createJcx,editJcx,delJcx,addJcb,delJcb,createZxjcplan,editZxjcplan,delZxjcplan} from './api'
+import {GeneralQuery,GeneralPostQuery,createJcx,editJcx,delJcx,addJcb,delJcb,createZxjcplan,editZxjcplan,delZxjcplan,addZxjcJcx,delZxjcplanJcx,addZxjcQy,delZxjcplanQy} from './api'
 import message from 'ant-design-vue/es/message'
 const jixiao = {
   state:{
     jcx:{list:[],selectedOptions:[]},
     jcb:{list:[],selectedOptions:[],selList:[]},
-    zxjcplan:{list:[],selectedOptions:[],}
+    zxjcplan:{list:[],selectedOptions:[],jcxlist:[],selList:[],qyList:[],qySelList:[]}
   },
   mutations: {
 
@@ -24,6 +24,18 @@ const jixiao = {
     INIT_ZXJCPLAN_LIST: (state, payload) => {
       state.zxjcplan.list=payload
     },
+    INIT_ZXJCPLAN_JCX_LIST: (state, payload) => {
+      state.zxjcplan.jcxlist=payload
+    },
+    INIT_ZXJC_SEL_LIST:(state, payload) => {
+      state.zxjcplan.selList=payload
+    },
+    INIT_ZXJC_QY_LIST:(state, payload) => {
+      state.zxjcplan.qyList=payload
+    },
+    INIT_ZXJCSEL_QY_LIST:(state, payload) => {
+      state.zxjcplan.qySelList=payload
+    },
   },
   actions: {
     //查询检查项列表
@@ -34,7 +46,7 @@ const jixiao = {
           param1:sys_relateDepId2,
           ...params
         }
-        GeneralQuery(parameter)
+        GeneralPostQuery(parameter)
           .then((res)=>{
             if(res.success){
               res.data.forEach((item)=>{
@@ -133,6 +145,7 @@ const jixiao = {
           })
       })
     },
+    //添加日常检查表项目
     addJcbxm:(store,params)=>{
       return new Promise((resolve, reject) => {
         //这里可以增加通用参数，如部门id等
@@ -182,7 +195,7 @@ const jixiao = {
           })
       })
     },
-    //新增检查项
+    //新增专项检查计划
     createZxjcplan:(store,params)=>{
       return new Promise((resolve, reject) => {
         //这里可以增加通用参数，如部门id等
@@ -195,7 +208,7 @@ const jixiao = {
           })
       })
     },
-    //修改检查项信息
+    //修改专项检查计划
     editZxjcplan:(store,params)=>{
       return new Promise((resolve, reject) => {
         //这里可以增加通用参数，如部门id等
@@ -209,7 +222,7 @@ const jixiao = {
       })
     },
 
-    //删除检查项
+    //删除专项检查计划
     delZxjcplan:(store,params)=>{
       return new Promise((resolve, reject) => {
         //这里可以增加通用参数，如部门id等
@@ -217,6 +230,149 @@ const jixiao = {
           ...params
         }
         delZxjcplan(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+
+    //查询某一专项检查计划中的检查项
+    reqZxjcplanJcxList:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId:'S350016',
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            if(res.success){
+              res.data.forEach((item)=>{
+                item.key=item.id
+              })
+              commit('INIT_ZXJCPLAN_JCX_LIST',res.data)
+              resolve(res)
+            }else{
+              message.error(res.message)
+            }
+          })
+      })
+    },
+
+    reqZxjcSelList:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId:'S350017',
+          param2:'日常',
+          param3:sys_relateDepId2,
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            if(res.success){
+              res.data.forEach((item)=>{
+                item.key=item.id
+              })
+              commit('INIT_ZXJC_SEL_LIST',res.data)
+              resolve(res)
+            }else{
+              message.error(res.message)
+            }
+          })
+      })
+    },
+
+    //新增某一专项检查计划中的检查项
+    addZxjcplanJcx:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          ...params
+        }
+        addZxjcJcx(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+
+    //删除某一专项检查计划中的检查项
+    delZxjcplanJcx:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          ...params
+        }
+        delZxjcplanJcx(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+
+    //查询某一专项检查计划中的检查企业
+    reqZxjcQyList:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId:'S350018',
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            if(res.success){
+              res.data.forEach((item)=>{
+                item.key=item.id
+              })
+              commit('INIT_ZXJC_QY_LIST',res.data)
+              resolve(res)
+            }else{
+              message.error(res.message)
+            }
+          })
+      })
+    },
+    reqZxjcQySelList:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId:'S350019',
+          param1:sys_relateDepId2,
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            if(res.success){
+              res.data.forEach((item)=>{
+                item.key=item.departmentId
+              })
+              commit('INIT_ZXJCSEL_QY_LIST',res.data)
+              resolve(res)
+            }else{
+              message.error(res.message)
+            }
+          })
+      })
+    },
+    //新增某一专项检查计划中的检查企业
+    addZxjcplanQyJcx:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          ...params
+        }
+        addZxjcQy(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+
+    //删除某一专项检查计划中的检查企业
+    delZxjcplanQyJcx:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          ...params
+        }
+        delZxjcplanQy(parameter)
           .then((res)=>{
             resolve(res)
           })
@@ -262,6 +418,36 @@ const jixiao = {
     getJcplanById:(state)=>(id)=> {
       return state.zxjcplan.list.find( todo=> todo.id==id)
     },
+
+    jxgl_zxjcplan_jcxlist:(state) => {
+      state.zxjcplan.jcxlist.forEach((item,index)=>{
+        // item.departName=item.__ddepartmentid.departName
+        item.index=index+1
+      })
+      return state.zxjcplan.jcxlist
+    },
+    getJcplanJcxById:(state)=>(id)=> {
+      return state.zxjcplan.jcxlist.find( todo=> todo.id==id)
+    },
+
+    jxgl_zxjcsel_list:(state) => {
+      state.zxjcplan.selList.forEach(item=>item.departName=item.__ddepartmentid.departName)
+      return state.zxjcplan.selList
+    },
+
+    jxgl_zxjcplan_qylist:(state) => {
+      state.zxjcplan.qyList.forEach((item,index)=>{
+        // item.departName=item.__ddepartmentid.departName
+        item.index=index+1
+      })
+      return state.zxjcplan.qyList
+    },
+
+    jxgl_zxjcsel_qylist:(state) => {
+      // state.zxjcplan.qySelList.forEach(item=>item.departName=item.__ddepartmentid.departName)
+      return state.zxjcplan.qySelList
+    },
+
   }
 }
 

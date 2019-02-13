@@ -81,7 +81,7 @@
           v-if="this.modalOption.modelType=='query'"
           :recordId="modalOption.recordId" />
 
-        <amap-model
+        <amap-modal
           v-if="modalOption.modelType=='map'"
           :recordId="modalOption.recordId"
           :recordGps="{lng:recordData.lng,lat:recordData.lat}"
@@ -106,7 +106,7 @@
   import {  mapGetters,mapActions } from 'vuex'
   import editForm from './editForm'
   import dataDetail from './dataDetail'
-  import AmapModel from  '../../wryComps/AmapModel.vue'
+  import AmapModal from  '../../wryComps/AmapModal.vue'
 
   const pageName='peizhi_kuaibaoShry'
   const modalTitle="审核人员"   //模态框的title标题
@@ -130,7 +130,7 @@
     components:{
       editForm,
       dataDetail,
-      AmapModel
+      AmapModal
     },
     data(){
       return{

@@ -91,7 +91,7 @@
           v-if="this.modalOption.modelType=='query'"
           :recordId="modalOption.recordId" />
 
-        <amap-model
+        <amap-modal
           v-if="modalOption.modelType=='map'"
           :recordId="modalOption.recordId"
           :recordGps="{lng:recordData.lng,lat:recordData.lat}"
@@ -116,7 +116,7 @@
   import {  mapGetters,mapActions } from 'vuex'
   import editForm from './editForm'
   import dataDetail from './dataDetail'
-  import AmapModel from  '../../wryComps/AmapModel.vue'
+  import AmapModal from  '../../wryComps/AmapModal.vue'
   import { initColumn } from '@/utils/tableColumnInit'
 
   const pageName='yingji_wz'
@@ -141,7 +141,7 @@
     components:{
       editForm,
       dataDetail,
-      AmapModel
+      AmapModal
     },
     data(){
       return{

@@ -8,14 +8,14 @@
       </a-popconfirm>
       <a-button @click="refresh"size="small">刷新</a-button>
 
-      <!--搜索条-->
-      <!--<a-input-search-->
-        <!--:placeholder="search.placeholder"-->
-        <!--style="width: 220px"-->
-        <!--v-model="search.searchValue"-->
-        <!--size="small"-->
-        <!--@search="onSearch"-->
-      <!--/>-->
+      搜索条
+      <a-input-search
+        :placeholder="search.placeholder"
+        style="width: 250px"
+        v-model="search.searchValue"
+        size="small"
+        @search="onSearch"
+      />
     </div>
 
     <!--下面是表格区域，分为表格主体和分页器-->
@@ -91,7 +91,7 @@
           v-if="this.modalOption.modelType=='query'"
           :recordId="modalOption.recordId" />
 
-        <amap-model
+        <amap-modal
           v-if="modalOption.modelType=='map'"
           :recordId="modalOption.recordId"
           :recordGps="{lng:recordData.lng,lat:recordData.lat}"
@@ -116,7 +116,7 @@
   import {  mapGetters,mapActions } from 'vuex'
   import editForm from './editForm'
   import dataDetail from './dataDetail'
-  import AmapModel from  '../../wryComps/AmapModel.vue'
+  import AmapModal from  '../../wryComps/AmapModal.vue'
   import { initColumn } from '@/utils/tableColumnInit'
 
   const pageName='jxgl_jcxgl'
@@ -141,7 +141,7 @@
     components:{
       editForm,
       dataDetail,
-      AmapModel
+      AmapModal
     },
     data(){
       return{
@@ -149,7 +149,8 @@
         pageNmae:pageName,
         search:{
           placeholder:'',
-          searchValue:''
+          searchValue:'',
+          searchOption:{}
         },
         table:{
           dataSource:[],
@@ -234,6 +235,10 @@
         selOptions.forEach(item=>{tmp.push({name:item,value:ls[item]})})
         this.$store.commit(selOptionMutation,tmp)
         this.modalOption.selectOptions=this.$store.getters[getSelOpitons]
+
+        const lsSearch=JSON.parse(localStorage.getItem('/asrsajjfixsearch'))['检查条目列表']
+        this.search.placeholder="请输入"+lsSearch["0"][0].dispNm+"..."
+        this.search.searchOption=lsSearch
       })
     },
     methods:{
@@ -249,7 +254,41 @@
         this.reqTableData()
       },
       onSearch(){
-        alert('onSearch')
+        const searchItems=this.search.searchOption["0"][0].procSql.split('|')
+        const filterOption=[]
+        const normalVlaue={
+          "operate":"more",
+        }
+        const valueA=[]
+        const valueB={
+          "relation":"0",
+          "value":valueA
+        }
+        searchItems.forEach(item=>valueA.push({
+          "operate":"like",
+          "sqlIndex":item,
+          "value":this.search.searchValue
+        }))
+        normalVlaue.value=JSON.stringify(valueB)
+        filterOption.push(normalVlaue)
+        this.expandedRowKeys=[]
+        this.tableIsLoading=true
+        const parameter={
+          filter:JSON.stringify(filterOption),
+          param1:sys_relateDepId2,
+          limit:this.pagination.pageSize,
+          start:(this.pagination.current -1)*this.pagination.pageSize
+        }
+        this.$store.dispatch(reqList,parameter)
+          .then((res)=>{
+            this.table.dataSource=this.$store.getters[getList]
+            this.table.dataSource.forEach((item,index)=>{
+              item.index=index+(this.pagination.current -1)*this.pagination.pageSize+1
+            })
+            this.pagination.total=res.totalCount
+            this.table.tableIsLoading=false
+          })
+          .catch(err=>console.log(JSON.stringify(err)))
       },
       showModal(type,record){
         switch (type) {

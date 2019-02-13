@@ -50,6 +50,21 @@
   }
 }
 
+//还有table的modal弹出框
+.table-modal{
+  .ant-table-wrapper{
+    height: calc(100% - 40px);
+  }
+  .ant-modal-body{
+    padding: 0 !important;
+  }
+}
+.no-footer{
+  .ant-modal-footer{
+    padding: 0 !important;
+  }
+}
+
 //antd table 的滚动条
 .ant-table-fixed-header .ant-table-scroll .ant-table-header{
   overflow-x: scroll !important;

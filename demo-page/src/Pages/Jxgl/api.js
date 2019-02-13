@@ -134,3 +134,59 @@ export function delZxjcplan(parameter){
     }
   })
 }
+
+//新增专项检查计划中的检查项
+//jsonData
+export function addZxjcJcx (parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.savePlanJcb.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+//删除专项检查计划中的检查项
+//jsonData
+export function delZxjcplanJcx(parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.delPlanJcb.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+//新增专项检查计划中的检查企业
+//jsonData
+export function addZxjcQy (parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.saveJcplandw.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+//删除专项检查计划中的检查企业
+//jsonData
+export function delZxjcplanQy(parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.delplandw.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
