@@ -2,45 +2,21 @@
   <div :class="pageNmae" style="height: 100%">
     <!--下面是顶部的按钮栏-->
     <div  class="header-buttons-bar" style="padding-left: 5px">
-      <a-button type='primary' @click="showModal('add')"size="small">新增{{this.pageTitle}}</a-button>
+      <!--<a-button type='primary' @click="showModal('add')"size="small">新增{{this.pageTitle}}</a-button>-->
       <a-popconfirm title="您确认删除该条记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
         <!--<a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>-->
       </a-popconfirm>
       <a-button @click="refresh"size="small">刷新</a-button>
-
       <!--搜索条-->
       <a-input-search
         :placeholder="search.placeholder"
-        style="width: 250px"
+        style="width: 300px"
         v-model="search.searchValue"
         size="small"
         @search="onSearch"
       />
-      <a-button size="small"  style="margin-left: 5px"  @click="()=>search.showAdvanced=!search.showAdvanced">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>
-      <a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.tmlx && !search.advancedForm.jclx" @click="clearSearch">清除</a-button>
-    </div>
-    <div>
-        <a-row>
-          <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item label="条目类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-              <a-select style="width:100%" size="small" placeholder="请选择条目类型" v-model="search.advancedForm.tmlx">
-                <a-select-option v-for="(item) in modalOption.selectOptions.tmlx" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item label="检查类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-              <a-select style="width:100%"  size="small" placeholder="请选择检查类型" v-model="search.advancedForm.jclx">
-                <a-select-option v-for="(item) in modalOption.selectOptions.jclx" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col  :lg="2" :md="12" :sm="24">
-            <a-form-item>
-              <a-button type='primary'size="small" style="margin-left: 8px" @click="onSearch" >搜索</a-button>
-            </a-form-item>
-          </a-col>
-        </a-row>
+      <!--<a-button size="small"  style="margin-left: 5px"  @click="()=>search.showAdvanced=!search.showAdvanced">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>-->
+      <!--<a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.tmlx && !search.advancedForm.jclx" @click="clearSearch">清除</a-button>-->
     </div>
     <!--下面是表格区域，分为表格主体和分页器-->
     <div>
@@ -56,14 +32,14 @@
         :rowSelection="table.rowSelection"
       >
         <span slot="actionCell" slot-scope="text,record,index" >
-          <a href="javascript:;" @click="showModal('query',record)">查看</a>
+          <a href="javascript:;" @click="showModal('query',record)">查看详情</a>
+          <a-divider v-if="" type="vertical" />
+          <a href="javascript:;" @click="showModal('map',record)">位置</a>
           <!--<a-divider v-if="" type="vertical" />-->
-          <!--<a href="javascript:;" @click="showModal('map',record)">位置</a>-->
-          <a-divider v-if="" type="vertical" />
-          <a href="javascript:;" @click="showModal('edit',record)">修改</a>
-          <a-divider v-if="" type="vertical" />
+          <!--<a href="javascript:;" @click="showModal('edit',record)">修改</a>-->
+          <!--<a-divider v-if="" type="vertical" />-->
           <a-popconfirm title="您确认删除该条记录吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="deleteRowData(record)">
-            <a href="javascript:;">删除</a>
+            <!--<a href="javascript:;">删除</a>-->
           </a-popconfirm>
         </span>
         <span slot="defaultcustomRender" slot-scope="text,record,index">
@@ -104,21 +80,21 @@
         :bodyStyle="modalOption.bodyStyle"
       >
 
-        <edit-form
-          v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"
-          :selectOptions="modalOption.selectOptions"
-          :recordId="modalOption.recordId"
-          :modelType="modalOption.modelType"
-          ref="commitForm"/>
+        <!--<edit-form-->
+          <!--v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"-->
+          <!--:selectOptions="modalOption.selectOptions"-->
+          <!--:recordId="modalOption.recordId"-->
+          <!--:modelType="modalOption.modelType"-->
+          <!--ref="commitForm"/>-->
 
-        <data-detail
-          v-if="this.modalOption.modelType=='query'"
-          :recordId="modalOption.recordId" />
+        <!--<data-detail-->
+          <!--v-if="this.modalOption.modelType=='query'"-->
+          <!--:recordId="modalOption.recordId" />-->
 
         <amap-modal
           v-if="modalOption.modelType=='map'"
           :recordId="modalOption.recordId"
-          :recordGps="{lng:recordData.lng,lat:recordData.lat}"
+          :recordGps="{lng:recordData.dwgpsj,lat:recordData.dwgpsw}"
           :height="modalOption.bodyStyle['max-height']"
           @closeMap="closeMap"
           :city="modalOption.mapCity"
@@ -138,33 +114,33 @@
 
 <script>
   import {  mapGetters,mapActions } from 'vuex'
-  import editForm from './editForm'
-  import dataDetail from './dataDetail'
+//  import editForm from './editForm'
+//  import dataDetail from './dataDetail'
   import AmapModal from  '../../wryComps/AmapModal.vue'
   import { initColumn } from '@/utils/tableColumnInit'
 
-  const pageName='jxgl_jcxgl'
-  const modalTitle="检查条目"   //模态框的title标题
+  const pageName='qiye_xqqygl'
+  const modalTitle="企业"   //模态框的title标题
 
-  const selOptions=['tmlx','jclx']          //选择项所需要的配置，localstorage中的配置名称
-  const selOptionMutation='INIT_JCX_SELECTED_OPTIONS'   //将选择项配置保存到store的mutation方法名
+  const selOptions=[]          //选择项所需要的配置，localstorage中的配置名称
+  const selOptionMutation=''   //将选择项配置保存到store的mutation方法名
   //修改以下获取store数据的getters 配置
-  const getList='jxgl_jcx_list'                //获取table的list
-  const getSelOpitons='jxgl_jcx_selOptions'   //获取选择项的配置内容
-  const getDetailById='getJcxById'              //获取某一具体记录的详情
+  const getList='qiye_xqqiye_list'                //获取table的list
+  const getSelOpitons=''   //获取选择项的配置内容
+  const getDetailById='getXqqiyeById'              //获取某一具体记录的详情
 
   //修改以下增删改查的Actions 方法名
-  const reqList='reqJcxList'                   //查询列表
-  const createAction='createJcx'             //新增记录
-  const editAction='editJcx'                 //修改记录
-  const delAction='delJcx'                   //删除
-  const editGpsAction=''                  //修改Gps信息
+  const reqList='reqXqqyList'                   //查询列表
+  const createAction=''             //新增记录
+  const editAction=''                 //修改记录
+  const delAction=''                   //删除
+  const editGpsAction='editXqqyGps'                  //修改Gps信息
 
   export default {
     name:pageName,
     components:{
-      editForm,
-      dataDetail,
+//      editForm,
+//      dataDetail,
       AmapModal
     },
     data(){
@@ -177,22 +153,19 @@
           searchOption:{},
           showAdvanced:false,
           advancedForm:{
-            jclx:undefined,
-            tmlx:undefined,
+//            jclx:undefined,
+//            tmlx:undefined,
           },
         },
         table:{
           dataSource:[],
           columns:[
             {title: '序号', dataIndex: 'index', width: '50px',align: 'center'},
-            {title: '条目类型',dataIndex: 'tmlx', width: '80px', align: 'center'},
-            {title: '检查类型', dataIndex: 'jclx', width: '100px', align: 'center'},
-            {title: '检查内容', dataIndex: 'jcnr', width: '150px', align: 'center',},
-            {title: '检查依据', dataIndex: 'jcyj', width: '150px', align: 'center',},
-            {title: '隐患提示', dataIndex: 'yhts', width: '150px',align: 'center'},
-            {title: '系统未落实提示', dataIndex: 'systs', width: '150px', align: 'center',},
-            {title: '所属组织', dataIndex: 'departName', width: '120px',align: 'center'},
-            {title: '操作', dataIndex: 'actions', width: '150px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
+            {title: '企业名称',dataIndex: 'dwmc', width: '220px', align: 'center'},
+            {title: '单位类型', dataIndex: 'dwlx', width: '100px', align: 'center'},
+            {title: '单位地址', dataIndex: 'dwdz', width: '250px', align: 'center',},
+            {title: '所属网格', dataIndex: 'nodeNm', width: '120px',align: 'center'},
+            {title: '操作', dataIndex: 'actions', width: '120px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
           ],
           size:'small',
           tableIsLoading:false,
@@ -212,7 +185,7 @@
         },
         modalOption:{
           title:'',
-          width:'65%',
+          width:'85%',
           visible:false,
           bodyStyle:{
             "max-height":window.innerHeight-250 + 'px',
@@ -259,13 +232,13 @@
         document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
 
         //初始化选择项,存入vuex相应store的state中
-        const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
-        const tmp=[]
-        selOptions.forEach(item=>{tmp.push({name:item,value:ls[item]})})
-        this.$store.commit(selOptionMutation,tmp)
-        this.modalOption.selectOptions=this.$store.getters[getSelOpitons]
-
-        const lsSearch=JSON.parse(localStorage.getItem('/asrsajjfixsearch'))['检查条目列表']
+//        const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
+//        const tmp=[]
+//        selOptions.forEach(item=>{tmp.push({name:item,value:ls[item]})})
+//        this.$store.commit(selOptionMutation,tmp)
+//        this.modalOption.selectOptions=this.$store.getters[getSelOpitons]
+//
+        const lsSearch=JSON.parse(localStorage.getItem('/asrsajjfixsearch'))['辖区企业列表（含单位类型）']
         this.search.placeholder="请输入"+lsSearch["0"][0].dispNm+"..."
         this.search.searchOption=lsSearch
       })
@@ -302,23 +275,24 @@
         }))
         normalVlaue.value=JSON.stringify(valueB)
         filterOption.push(normalVlaue)
-        const advancedVlaue={
-          "fix":"",
-        }
-        const tmlxSelValue=this.search.advancedForm.tmlx?`(a.tmlx = '${this.search.advancedForm.tmlx}') `: null
-        const jclxSelValue=this.search.advancedForm.jclx?`(a.jclx = '${this.search.advancedForm.jclx}') `: null
-        if (tmlxSelValue){
-          advancedVlaue.fix= jclxSelValue ? tmlxSelValue +' and '+jclxSelValue:tmlxSelValue
-          filterOption.push(advancedVlaue)
-        }else if(jclxSelValue){
-          advancedVlaue.fix= jclxSelValue
-          filterOption.push(advancedVlaue)
-        }
+//        const advancedVlaue={
+//          "fix":"",
+//        }
+//        const tmlxSelValue=this.search.advancedForm.tmlx?`(a.tmlx = '${this.search.advancedForm.tmlx}') `: null
+//        const jclxSelValue=this.search.advancedForm.jclx?`(a.jclx = '${this.search.advancedForm.jclx}') `: null
+//        if (tmlxSelValue){
+//          advancedVlaue.fix= jclxSelValue ? tmlxSelValue +' and '+jclxSelValue:tmlxSelValue
+//          filterOption.push(advancedVlaue)
+//        }else if(jclxSelValue){
+//          advancedVlaue.fix= jclxSelValue
+//          filterOption.push(advancedVlaue)
+//        }
         this.expandedRowKeys=[]
         this.tableIsLoading=true
         const parameter={
           filter:JSON.stringify(filterOption),
-          param1:sys_relateDepId2,
+          //TODO 后续需要修改参数为网格的ID
+          param1:'A-3049',
           limit:this.pagination.pageSize,
           start:(this.pagination.current -1)*this.pagination.pageSize
         }
@@ -456,6 +430,8 @@
       reqTableData(){
         this.table.tableIsLoading=true
         const parameter={
+            //TODO 后续需要修改参数为网格的ID
+          param1:'A-3049',
           limit:this.pagination.pageSize,
           start:(this.pagination.current -1)*this.pagination.pageSize
         }

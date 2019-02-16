@@ -9,6 +9,7 @@ import kuaibao from '../Pages/KuaiBao/store'
 import yingji from '../Pages/Yingji/store'
 import peizhi from '../Pages/Peizhi/store'
 import jxgl from '../Pages/Jxgl/store'
+import Qiye from '../Pages/Qiye/store'
 
 Vue.use(Vuex)
 
@@ -20,7 +21,8 @@ export default new Vuex.Store({
     kuaibao,
     yingji,
     peizhi,
-    jxgl
+    jxgl,
+    Qiye
   },
   state: {
 
