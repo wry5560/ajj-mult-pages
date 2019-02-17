@@ -1,38 +1,41 @@
 <template>
   <div :class="pageNmae" style="height: 100%">
-    <!--下面是顶部的按钮栏-->
-    <div  class="header-buttons-bar" style="padding-left: 5px">
-      <!--<a-button type='primary' @click="showModal('add')"size="small">新增{{this.pageTitle}}</a-button>-->
-      <a-popconfirm title="您确认删除该条记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
-        <!--<a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>-->
-      </a-popconfirm>
-      <a-button @click="refresh"size="small">刷新</a-button>
-      <!--搜索条-->
-      <a-input-search
-        :placeholder="search.placeholder"
-        style="width: 300px"
-        v-model="search.searchValue"
-        size="small"
-        @search="onSearch"
-      />
-      <!--<a-button size="small"  style="margin-left: 5px"  @click="()=>search.showAdvanced=!search.showAdvanced">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>-->
-      <!--<a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.tmlx && !search.advancedForm.jclx" @click="clearSearch">清除</a-button>-->
-    </div>
-    <!--下面是表格区域，分为表格主体和分页器-->
-    <div>
-      <a-table
-        bordered
-        :rowClassName="rowClass"
-        :dataSource="table.dataSource"
-        :columns="table.columns"
-        :pagination= "false"
-        :size="table.size"
-        :loading="table.tableIsLoading"
-        :scroll="table.scrollSize"
-        :rowSelection="table.rowSelection"
-      >
+    <!--//企业列表页面-->
+    <keep-alive>
+      <div v-if="!showDetail">
+        <!--下面是顶部的按钮栏-->
+        <div  class="header-buttons-bar" style="padding-left: 5px">
+          <!--<a-button type='primary' @click="showModal('add')"size="small">新增{{this.pageTitle}}</a-button>-->
+          <a-popconfirm title="您确认删除该条记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
+            <!--<a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>-->
+          </a-popconfirm>
+          <a-button @click="refresh"size="small">刷新</a-button>
+          <!--搜索条-->
+          <a-input-search
+            :placeholder="search.placeholder"
+            style="width: 300px"
+            v-model="search.searchValue"
+            size="small"
+            @search="onSearch"
+          />
+          <!--<a-button size="small"  style="margin-left: 5px"  @click="()=>search.showAdvanced=!search.showAdvanced">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>-->
+          <!--<a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.tmlx && !search.advancedForm.jclx" @click="clearSearch">清除</a-button>-->
+        </div>
+        <!--下面是表格区域，分为表格主体和分页器-->
+        <div>
+          <a-table
+            bordered
+            :rowClassName="rowClass"
+            :dataSource="table.dataSource"
+            :columns="table.columns"
+            :pagination= "false"
+            :size="table.size"
+            :loading="table.tableIsLoading"
+            :scroll="table.scrollSize"
+            :rowSelection="table.rowSelection"
+          >
         <span slot="actionCell" slot-scope="text,record,index" >
-          <a href="javascript:;" @click="showModal('query',record)">查看详情</a>
+          <a href="javascript:;" @click="showDetailFun(record)">查看详情</a>
           <a-divider v-if="" type="vertical" />
           <a href="javascript:;" @click="showModal('map',record)">位置</a>
           <!--<a-divider v-if="" type="vertical" />-->
@@ -42,7 +45,7 @@
             <!--<a href="javascript:;">删除</a>-->
           </a-popconfirm>
         </span>
-        <span slot="defaultcustomRender" slot-scope="text,record,index">
+            <span slot="defaultcustomRender" slot-scope="text,record,index">
           <template>
             <a-tooltip :mouseEnterDelay="0.8">
               <template slot='title'>
@@ -52,62 +55,69 @@
             </a-tooltip>
           </template>
         </span>
-      </a-table>
-      <a-pagination
-        v-model="pagination.current"
-        style="margin-top: 8px; float:right; padding-right: 16px;"
-        :total="pagination.total"
-        :pageSizeOptions="pagination.pageSizeOptions"
-        :pageSize="pagination.pageSize"
-        showSizeChanger
-        showQuickJumper
-        :showTotal="total =>`共${total}条数据`"
-        @change="changeCurrentPage"
-        @showSizeChange="showSizeChange"
-        size="small"/>
-    </div>
+          </a-table>
+          <a-pagination
+            v-model="pagination.current"
+            style="margin-top: 8px; float:right; padding-right: 16px;"
+            :total="pagination.total"
+            :pageSizeOptions="pagination.pageSizeOptions"
+            :pageSize="pagination.pageSize"
+            showSizeChanger
+            showQuickJumper
+            :showTotal="total =>`共${total}条数据`"
+            @change="changeCurrentPage"
+            @showSizeChange="showSizeChange"
+            size="small"/>
+        </div>
 
-    <!--下面是弹出框-->
-    <div>
-      <a-modal
-        :title="modalOption.title"
-        @cancel="modalCancel"
-        :visible="modalOption.visible"
-        :destroyOnClose="true"
-        :maskClosable="false"
-        :wrapClassName="modalOption.modalClass"
-        :width="modalOption.width"
-        :bodyStyle="modalOption.bodyStyle"
-      >
+        <!--下面是弹出框-->
+        <div>
+          <a-modal
+            :title="modalOption.title"
+            @cancel="modalCancel"
+            :visible="modalOption.visible"
+            :destroyOnClose="true"
+            :maskClosable="false"
+            :wrapClassName="modalOption.modalClass"
+            :width="modalOption.width"
+            :style="modalOption.style"
+            :bodyStyle="modalOption.bodyStyle"
+          >
 
-        <!--<edit-form-->
-          <!--v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"-->
-          <!--:selectOptions="modalOption.selectOptions"-->
-          <!--:recordId="modalOption.recordId"-->
-          <!--:modelType="modalOption.modelType"-->
-          <!--ref="commitForm"/>-->
+            <!--<edit-form-->
+            <!--v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"-->
+            <!--:selectOptions="modalOption.selectOptions"-->
+            <!--:recordId="modalOption.recordId"-->
+            <!--:modelType="modalOption.modelType"-->
+            <!--ref="commitForm"/>-->
 
-        <!--<data-detail-->
-          <!--v-if="this.modalOption.modelType=='query'"-->
-          <!--:recordId="modalOption.recordId" />-->
+            <!--<data-detail-->
+            <!--v-if="this.modalOption.modelType=='query'"-->
+            <!--:recordId="modalOption.recordId" />-->
 
-        <amap-modal
-          v-if="modalOption.modelType=='map'"
-          :recordId="modalOption.recordId"
-          :recordGps="{lng:recordData.dwgpsj,lat:recordData.dwgpsw}"
-          :height="modalOption.bodyStyle['max-height']"
-          @closeMap="closeMap"
-          :city="modalOption.mapCity"
-          :default-center="modalOption.defaultCenter"
-          :commitGpsAction="modalOption.commitGpsAction"/>
+            <amap-modal
+              v-if="modalOption.modelType=='map'"
+              :recordId="modalOption.recordId"
+              :recordGps="{lng:recordData.dwgpsj,lat:recordData.dwgpsw}"
+              :height="modalOption.bodyStyle['max-height']"
+              @closeMap="closeMap"
+              :city="modalOption.mapCity"
+              :default-center="modalOption.defaultCenter"
+              :commitGpsAction="modalOption.commitGpsAction"/>
 
-        <template slot="footer" >
-          <a-button v-show="this.modalOption.modelType!='map'" key="back" @click="modalCancel" size="small">返 回</a-button>
-          <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
-          <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='map'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
-          </a-popconfirm>
-        </template>
-      </a-modal>
+            <template slot="footer" >
+              <a-button v-show="this.modalOption.modelType!='map'" key="back" @click="modalCancel" size="small">返 回</a-button>
+              <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
+                <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='map'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
+              </a-popconfirm>
+            </template>
+          </a-modal>
+        </div>
+      </div>
+    </keep-alive>
+    <!--企业详情页面-->
+    <div v-if="showDetail">
+      <qiye-detail :QiyeId="modalOption.recordId" @return="() => showDetail=false"></qiye-detail>
     </div>
   </div>
 </template>
@@ -118,6 +128,7 @@
 //  import dataDetail from './dataDetail'
   import AmapModal from  '../../wryComps/AmapModal.vue'
   import { initColumn } from '@/utils/tableColumnInit'
+  import QiyeDetail from '../../wryComps/QiyeDetail/index'
 
   const pageName='qiye_xqqygl'
   const modalTitle="企业"   //模态框的title标题
@@ -139,6 +150,7 @@
   export default {
     name:pageName,
     components:{
+      QiyeDetail,
 //      editForm,
 //      dataDetail,
       AmapModal
@@ -147,6 +159,7 @@
       return{
         pageTitle:modalTitle,
         pageNmae:pageName,
+        showDetail:false,
         search:{
           placeholder:'',
           searchValue:'',
@@ -185,11 +198,12 @@
         },
         modalOption:{
           title:'',
-          width:'85%',
+          width:'100%',
           visible:false,
+          style:'top:0px;padding-bottom:0px',
           bodyStyle:{
-            "max-height":window.innerHeight-250 + 'px',
-            "min-height":100
+            // "max-height":window.innerHeight-250 + 'px',
+            "min-height":window.innerHeight-85 +'px'
           },
           commitLoading:false,
           mapCity:'珠海',
@@ -321,6 +335,7 @@
             this.modalOption.modalClass ='nomal-modal '
                 break;
           case 'query':
+            //本页详情不采用modal
             this.modalOption.title=modalTitle+'详情'
             this.modalOption.modelType='query'
             this.modalOption.recordId=record.id
@@ -340,6 +355,10 @@
                 break
         }
         this.modalOption.visible=true
+      },
+      showDetailFun(record){
+        this.modalOption.recordId=record.autoid
+        this.showDetail=true
       },
       modalCancel(){
         this.modalOption.commitLoading=false

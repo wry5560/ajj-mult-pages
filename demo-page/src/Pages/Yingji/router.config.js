@@ -10,8 +10,14 @@ export const constantRouterMap = [
   {
     path: '/yingji/wz',
     name: 'index',
-
-    component: ()=>import(/* webpackChunkName: "index" */'./Wz/index.vue'),
+    // component: ()=>import(/* webpackChunkName: "index" */'./Wz/index.vue'),
+    // component: ()=>import(/* webpackChunkName: "index" */'./Zb/index.vue'),
+    // component: ()=>import(/* webpackChunkName: "index" */'./Team/index.vue'),
+    // component: ()=>import(/* webpackChunkName: "index" */'./Place/index'),
+    // component: ()=>import(/* webpackChunkName: "index" */'./Zhuanjia/index'),
+    // component: ()=>import(/* webpackChunkName: "index" */'./Zhishi/index'),
+    component: ()=>import(/* webpackChunkName: "index" */'./Yuan/index.vue'),
+    // component: ()=>import(/* webpackChunkName: "index" */'./Yanlian/index.vue'),
     meta: {keepAlive:true},
   },
   {

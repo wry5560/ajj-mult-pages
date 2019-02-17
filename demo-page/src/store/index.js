@@ -10,6 +10,8 @@ import yingji from '../Pages/Yingji/store'
 import peizhi from '../Pages/Peizhi/store'
 import jxgl from '../Pages/Jxgl/store'
 import Qiye from '../Pages/Qiye/store'
+import QiyeDetial from '../Pages/wryComps/QiyeDetail/store'
+
 
 Vue.use(Vuex)
 
@@ -22,7 +24,8 @@ export default new Vuex.Store({
     yingji,
     peizhi,
     jxgl,
-    Qiye
+    Qiye,
+    QiyeDetial
   },
   state: {
 

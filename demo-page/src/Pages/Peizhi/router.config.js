@@ -10,7 +10,6 @@ export const constantRouterMap = [
   {
     path: '/peizhi/kuaibaoShryList',
     name: 'kuaibaoShryList',
-
     component: ()=>import(/* webpackChunkName: "index" */'./KuaibaoShry/index.vue'),
     meta: {keepAlive:true},
   },

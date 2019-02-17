@@ -1,3 +1,3 @@
 <template>
-  <div>IndexYnalian</div>
+  <div>IndexYanlian</div>
 </template>

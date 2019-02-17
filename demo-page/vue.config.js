@@ -12,7 +12,23 @@ const settings={
   // pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanuser_v/'     //排班人员设置打包地址
 
   // pubilcUrl:'/asrsajj/90_asrs/sgkb/sgkb/'     //事故快报打包地址
-  pubilcUrl:'/asrsajj/90_asrs/sgkb/sgkb_sh/'     //事故快报审核打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/sgkb/sglc/'     //事故快报审核打包地址
+
+  // pubilcUrl:'/asrsajj/90_asrs/yjgl/yjwz/'     //应急物资打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/yjgl/yjzb/'     //应急装备打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/yjgl/yjdw/'     //应急队伍打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/yjgl/bncs/'     //避难场所打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/yjgl/yjzj/'     //应急专家打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/yjgl/yjzs/'     //应急知识打包地址
+
+  // pubilcUrl:'/asrsajj/90_asrs/jxgl/jcxgl/'     //绩效，检查项管理
+  // pubilcUrl:'/asrsajj/90_asrs/jxgl/jcbgl/'     //绩效，日常检查表管理
+  // pubilcUrl:'/asrsajj/90_asrs/jxgl/zxjcplan/'     //绩效，专项检查计划管理
+
+
+  pubilcUrl:'/asrsajj/90_asrs/xqqda/'     //企业档案
+
+
 }
 
 function resolve (dir) {
