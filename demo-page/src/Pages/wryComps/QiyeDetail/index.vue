@@ -60,7 +60,7 @@
         <weixianpin v-if="isCurrent=='weixianpin'":anchor="current[0]" :qyId="QiyeId"/>
         <yinghuan-paicha v-if="isCurrent=='yinhuanpaicha'":anchor="current[0]" :qyId="QiyeId"/>
         <yingji v-if="isCurrent=='yingji'" :anchor="current[0]" :qyId="QiyeId"/>
-        <zhiye-weisheng v-if="isCurrent=='zhiyeweisheng'" :anchor="current[0]" :qyId="QiyeId"/>
+        <zhiye-weisheng v-if="isCurrent=='zhiyeweisheng'" :anchor="current[0]" :qyId="QiyeId" :recordId="recordId"/>
       </div>
     </div>
 </template>
@@ -80,6 +80,7 @@
       components:{QiyeHuji, GangweiRenyuan, JianguanJiancha,Teshuzuoye,Weixianpin,YinghuanPaicha,Yingji,ZhiyeWeisheng},
       props:{
         QiyeId:[String,Number],
+        recordId:[String,Number],
       },
       data(){
           return{

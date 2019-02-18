@@ -59,7 +59,7 @@
     props:{
       selectOptions:Object,
       recordId:String,
-      modelType:String
+      modalType:String
     },
     components: {
     },
@@ -75,7 +75,7 @@
     computed:{
       initialValues(){
         let initialValues={}
-        if(this.modelType=='edit') {
+        if(this.modalType=='edit') {
           initialValues = {...this.getJcplanById()(this.recordId)}
           initialValues.planstartDate=moment(initialValues.planstartDate)
           initialValues.planendDate=moment(initialValues.planendDate)

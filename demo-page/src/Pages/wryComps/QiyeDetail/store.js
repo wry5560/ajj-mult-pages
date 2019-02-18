@@ -7,6 +7,7 @@ import Jianguanjiancha from './Jianguanjiancha/store'
 import Teshuzuoye from './Teshuzuoye/store'
 import YinhuanPaicha from './YinhuanPaicha/store'
 import Yingji from './Yingji/store'
+import ZhiyeWeisheng from './ZhiyeWeisheng/store'
 
 export default{
   modules: {
@@ -16,6 +17,7 @@ export default{
     Jianguanjiancha,
     Teshuzuoye,
     YinhuanPaicha,
-    Yingji
+    Yingji,
+    ZhiyeWeisheng
   },
 }

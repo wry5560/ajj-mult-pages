@@ -117,7 +117,7 @@
     </keep-alive>
     <!--企业详情页面-->
     <div v-if="showDetail">
-      <qiye-detail :QiyeId="modalOption.recordId" @return="() => showDetail=false"></qiye-detail>
+      <qiye-detail :QiyeId="modalOption.recordQyId" :recordId="modalOption.recordId" @return="() => showDetail=false"></qiye-detail>
     </div>
   </div>
 </template>
@@ -214,6 +214,7 @@
           },
           selectOptions:{},
           recordId:'',
+          recordQyId:'',
           modelType:'',
           modalClass:'nomal-modal'
         }
@@ -357,7 +358,8 @@
         this.modalOption.visible=true
       },
       showDetailFun(record){
-        this.modalOption.recordId=record.autoid
+        this.modalOption.recordId=record.id
+        this.modalOption.recordQyId=record.autoid
         this.showDetail=true
       },
       modalCancel(){

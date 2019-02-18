@@ -23,10 +23,10 @@ const settings={
 
   // pubilcUrl:'/asrsajj/90_asrs/jxgl/jcxgl/'     //绩效，检查项管理
   // pubilcUrl:'/asrsajj/90_asrs/jxgl/jcbgl/'     //绩效，日常检查表管理
-  // pubilcUrl:'/asrsajj/90_asrs/jxgl/zxjcplan/'     //绩效，专项检查计划管理
+  pubilcUrl:'/asrsajj/90_asrs/jxgl/zxjcplan/'     //绩效，专项检查计划管理
 
 
-  pubilcUrl:'/asrsajj/90_asrs/xqqda/'     //企业档案
+  // pubilcUrl:'/asrsajj/90_asrs/xqqda/'     //企业档案
 
 
 }

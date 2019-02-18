@@ -189,7 +189,8 @@
 //              description: JSON.stringify(values)
 //            })
             this.modalOption.commitLoading=true
-            values.fssj=values.fssj.format('YYYY-MM-DD HH:MM:SS')
+            values.fssj=values.fssj.format('YYYY-MM-DD HH:MM')
+//            debugger
             if (values.sgdj) values.sgdj=this.selectOptions.sgdj.find(item=>item[0]==values.sgdj)[1]
             if (values.sglx) values.sglx=this.selectOptions.sglx.find(item=>item[0]==values.sglx)[1]
             if (values.shlb) values.shlb=this.selectOptions.shlb.find(item=>item[0]==values.shlb)[1]
@@ -222,6 +223,7 @@
           if (!err) {
             this.modalOption.commitLoading=true
             values.fssj=values.fssj.format('YYYY-MM-DD HH:MM')
+//            debugger
             if (values.sgdj) values.sgdj=this.selectOptions.sgdj.find(item=>item[0]==values.sgdj)[1]
             if (values.sglx) values.sglx=this.selectOptions.sglx.find(item=>item[0]==values.sglx)[1]
             if (values.shlb) values.shlb=this.selectOptions.shlb.find(item=>item[0]==values.shlb)[1]
