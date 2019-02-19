@@ -12,6 +12,11 @@ export const constantRouterMap = [
     component: ()=>import(/* webpackChunkName: "index" */'@/Pages/PaiBan/IndexRole'),
   },
   {
+    path: '/paibanQuery',
+    name: 'paibanQuery',
+    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/PaiBan/IndexPaibanQuery'),
+  },
+  {
     path: '*', redirect: '/index', hidden: true
   },
   {

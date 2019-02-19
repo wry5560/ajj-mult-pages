@@ -18,6 +18,20 @@ export function reqSchedule(parameter) {
   })
 }
 
+export function reqWholeSchedule(parameter) {
+  return axios({
+    url: process.env.NODE_ENV === 'production'
+      ?'/base/General.query.json'
+      // : '/base/General.query.json/reqSchedule',
+      : '/base/General.query.json',
+    method: 'get',
+    params: {"sqlId":'S360014',...parameter},
+    // headers: {
+    //   'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    // }
+  })
+}
+
 //获取已排班的年份
 export function reqPbYear(parameter){
   return axios({

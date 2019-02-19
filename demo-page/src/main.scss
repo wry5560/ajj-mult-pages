@@ -1,3 +1,8 @@
+#app{
+  background-color: #f0f2f5;
+}
+
+
 //全局布局样式
 .ant-layout{
   height: 100%;
@@ -88,7 +93,6 @@
     background-color: #fafafa !important;
     color: #bdbdbd;
   }
-
 }
 
 .ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-tbody > tr > td{
