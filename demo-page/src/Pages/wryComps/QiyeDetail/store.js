@@ -1,5 +1,3 @@
-import Vue from 'vue'
-
 import QiyeHuji from './QiyeHuji/store'
 import GangweiRenyuan from './GangweiRenyuan/store'
 import Weixianpin from './Weixianpin/store'

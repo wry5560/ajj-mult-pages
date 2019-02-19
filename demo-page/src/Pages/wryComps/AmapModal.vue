@@ -38,7 +38,7 @@
   export default{
     name:'mapModel',
     props:{
-      height:String,
+      height:[String,Number],
       recordId:String,
       recordGps:Object,
       city:String,

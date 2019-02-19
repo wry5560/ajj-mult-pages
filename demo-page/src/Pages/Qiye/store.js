@@ -124,6 +124,10 @@ const jixiao = {
     getWgnameById:(state)=>(id)=> {
       return state.xqwgTree.find( todo=> todo.id==id)
     },
+    getXqqiyeById:(state)=>(id)=> {
+      return state.xqqiye.list.find( todo=> todo.id==id)
+    },
+
     // jxgl_jcx_selOptions:(state)=>{
     //   const selOptions={}
     //   state.jcx.selectedOptions.forEach(option=>{

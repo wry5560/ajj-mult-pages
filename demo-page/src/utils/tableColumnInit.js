@@ -4,6 +4,7 @@ export function initColumn(columns=[]) {
   tmpColumns.forEach((column)=>{
     column.key=column.dataIndex
     const align=column.align ||''
+    const titleAlign=column.titleAlign ? column.titleAlign : align
     if (column.align) delete column.align
     column.customCell=(record,recordIndex)=>{
       return{
@@ -21,7 +22,7 @@ export function initColumn(columns=[]) {
     column.customHeaderCell=(thisColumn)=>{
       return{
         style: {
-          'text-align':align
+          'text-align':titleAlign
         }
       }
     }

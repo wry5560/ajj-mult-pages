@@ -1,5 +1,5 @@
 #app{
-  background-color: #f0f2f5;
+  //background-color: #f0f2f5;
 }
 
 
@@ -81,8 +81,8 @@
 
 //table 样式
 .ant-table-wrapper{
-  height: calc(100% - 72px);
-  border-bottom:1px solid #e0e0e0;
+  //height: calc(100% - 72px);
+  //border-bottom:1px solid #e0e0e0;
   .odd-rows{
     //background-color: blue
   }
@@ -97,6 +97,7 @@
 
 .ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-tbody > tr > td{
   padding:4px 4px  !important;
+  //border-top: 1px solid #e8e8e8 !important;
 }
 .ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-header > table > .ant-table-thead > tr > th{
   background-color: #fbfbfb !important;
@@ -110,6 +111,15 @@
 //  white-space: nowrap;
 //  text-overflow: ellipsis;
 //}
+
+//全页table下的分页器固定在页面下方
+.bottom-pagination-warpper{
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  padding:8px 16px
+
+}
 
   /*滚动条 start*/
 ::-webkit-scrollbar {

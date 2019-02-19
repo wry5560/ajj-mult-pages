@@ -229,7 +229,7 @@
       this.$nextTick(function () {
         let _this=this
         window.onresize = function(){
-          _this.modalOption.bodyStyle['max-height']= window.innerHeight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  -250+'px'
+          _this.modalOption.bodyStyle['max-height']= window.innerHeight-250+'px'
         }
         document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
 

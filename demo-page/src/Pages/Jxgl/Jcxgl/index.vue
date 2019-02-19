@@ -9,40 +9,43 @@
       <a-button @click="refresh"size="small">刷新</a-button>
 
       <!--搜索条-->
-      <!--<a-input-search-->
-        <!--:placeholder="search.placeholder"-->
-        <!--style="width: 250px"-->
-        <!--v-model="search.searchValue"-->
-        <!--size="small"-->
-        <!--@search="onSearch"-->
-      <!--/>-->
-      <!--<a-button size="small"  style="margin-left: 5px"  @click="()=>search.showAdvanced=!search.showAdvanced">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>-->
-      <!--<a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.tmlx && !search.advancedForm.jclx" @click="clearSearch">清除</a-button>-->
+      <a-input-search
+        :placeholder="search.placeholder"
+        style="width: 250px"
+        v-model="search.searchValue"
+        size="small"
+        @search="onSearch"
+      />
+      <a-button size="small"  style="margin-left: 5px"  @click="toggleShowAdvancedSearch">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>
+      <a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.tmlx && !search.advancedForm.jclx" @click="clearSearch">清除</a-button>
     </div>
-    <div>
-        <!--<a-row>-->
-          <!--<a-col :lg="6" :md="12" :sm="24">-->
-            <!--<a-form-item label="条目类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">-->
-              <!--<a-select style="width:100%" size="small" placeholder="请选择条目类型" v-model="search.advancedForm.tmlx">-->
-                <!--<a-select-option v-for="(item) in modalOption.selectOptions.tmlx" :key="item.value" :value="item.value">{{item.label}}</a-select-option>-->
-              <!--</a-select>-->
-            <!--</a-form-item>-->
-          <!--</a-col>-->
-          <!--<a-col :lg="6" :md="12" :sm="24">-->
-            <!--<a-form-item label="检查类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">-->
-              <!--<a-select style="width:100%"  size="small" placeholder="请选择检查类型" v-model="search.advancedForm.jclx">-->
-                <!--<a-select-option v-for="(item) in modalOption.selectOptions.jclx" :key="item.value" :value="item.value">{{item.label}}</a-select-option>-->
-              <!--</a-select>-->
-            <!--</a-form-item>-->
-          <!--</a-col>-->
-          <!--<a-col  :lg="2" :md="12" :sm="24">-->
-            <!--<a-form-item>-->
-              <!--<a-button type='primary'size="small" style="margin-left: 8px" @click="onSearch" >搜索</a-button>-->
-            <!--</a-form-item>-->
-          <!--</a-col>-->
-        <!--</a-row>-->
-    </div>
+    <transition name="fade">
+      <div v-if="search.showAdvanced">
+        <a-row >
+          <a-col :lg="6" :md="12" :sm="24">
+            <a-form-item label="条目类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+              <a-select style="width:100%" size="small" placeholder="请选择条目类型" v-model="search.advancedForm.tmlx">
+                <a-select-option v-for="(item) in modalOption.selectOptions.tmlx" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :lg="6" :md="12" :sm="24">
+            <a-form-item label="检查类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+              <a-select style="width:100%"  size="small" placeholder="请选择检查类型" v-model="search.advancedForm.jclx">
+                <a-select-option v-for="(item) in modalOption.selectOptions.jclx" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col  :lg="2" :md="12" :sm="24">
+            <a-form-item>
+              <a-button type='primary'size="small" style="margin-left: 8px" @click="onSearch" >搜索</a-button>
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </div>
+    </transition>
     <!--下面是表格区域，分为表格主体和分页器-->
+
     <div>
       <a-table
         bordered
@@ -77,18 +80,21 @@
           </template>
         </span>
       </a-table>
-      <a-pagination
-        v-model="pagination.current"
-        style="margin-top: 8px; float:right; padding-right: 16px;"
-        :total="pagination.total"
-        :pageSizeOptions="pagination.pageSizeOptions"
-        :pageSize="pagination.pageSize"
-        showSizeChanger
-        showQuickJumper
-        :showTotal="total =>`共${total}条数据`"
-        @change="changeCurrentPage"
-        @showSizeChange="showSizeChange"
-        size="small"/>
+      <div class="bottom-pagination-warpper">
+        <a-pagination
+          v-model="pagination.current"
+          style="float:right;"
+          :total="pagination.total"
+          :pageSizeOptions="pagination.pageSizeOptions"
+          :pageSize="pagination.pageSize"
+          showSizeChanger
+          showQuickJumper
+          :showTotal="total =>`共${total}条数据`"
+          @change="changeCurrentPage"
+          @showSizeChange="showSizeChange"
+          size="small"/>
+        <div style="clear: both"></div>
+      </div>
     </div>
 
     <!--下面是弹出框-->
@@ -144,7 +150,7 @@
   import { initColumn } from '@/utils/tableColumnInit'
 
   const pageName='jxgl_jcxgl'
-  const modalTitle="检查条目"   //模态框的title标题
+  const modalTitle="检查标准"   //模态框的title标题
 
   const selOptions=['tmlx','jclx']          //选择项所需要的配置，localstorage中的配置名称
   const selOptionMutation='INIT_JCX_SELECTED_OPTIONS'   //将选择项配置保存到store的mutation方法名
@@ -186,17 +192,18 @@
           columns:[
             {title: '序号', dataIndex: 'index', width: '50px',align: 'center'},
             {title: '条目类型',dataIndex: 'tmlx', width: '80px', align: 'center'},
-            {title: '检查类型', dataIndex: 'jclx', width: '100px', align: 'center'},
-            {title: '检查内容', dataIndex: 'jcnr', width: '150px', align: 'center',},
-            {title: '检查依据', dataIndex: 'jcyj', width: '150px', align: 'center',},
-            {title: '隐患提示', dataIndex: 'yhts', width: '150px',align: 'center'},
-            {title: '系统未落实提示', dataIndex: 'systs', width: '150px', align: 'center',},
-            {title: '所属组织', dataIndex: 'departName', width: '120px',align: 'center'},
+            {title: '检查类型', dataIndex: 'jclx', width: '120px', align: 'left',titleAlign:'center'},
+            {title: '检查子类型', dataIndex: 'jclx2', width: '120px', align: 'left',titleAlign:'center'},
+            {title: '检查内容', dataIndex: 'jcnr', width: '200px', align: 'left',titleAlign:'center'},
+            {title: '检查依据', dataIndex: 'jcyj', width: '200px', align: 'left',titleAlign:'center'},
+            // {title: '隐患提示', dataIndex: 'yhts', width: '150px',align: 'center'},
+            // {title: '系统未落实提示', dataIndex: 'systs', width: '150px', align: 'center',},
+            // {title: '所属组织', dataIndex: 'departName', width: '120px',align: 'center'},
             {title: '操作', dataIndex: 'actions', width: '150px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
           ],
           size:'small',
           tableIsLoading:false,
-          scrollSize: { x:1120, y: window.innerHeight - 120},
+          scrollSize: { x:920, y: window.innerHeight - 112},
           // rowSelection:{
           //   selectedRowKeys: [],
           //   onChange: this.onSelectChange,
@@ -254,9 +261,11 @@
       this.$nextTick(function () {
         let _this=this
         window.onresize = function(){
-          _this.modalOption.bodyStyle['max-height']= window.innerHeight -250+'px'
+          // debugger
+          _this.table.scrollSize.y= window.innerHeight - 112
+          // _this.modalOption.bodyStyle['max-height']= window.innerHeight -250+'px'
         }
-        document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
+        // document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
 
         //初始化选择项,存入vuex相应store的state中
         const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
@@ -281,6 +290,11 @@
       },
       refresh(){
         this.reqTableData()
+      },
+      toggleShowAdvancedSearch(){
+        this.search.showAdvanced=!this.search.showAdvanced
+        this.search.advancedForm.jclx=undefined
+        this.search.advancedForm.tmlx=undefined
       },
       onSearch(){
         this.table.tableIsLoading=true
@@ -490,3 +504,8 @@
   }
 
 </script>
+<style lang="scss" scoped >
+  .ant-form-item{
+    margin-bottom: 0px;
+  }
+</style>

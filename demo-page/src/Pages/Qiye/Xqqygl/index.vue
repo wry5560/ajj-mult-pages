@@ -1,8 +1,7 @@
 <template>
   <div :class="pageNmae" style="height: 100%">
     <!--//企业列表页面-->
-    <keep-alive>
-      <div v-if="!showDetail">
+      <div v-show="!showDetail">
         <a-layout-sider width="160px" :style="{position:'fixed',height:'100%',overflow:'auto'}">
           <div class="tree-wrapper"style="height: 100%;overflow: auto;background-color: #ffffff">
             <div class="tree-title">
@@ -67,18 +66,20 @@
           </template>
         </span>
             </a-table>
-            <a-pagination
-              v-model="pagination.current"
-              style="margin-top: 8px; float:right; padding-right: 16px;"
-              :total="pagination.total"
-              :pageSizeOptions="pagination.pageSizeOptions"
-              :pageSize="pagination.pageSize"
-              showSizeChanger
-              showQuickJumper
-              :showTotal="total =>`共${total}条数据`"
-              @change="changeCurrentPage"
-              @showSizeChange="showSizeChange"
-              size="small"/>
+            <div class="bottom-pagination-warpper" style="padding-right:172px">
+              <a-pagination
+                v-model="pagination.current"
+                style="float:right;"
+                :total="pagination.total"
+                :pageSizeOptions="pagination.pageSizeOptions"
+                :pageSize="pagination.pageSize"
+                showSizeChanger
+                showQuickJumper
+                :showTotal="total =>`共${total}条数据`"
+                @change="changeCurrentPage"
+                @showSizeChange="showSizeChange"
+                size="small"/>
+            </div>
           </div>
 
           <!--下面是弹出框-->
@@ -126,7 +127,6 @@
           </div>
         </a-layout-content>
       </div>
-    </keep-alive>
     <!--企业详情页面-->
     <div v-if="showDetail">
       <qiye-detail :QiyeId="modalOption.recordQyId" :recordId="modalOption.recordId" @return="() => showDetail=false"></qiye-detail>
@@ -200,7 +200,7 @@
           ],
           size:'small',
           tableIsLoading:false,
-          scrollSize: { x:1120, y: window.innerHeight - 120},
+          scrollSize: { x:1120, y: window.innerHeight - 112},
           // rowSelection:{
           //   selectedRowKeys: [],
           //   onChange: this.onSelectChange,
@@ -216,12 +216,12 @@
         },
         modalOption:{
           title:'',
-          width:'100%',
+          width:'85%',
           visible:false,
-          style:'top:0px;padding-bottom:0px',
+          // style:'top:0px ; padding-bottom:0px',
           bodyStyle:{
-            // "max-height":window.innerHeight-250 + 'px',
-            "min-height":window.innerHeight-85 +'px'
+            "max-height":window.innerHeight-250 + 'px',
+            "min-height":100
           },
           commitLoading:false,
           mapCity:'珠海',
@@ -240,10 +240,13 @@
     },
     computed:{
       recordData(){
-        return this.$store.getters[getDetailById](this.modalOption.recordId)
+        const recordData=this.$store.getters[getDetailById](this.modalOption.recordId)
+        return !recordData ? '': recordData
       },
       wgName(){
-        return this.$store.getters.getWgnameById(this.wgid).nodeNm
+        const wgName=this.$store.getters.getWgnameById(this.wgid)
+        return  !wgName ? '': wgName.nodeNm
+
       }
     },
     beforeCreate(){
@@ -265,9 +268,10 @@
       this.$nextTick(function () {
         let _this=this
         window.onresize = function(){
-          _this.modalOption.bodyStyle['max-height']= window.innerHeight -250+'px'
+          _this.modalOption.bodyStyle['max-height']= window.innerHeight-250+'px'
+          _this.table.scrollSize.y= window.innerHeight - 112
         }
-        document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
+        document.getElementsByClassName('ant-table-body')[0].style['"max-height"']=`${window.innerHeight-250}px`
 
         //初始化选择项,存入vuex相应store的state中
 //        const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
@@ -291,6 +295,7 @@
         this.table.rowSelection.selectedRowKeys = selectedRowKeys
       },
       refresh(){
+        this.pagination.current=1
         this.reqTableData()
       },
       onSearch(){
@@ -373,6 +378,7 @@
                 break;
           case 'map':
             this.modalOption.title=modalTitle+'位置信息'
+            this.modalOption.width='85%'
             this.modalOption.modelType='map'
             this.modalOption.recordId=record.id
             this.modalOption.modalClass ='nomal-modal mapModal'
@@ -473,7 +479,7 @@
       },
       selectWg(wgid){
         this.wgid=wgid
-        this.reqTableData()
+        this.refresh()
       },
       reqTreeData(){
         this.$store.dispatch('reqXqwgTree')

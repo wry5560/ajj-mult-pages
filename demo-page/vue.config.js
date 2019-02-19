@@ -10,7 +10,7 @@ const settings={
 
   // pubilcUrl:'/asrsajj/90_asrs/sgkb/paiban_v/',        //排班打包地址
   // pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanuser_v/'     //排班人员设置打包地址
-  pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanWhole/'     //查询当日所有排班人员设置打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanWhole/'     //查询当日所有排班人员设置打包地址
 
   // pubilcUrl:'/asrsajj/90_asrs/sgkb/sgkb/'     //事故快报打包地址
   // pubilcUrl:'/asrsajj/90_asrs/sgkb/sglc/'     //事故快报审核打包地址
@@ -27,7 +27,7 @@ const settings={
   // pubilcUrl:'/asrsajj/90_asrs/jxgl/zxjcplan/'     //绩效，专项检查计划管理
 
 
-  // pubilcUrl:'/asrsajj/90_asrs/xqqda/'     //企业档案
+  pubilcUrl:'/asrsajj/90_asrs/xqqda/'     //企业档案
 
 
 }
