@@ -81,6 +81,7 @@
       props:{
         QiyeId:[String,Number],
         recordId:[String,Number],
+
       },
       data(){
           return{

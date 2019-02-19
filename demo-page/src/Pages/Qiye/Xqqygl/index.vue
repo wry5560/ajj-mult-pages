@@ -3,37 +3,48 @@
     <!--//企业列表页面-->
     <keep-alive>
       <div v-if="!showDetail">
-        <!--下面是顶部的按钮栏-->
-        <div  class="header-buttons-bar" style="padding-left: 5px">
-          <!--<a-button type='primary' @click="showModal('add')"size="small">新增{{this.pageTitle}}</a-button>-->
-          <a-popconfirm title="您确认删除该条记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
-            <!--<a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>-->
-          </a-popconfirm>
-          <a-button @click="refresh"size="small">刷新</a-button>
-          <!--搜索条-->
-          <a-input-search
-            :placeholder="search.placeholder"
-            style="width: 300px"
-            v-model="search.searchValue"
-            size="small"
-            @search="onSearch"
-          />
-          <!--<a-button size="small"  style="margin-left: 5px"  @click="()=>search.showAdvanced=!search.showAdvanced">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>-->
-          <!--<a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.tmlx && !search.advancedForm.jclx" @click="clearSearch">清除</a-button>-->
-        </div>
-        <!--下面是表格区域，分为表格主体和分页器-->
-        <div>
-          <a-table
-            bordered
-            :rowClassName="rowClass"
-            :dataSource="table.dataSource"
-            :columns="table.columns"
-            :pagination= "false"
-            :size="table.size"
-            :loading="table.tableIsLoading"
-            :scroll="table.scrollSize"
-            :rowSelection="table.rowSelection"
-          >
+        <a-layout-sider width="160px" :style="{position:'fixed',height:'100%',overflow:'auto'}">
+          <div class="tree-wrapper"style="height: 100%;overflow: auto;background-color: #ffffff">
+            <div class="tree-title">
+              辖区网格列表
+              <a-icon type="sync" style="float: right; font-size: 12px;margin-top: 6px;" @click="refreshTree"/>
+            </div>
+            <wg-tree :treeData="treeData" @select="selectWg"></wg-tree>
+          </div>
+        </a-layout-sider>
+        <a-layout-content :style="{ 'padding-left': '160px',overflow:'auto'}">
+          <!--下面是顶部的按钮栏-->
+          <div  class="header-buttons-bar" style="padding-left: 5px">
+            <!--<a-button type='primary' @click="showModal('add')"size="small">新增{{this.pageTitle}}</a-button>-->
+            <a-popconfirm title="您确认删除该条记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
+              <!--<a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>-->
+            </a-popconfirm>
+            <span style="font-size: 15px;color: #636363;margin:0 15px"><strong>{{this.wgName +' '}} </strong> <span style="font-size: 14px"> 下辖企业列表</span></span>
+            <a-button @click="refresh"size="small">刷新</a-button>
+            <!--搜索条-->
+            <a-input-search
+              :placeholder="search.placeholder"
+              style="width: 300px"
+              v-model="search.searchValue"
+              size="small"
+              @search="onSearch"
+            />
+            <!--<a-button size="small"  style="margin-left: 5px"  @click="()=>search.showAdvanced=!search.showAdvanced">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>-->
+            <!--<a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.tmlx && !search.advancedForm.jclx" @click="clearSearch">清除</a-button>-->
+          </div>
+          <!--下面是表格区域，分为表格主体和分页器-->
+          <div>
+            <a-table
+              bordered
+              :rowClassName="rowClass"
+              :dataSource="table.dataSource"
+              :columns="table.columns"
+              :pagination= "false"
+              :size="table.size"
+              :loading="table.tableIsLoading"
+              :scroll="table.scrollSize"
+              :rowSelection="table.rowSelection"
+            >
         <span slot="actionCell" slot-scope="text,record,index" >
           <a href="javascript:;" @click="showDetailFun(record)">查看详情</a>
           <a-divider v-if="" type="vertical" />
@@ -45,7 +56,7 @@
             <!--<a href="javascript:;">删除</a>-->
           </a-popconfirm>
         </span>
-            <span slot="defaultcustomRender" slot-scope="text,record,index">
+              <span slot="defaultcustomRender" slot-scope="text,record,index">
           <template>
             <a-tooltip :mouseEnterDelay="0.8">
               <template slot='title'>
@@ -55,64 +66,65 @@
             </a-tooltip>
           </template>
         </span>
-          </a-table>
-          <a-pagination
-            v-model="pagination.current"
-            style="margin-top: 8px; float:right; padding-right: 16px;"
-            :total="pagination.total"
-            :pageSizeOptions="pagination.pageSizeOptions"
-            :pageSize="pagination.pageSize"
-            showSizeChanger
-            showQuickJumper
-            :showTotal="total =>`共${total}条数据`"
-            @change="changeCurrentPage"
-            @showSizeChange="showSizeChange"
-            size="small"/>
-        </div>
+            </a-table>
+            <a-pagination
+              v-model="pagination.current"
+              style="margin-top: 8px; float:right; padding-right: 16px;"
+              :total="pagination.total"
+              :pageSizeOptions="pagination.pageSizeOptions"
+              :pageSize="pagination.pageSize"
+              showSizeChanger
+              showQuickJumper
+              :showTotal="total =>`共${total}条数据`"
+              @change="changeCurrentPage"
+              @showSizeChange="showSizeChange"
+              size="small"/>
+          </div>
 
-        <!--下面是弹出框-->
-        <div>
-          <a-modal
-            :title="modalOption.title"
-            @cancel="modalCancel"
-            :visible="modalOption.visible"
-            :destroyOnClose="true"
-            :maskClosable="false"
-            :wrapClassName="modalOption.modalClass"
-            :width="modalOption.width"
-            :style="modalOption.style"
-            :bodyStyle="modalOption.bodyStyle"
-          >
+          <!--下面是弹出框-->
+          <div>
+            <a-modal
+              :title="modalOption.title"
+              @cancel="modalCancel"
+              :visible="modalOption.visible"
+              :destroyOnClose="true"
+              :maskClosable="false"
+              :wrapClassName="modalOption.modalClass"
+              :width="modalOption.width"
+              :style="modalOption.style"
+              :bodyStyle="modalOption.bodyStyle"
+            >
 
-            <!--<edit-form-->
-            <!--v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"-->
-            <!--:selectOptions="modalOption.selectOptions"-->
-            <!--:recordId="modalOption.recordId"-->
-            <!--:modelType="modalOption.modelType"-->
-            <!--ref="commitForm"/>-->
+              <!--<edit-form-->
+              <!--v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"-->
+              <!--:selectOptions="modalOption.selectOptions"-->
+              <!--:recordId="modalOption.recordId"-->
+              <!--:modelType="modalOption.modelType"-->
+              <!--ref="commitForm"/>-->
 
-            <!--<data-detail-->
-            <!--v-if="this.modalOption.modelType=='query'"-->
-            <!--:recordId="modalOption.recordId" />-->
+              <!--<data-detail-->
+              <!--v-if="this.modalOption.modelType=='query'"-->
+              <!--:recordId="modalOption.recordId" />-->
 
-            <amap-modal
-              v-if="modalOption.modelType=='map'"
-              :recordId="modalOption.recordId"
-              :recordGps="{lng:recordData.dwgpsj,lat:recordData.dwgpsw}"
-              :height="modalOption.bodyStyle['max-height']"
-              @closeMap="closeMap"
-              :city="modalOption.mapCity"
-              :default-center="modalOption.defaultCenter"
-              :commitGpsAction="modalOption.commitGpsAction"/>
+              <amap-modal
+                v-if="modalOption.modelType=='map'"
+                :recordId="modalOption.recordId"
+                :recordGps="{lng:recordData.dwgpsj,lat:recordData.dwgpsw}"
+                :height="modalOption.bodyStyle['max-height']"
+                @closeMap="closeMap"
+                :city="modalOption.mapCity"
+                :default-center="modalOption.defaultCenter"
+                :commitGpsAction="modalOption.commitGpsAction"/>
 
-            <template slot="footer" >
-              <a-button v-show="this.modalOption.modelType!='map'" key="back" @click="modalCancel" size="small">返 回</a-button>
-              <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
-                <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='map'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
-              </a-popconfirm>
-            </template>
-          </a-modal>
-        </div>
+              <template slot="footer" >
+                <a-button v-show="this.modalOption.modelType!='map'" key="back" @click="modalCancel" size="small">返 回</a-button>
+                <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
+                  <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='map'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
+                </a-popconfirm>
+              </template>
+            </a-modal>
+          </div>
+        </a-layout-content>
       </div>
     </keep-alive>
     <!--企业详情页面-->
@@ -124,10 +136,12 @@
 
 <script>
   import {  mapGetters,mapActions } from 'vuex'
+  import wgTree from './wgTree'
 //  import editForm from './editForm'
 //  import dataDetail from './dataDetail'
   import AmapModal from  '../../wryComps/AmapModal.vue'
   import { initColumn } from '@/utils/tableColumnInit'
+  import { initTreeData } from '@/utils/treeDataInit'
   import QiyeDetail from '../../wryComps/QiyeDetail/index'
 
   const pageName='qiye_xqqygl'
@@ -153,13 +167,17 @@
       QiyeDetail,
 //      editForm,
 //      dataDetail,
-      AmapModal
+      AmapModal,
+      wgTree
     },
     data(){
       return{
         pageTitle:modalTitle,
         pageNmae:pageName,
         showDetail:false,
+        treeData:[],
+        //TODO 进入时网格id须确认，修改以下参数
+        wgid:'A-3049',
         search:{
           placeholder:'',
           searchValue:'',
@@ -223,6 +241,9 @@
     computed:{
       recordData(){
         return this.$store.getters[getDetailById](this.modalOption.recordId)
+      },
+      wgName(){
+        return this.$store.getters.getWgnameById(this.wgid).nodeNm
       }
     },
     beforeCreate(){
@@ -235,7 +256,9 @@
       }},
 
     created(){
+
       this.reqTableData()
+      this.reqTreeData()
       this.table.columns=initColumn(this.table.columns)
     },
     mounted(){
@@ -448,11 +471,26 @@
             this.table.tableIsLoading=false
           })
       },
+      selectWg(wgid){
+        this.wgid=wgid
+        this.reqTableData()
+      },
+      reqTreeData(){
+        this.$store.dispatch('reqXqwgTree')
+          .then((res)=>{
+            this.treeData=initTreeData(this.$store.getters['qiye_xqwg_tree'])
+          })
+          .catch(err=>console.log(JSON.stringify(err)))
+      },
+      refreshTree(){
+        this.treeData=[]
+        this.reqTreeData()
+      },
+
       reqTableData(){
         this.table.tableIsLoading=true
         const parameter={
-            //TODO 后续需要修改参数为网格的ID
-          param1:'A-3049',
+          param1:this.wgid,
           limit:this.pagination.pageSize,
           start:(this.pagination.current -1)*this.pagination.pageSize
         }
@@ -487,3 +525,17 @@
   }
 
 </script>
+
+<style lang="scss" scoped>
+  .tree-wrapper{
+    /*margin-right: 2px;*/
+    /*border-right: 1px #f0f2f5 solid;*/
+  }
+  .tree-title{
+    font-size: 15px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-bottom:1px #e7e9ec solid;
+
+  }
+</style>

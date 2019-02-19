@@ -3,14 +3,40 @@ import message from 'ant-design-vue/es/message'
 const jixiao = {
   state:{
     xqqiye:{list:[],selectedOptions:[]},
+    xqwgTree:[]
   },
   mutations: {
     INIT_XQQIYE_LIST: (state, payload) => {
       state.xqqiye.list=payload
     },
+    INIT_XQWG_TREE: (state, payload) => {
+      state.xqwgTree=payload
+    },
 
   },
   actions: {
+    //查询辖区网格数据（树）
+    reqXqwgTree:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId:'S350001.wg',
+          param2:sys_relateDepId5,
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            if(res.success){
+              // res.data.forEach((item)=>{
+              //   item.key=item.id
+              // })
+              commit('INIT_XQWG_TREE',res.data)
+              resolve(res)
+            }else{
+              message.error(res.message)
+            }
+          })
+      })
+    },
     //查询企业列表
     reqXqqyList:({commit},params)=>{
       return new Promise((resolve, reject) => {
@@ -88,12 +114,15 @@ const jixiao = {
   },
 
   getters:{
+    qiye_xqwg_tree:(state) => {
+      return state.xqwgTree
+    },
     qiye_xqqiye_list:(state) => {
       state.xqqiye.list.forEach(item=>item.departName=item.departName)
       return state.xqqiye.list
     },
-    getXqqiyeById:(state)=>(id)=> {
-      return state.xqqiye.list.find( todo=> todo.id==id)
+    getWgnameById:(state)=>(id)=> {
+      return state.xqwgTree.find( todo=> todo.id==id)
     },
     // jxgl_jcx_selOptions:(state)=>{
     //   const selOptions={}
