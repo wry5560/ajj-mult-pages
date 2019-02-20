@@ -3,7 +3,7 @@ import message from 'ant-design-vue/es/message'
 const jixiao = {
   state:{
     jcx:{list:[],selectedOptions:[]},
-    jcb:{list:[],selectedOptions:[],selList:[]},
+    jcb:{list:[],selectedOptions:[],selList:[],option:[]},
     zxjcplan:{list:[],selectedOptions:[],jcxlist:[],selList:[],qyList:[],qySelList:[]}
   },
   mutations: {
@@ -14,6 +14,9 @@ const jixiao = {
 
     INIT_JCX_SELECTED_OPTIONS:(state,payload)=>{
       state.jcx.selectedOptions=payload
+    },
+    INIT_JCB_OPTION: (state, payload) => {
+      state.jcb.option=payload
     },
     INIT_JCB_LIST: (state, payload) => {
       state.jcb.list=payload
@@ -116,6 +119,28 @@ const jixiao = {
                 item.key=item.id
               })
               commit('INIT_JCB_LIST',res.data)
+              resolve(res)
+            }else{
+              message.error(res.message)
+            }
+          })
+      })
+    },
+    reqJcbOption:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId:'S350033',
+          param1:sys_relateDepId2,
+          param2:'日常',
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            if(res.success){
+              res.data.forEach((item)=>{
+                item.key=item.id
+              })
+              commit('INIT_JCB_OPTION',res.data)
               resolve(res)
             }else{
               message.error(res.message)
@@ -398,7 +423,9 @@ const jixiao = {
       })
       return selOptions
     },
-
+    jxgl_jcb_option:(state) => {
+      return state.jcb.option
+    },
     jxgl_jcb_list:(state) => {
       state.jcb.list.forEach(item=>item.departName=item.__ddepartmentid.departName)
       return state.jcb.list

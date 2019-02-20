@@ -1,12 +1,23 @@
 <template>
   <div :class="pageNmae" style="height: 100%">
     <!--下面是顶部的按钮栏-->
-    <div  class="header-buttons-bar" style="padding-left: 5px">
-      <a-button type='primary' @click="showModal('add')"size="small">选入检查表</a-button>
-      <a-popconfirm title="您确认删除这些记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
-        <a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>
-      </a-popconfirm>
-      <a-button @click="refresh"size="small">刷新</a-button>
+    <div  class="header-buttons-bar" style="padding: 5px">
+      <span v-if="!isEdit">
+        <span style="font-size: 16px;margin:16px">检查表名称：<strong>{{JcbOption.jcbname}}</strong></span>
+        <span style="font-size: 16px;margin-right: 16px">开始时间：<strong>{{JcbOption.startTime}}</strong></span>
+        <a-button type='primary' @click="() => this.isEdit=true"size="small">编辑检查表</a-button>
+        <a-button @click="refresh"size="small">刷新</a-button>
+      </span>
+      <span v-if="isEdit">
+        <span style="font-size: 16px;margin-left:16px">检查表名称：</span>
+          <a-input style="width: 250px;margin-right: 8px" size="small" placeholder="请输入检查表名称" v-model="jcbName"/>
+          <a-button type='primary' @click="showModal('add')"size="small">保存检查表</a-button>
+          <a-button type='primary' @click="showModal('add')"size="small">增加检查标准</a-button>
+          <a-popconfirm title="您确认删除这些记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
+            <a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>
+          </a-popconfirm>
+          <a-button  @click="() => this.isEdit=false" size="small">取消</a-button>
+      </span>
 
       <!--搜索条-->
       <!--<a-input-search-->
@@ -118,6 +129,8 @@
   import dataDetail from './dataDetail'
   import AmapModal from  '../../wryComps/AmapModal.vue'
   import { initColumn } from '@/utils/tableColumnInit'
+  import moment from  'moment'
+  import AFormItem from "ant-design-vue/es/form/FormItem";
 
   const pageName='jxgl_jcbgl'
   const modalTitle="检查表条目"   //模态框的title标题
@@ -126,20 +139,23 @@
   const selOptionMutation=''   //将选择项配置保存到store的mutation方法名
   //修改以下获取store数据的getters 配置
   const getList='jxgl_jcb_list'                //获取table的list
+  const getJcbOption='jxgl_jcb_option'                //获取检查表的配置
   const getSelOpitons=''   //获取选择项的配置内容
   const getDetailById=''              //获取某一具体记录的详情
 
   //修改以下增删改查的Actions 方法名
   const reqList='reqJcbList'                   //查询列表
+  const reqJcbOption='reqJcbOption'                   //查询检查表配置
   const createAction=''             //新增记录
   const editAction=''                 //修改记录
   const delAction='delJcbxm'                   //删除
   const editGpsAction=''                  //修改Gps信息
 
   export default {
+    moment,
     name:pageName,
     components:{
-      editForm,
+      AFormItem, editForm,
       dataDetail,
       AmapModal
     },
@@ -151,6 +167,9 @@
           placeholder:'',
           searchValue:''
         },
+        JcbOption:{},
+        jcbName:'',
+        isEdit:false,
         table:{
           dataSource:[],
           columns:[
@@ -392,20 +411,29 @@
       },
       reqTableData(){
         this.table.tableIsLoading=true
-        const parameter={
-          limit:this.pagination.pageSize,
-          start:(this.pagination.current -1)*this.pagination.pageSize
-        }
-        this.$store.dispatch(reqList,parameter)
+
+        this.$store.dispatch(reqJcbOption)
           .then((res)=>{
-            this.table.dataSource=this.$store.getters[getList]
-            this.table.dataSource.forEach((item,index)=>{
-                item.index=index+(this.pagination.current -1)*this.pagination.pageSize+1
-            })
-            this.pagination.total=res.totalCount
-            this.table.tableIsLoading=false
+            this.JcbOption=this.$store.getters[getJcbOption][0]
+            this.JcbOption.startTime=moment(this.JcbOption.startTime).format('YYYY-MM-DD HH-MM')
+            const parameter={
+              param2:this.JcbOption.id,
+              limit:this.pagination.pageSize,
+              start:(this.pagination.current -1)*this.pagination.pageSize
+            }
+            this.$store.dispatch(reqList,parameter)
+              .then((res)=>{
+                this.table.dataSource=this.$store.getters[getList]
+                this.table.dataSource.forEach((item,index)=>{
+                  item.index=index+(this.pagination.current -1)*this.pagination.pageSize+1
+                })
+                this.pagination.total=res.totalCount
+                this.table.tableIsLoading=false
+              })
           })
           .catch(err=>console.log(JSON.stringify(err)))
+
+
       },
 
       changeCurrentPage(page, pageSize){
