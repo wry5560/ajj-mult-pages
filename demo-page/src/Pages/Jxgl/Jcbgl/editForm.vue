@@ -5,7 +5,7 @@
       <a-table
         bordered
         :rowClassName="rowClass"
-        :dataSource="table.dataSource"
+        :dataSource="tableData"
         :columns="table.columns"
         :pagination= "false"
         :size="table.size"
@@ -48,7 +48,7 @@
           @change="changeCurrentPage"
           @showSizeChange="showSizeChange"
           size="small"/>
-        <a-button type="primary" style="float: right;margin-top: 8px; margin-bottom: 8px;margin-right: 16px" size="small" @click="showModal('add')">确定选择</a-button>
+        <a-button type="primary" style="float: right;margin-top: 8px; margin-bottom: 8px;margin-right: 16px" size="small" @click="emitCommit">确定选择</a-button>
         <p style="float: right;margin-top: 8px;margin-right: 16px" >共选择 {{table.rowSelection.selectedRowKeys.length}} 条</p>
         <div style="clear: both"></div>
       </div>
@@ -142,6 +142,13 @@
     name:pageName,
     props:{
       tableHeight:Number,
+      jcbId:String,
+      nowData:{
+        Array,
+        default: function () {
+          return []
+        }
+      },
     },
     components:{
       editForm,
@@ -152,6 +159,7 @@
       return{
         pageTitle:modalTitle,
         pageNmae:pageName,
+        selJcx:[],
         search:{
           placeholder:'',
           searchValue:''
@@ -183,7 +191,7 @@
           total:0,
           current:1,
           pageSize:20,
-          pageSizeOptions:['10','20','50','100','500']
+          pageSizeOptions:['5','10','20','50','100','500']
         },
         modalOption:{
           title:'',
@@ -233,6 +241,11 @@
     computed:{
       recordData(){
         return this.$store.getters[getDetailById](this.modalOption.recordId)
+      },
+      tableData(){
+        const start=(this.pagination.current-1)*this.pagination.pageSize
+        const end=(this.pagination.current)*this.pagination.pageSize
+        return this.table.dataSource.slice(start,end)
       }
     },
     beforeCreate(){
@@ -331,6 +344,17 @@
         if (data=='post')this.reqTableData()
         this.modalOption.visible=false
       },
+      emitCommit(){
+        // debugger
+        this.selJcx=[]
+        this.table.rowSelection.selectedRowKeys.forEach((key)=>{
+          this.selJcx.push(this.$store.getters.getJcbselById(key))
+        })
+        this.$emit('addJcx',[...this.selJcx])
+        this.selJcx=[]
+      },
+
+
       handleCommit(){
         let parameter={
           jsonData:JSON.stringify({
@@ -390,16 +414,24 @@
       reqTableData(){
         this.table.tableIsLoading=true
         const parameter={
-          limit:this.pagination.pageSize,
-          start:(this.pagination.current -1)*this.pagination.pageSize
+          limit:10000,
+          start:0,
+          param3:this.jcbId
         }
         this.$store.dispatch(reqList,parameter)
           .then((res)=>{
+            // debugger
             this.table.dataSource=this.$store.getters[getList]
-            this.table.dataSource.forEach((item,index)=>{
-              item.index=index+(this.pagination.current -1)*this.pagination.pageSize+1
+            this.nowData.forEach((data)=>{
+              const index =this.table.dataSource.findIndex(i=>i.id=data.id)
+              if (index>-1){
+                this.table.dataSource.splice(index,1)
+              }
             })
-            this.pagination.total=res.totalCount
+            this.table.dataSource.forEach((item,index)=>{
+              item.index=index+1
+            })
+            this.pagination.total=this.table.dataSource.length
             this.table.tableIsLoading=false
           })
           .catch(err=>console.log(JSON.stringify(err)))
@@ -408,7 +440,7 @@
       changeCurrentPage(page, pageSize){
         this.pagination.current=page
         this.pagination.pageSize=pageSize
-        this.reqTableData()
+        // this.reqTableData()
       },
       showSizeChange(current, size){
         const start=(this.pagination.current-1 )* this.pagination.pageSize
@@ -418,7 +450,7 @@
           this.pagination.current= Math.ceil(start/size)
         }
         this.pagination.pageSize=size
-        this.reqTableData()
+        // this.reqTableData()
       },
     }
   }

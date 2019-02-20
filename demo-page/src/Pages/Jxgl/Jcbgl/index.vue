@@ -5,18 +5,18 @@
       <span v-if="!isEdit">
         <span style="font-size: 16px;margin:16px">检查表名称：<strong>{{JcbOption.jcbname}}</strong></span>
         <span style="font-size: 16px;margin-right: 16px">开始时间：<strong>{{JcbOption.startTime}}</strong></span>
-        <a-button type='primary' @click="() => this.isEdit=true"size="small">编辑检查表</a-button>
+        <a-button type='primary' @click="showEdit"size="small">编辑检查表</a-button>
         <a-button @click="refresh"size="small">刷新</a-button>
       </span>
       <span v-if="isEdit">
         <span style="font-size: 16px;margin-left:16px">检查表名称：</span>
           <a-input style="width: 250px;margin-right: 8px" size="small" placeholder="请输入检查表名称" v-model="jcbName"/>
-          <a-button type='primary' @click="showModal('add')"size="small">保存检查表</a-button>
+          <a-button type='primary' @click="commitJcbOption"size="small">保存检查表</a-button>
           <a-button type='primary' @click="showModal('add')"size="small">增加检查标准</a-button>
           <a-popconfirm title="您确认删除这些记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
             <a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>
           </a-popconfirm>
-          <a-button  @click="() => this.isEdit=false" size="small">取消</a-button>
+          <a-button  @click="editCancel" size="small">取消</a-button>
       </span>
 
       <!--搜索条-->
@@ -35,7 +35,7 @@
         bordered
         :rowClassName="rowClass"
         :dataSource="table.dataSource"
-        :columns="table.columns"
+        :columns="columns"
         :pagination= "false"
         :size="table.size"
         :loading="table.tableIsLoading"
@@ -95,6 +95,9 @@
           v-if="this.modalOption.modalType =='add'||this.modalOption.modalType =='edit'"
           :tableHeight="modalTableHeight"
           @addSuccess="addSuccess"
+          @addJcx="addJcx"
+          :jcbId="jcbId"
+          :nowData="this.table.dataSource"
           />
 
         <!--<data-detail-->
@@ -146,7 +149,7 @@
   //修改以下增删改查的Actions 方法名
   const reqList='reqJcbList'                   //查询列表
   const reqJcbOption='reqJcbOption'                   //查询检查表配置
-  const createAction=''             //新增记录
+  const createAction='addJcbOption'             //新增记录
   const editAction=''                 //修改记录
   const delAction='delJcbxm'                   //删除
   const editGpsAction=''                  //修改Gps信息
@@ -168,10 +171,12 @@
           searchValue:''
         },
         JcbOption:{},
+        jcbId:'',
         jcbName:'',
         isEdit:false,
         table:{
           dataSource:[],
+          tempDataSource:[],
           columns:[
             {title: '序号', dataIndex: 'index', width: '40px',align: 'center'},
             {title: '条目类型',dataIndex: 'tmlx', width: '60px', align: 'center'},
@@ -229,6 +234,11 @@
       modalTableHeight(){
         return window.innerHeight-322
       },
+      columns(){
+       return this.isEdit
+          ? this.table.columns
+          : this.table.columns.slice(0,8)
+      }
     },
     beforeCreate(){
 //        debugger
@@ -282,6 +292,7 @@
             this.modalOption.title='新增'+ modalTitle
             this.modalOption.modalType='add'
             this.modalOption.modalClass ='nomal-modal table-modal no-footer'
+            this.table.tmpDataSource=this.table.dataSource
                 break;
 //          case 'query':
 //            this.modalOption.title=modalTitle+'详情'
@@ -308,6 +319,15 @@
         this.modalOption.commitLoading=false
         this.modalOption.visible=false
       },
+      addJcx(selJcxs){
+        // debugger
+        this.table.dataSource=this.table.dataSource.concat(selJcxs)
+        this.table.dataSource.forEach((item,index)=>{
+          item.index=index + 1
+        })
+        this.pagination.total=this.table.dataSource.length
+        this.modalOption.visible=false
+      },
       closeMap(data){
         if (data=='post')this.reqTableData()
         this.modalOption.visible=false
@@ -316,6 +336,40 @@
         this.modalOption.visible=false
         this.refresh()
       },
+      commitJcbOption(){
+        const jcb=[]
+        this.table.dataSource.forEach((item)=>{
+          delete item.index
+          delete item.key
+          jcb.push(item)
+        })
+        let parameter={
+          jsonData:JSON.stringify({
+            jcb:jcb
+          }),
+          param2:this.jcbName,
+        }
+        this.$store.dispatch(createAction,parameter).then((res)=>{
+          if (res.success==true){
+            this.$message.success('提交成功！')
+            this.isEdit=false
+            this.table.tempDataSource=[]
+            this.reqTableData()
+          }else{
+            this.$message.error(res.message+'请稍后再试！')
+          }
+        }).catch(err=>console.log(JSON.stringify(err)))
+      },
+      showEdit(){
+        this.isEdit=true
+        this.table.tempDataSource=[...this.table.dataSource]
+      },
+      editCancel(){
+        this.table.dataSource=[...this.table.tempDataSource]
+        this.table.tempDataSource=[]
+        this.isEdit=false
+      },
+
 //      handleCommit(){
 //        this.$refs.commitForm.form.validateFields((err, values) => {
 //          if (!err) {
@@ -370,44 +424,60 @@
 //        })
 //      },
       deleteRowData(record){
-        let parameter={
-          param1:'',
-        }
-        let payload={
-          parameter:parameter,
-          type:''
-        }
         if (record=='multi'){
-          payload.type='multi'
-           for (let i=0;i<this.table.rowSelection.selectedRowKeys.length-1;i++){
-             parameter.param1 +=this.table.rowSelection.selectedRowKeys[i]+','
-          }
-          parameter.param1 +=this.table.rowSelection.selectedRowKeys[this.table.rowSelection.selectedRowKeys.length-1]
-        }else{
-          parameter.param1=record.id
-        }
-        this.table.tableIsLoading=true
-        this.$store.dispatch(delAction,payload)
-          .then((res)=>{
-          if (res.success==true){
-            this.$message.success('删除成功！')
-            if (record=='multi'){
-              this.table.rowSelection.selectedRowKeys=[]
-            }else{
-              const index=this.table.rowSelection.selectedRowKeys.findIndex(item=>item==record.key)
-              this.table.rowSelection.selectedRowKeys.splice(index,1)
-            }
-            this.reqTableData()
-            this.table.tableIsLoading=false
-          }else{
-            this.$message.error(res.message+'请稍后再试！')
-            this.table.tableIsLoading=false
-          }
-        })
-          .catch((err)=>{
-            console.log(JSON.stringify(err))
-            this.table.tableIsLoading=false
+          this.table.rowSelection.selectedRowKeys.forEach((key)=>{
+            const index =this.table.dataSource.findIndex(i=>i.id=key)
+            this.table.dataSource.splice(index,1)
           })
+          this.table.rowSelection.selectedRowKeys=[]
+        }else{
+          const index =this.table.dataSource.findIndex(i=>i.id=record.id)
+          this.table.dataSource.splice(index,1)
+        }
+        this.table.dataSource.forEach((item,index)=>{
+          item.index=index+1
+        })
+
+        // 以下是之前的删除逻辑
+
+        // let parameter={
+        //   param1:'',
+        // }
+        // let payload={
+        //   parameter:parameter,
+        //   type:''
+        // }
+        // if (record=='multi'){
+        //   payload.type='multi'
+        //    for (let i=0;i<this.table.rowSelection.selectedRowKeys.length-1;i++){
+        //      parameter.param1 +=this.table.rowSelection.selectedRowKeys[i]+','
+        //   }
+        //   parameter.param1 +=this.table.rowSelection.selectedRowKeys[this.table.rowSelection.selectedRowKeys.length-1]
+        // }else{
+        //   parameter.param1=record.id
+        // }
+        // this.table.tableIsLoading=true
+        // this.$store.dispatch(delAction,payload)
+        //   .then((res)=>{
+        //   if (res.success==true){
+        //     this.$message.success('删除成功！')
+        //     if (record=='multi'){
+        //       this.table.rowSelection.selectedRowKeys=[]
+        //     }else{
+        //       const index=this.table.rowSelection.selectedRowKeys.findIndex(item=>item==record.key)
+        //       this.table.rowSelection.selectedRowKeys.splice(index,1)
+        //     }
+        //     this.reqTableData()
+        //     this.table.tableIsLoading=false
+        //   }else{
+        //     this.$message.error(res.message+'请稍后再试！')
+        //     this.table.tableIsLoading=false
+        //   }
+        // })
+        //   .catch((err)=>{
+        //     console.log(JSON.stringify(err))
+        //     this.table.tableIsLoading=false
+        //   })
       },
       reqTableData(){
         this.table.tableIsLoading=true
@@ -416,6 +486,7 @@
           .then((res)=>{
             this.JcbOption=this.$store.getters[getJcbOption][0]
             this.JcbOption.startTime=moment(this.JcbOption.startTime).format('YYYY-MM-DD HH-MM')
+            this.jcbId=this.JcbOption.id
             const parameter={
               param2:this.JcbOption.id,
               limit:this.pagination.pageSize,

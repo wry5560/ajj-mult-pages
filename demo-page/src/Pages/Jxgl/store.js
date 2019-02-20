@@ -1,4 +1,4 @@
-import {GeneralQuery,GeneralPostQuery,createJcx,editJcx,delJcx,addJcb,delJcb,createZxjcplan,editZxjcplan,delZxjcplan,addZxjcJcx,delZxjcplanJcx,addZxjcQy,delZxjcplanQy} from './api'
+import {GeneralQuery,GeneralPostQuery,createJcx,editJcx,delJcx,addJcb,addJcbOpt,delJcb,createZxjcplan,editZxjcplan,delZxjcplan,addZxjcJcx,delZxjcplanJcx,addZxjcQy,delZxjcplanQy} from './api'
 import message from 'ant-design-vue/es/message'
 const jixiao = {
   state:{
@@ -179,6 +179,20 @@ const jixiao = {
           ...params
         }
         addJcb(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+    //添加日常检查表配置
+    addJcbOption:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          param1:sys_relateDepId2,
+          ...params
+        }
+        addJcbOpt(parameter)
           .then((res)=>{
             resolve(res)
           })
@@ -434,7 +448,10 @@ const jixiao = {
       state.jcb.selList.forEach(item=>item.departName=item.__ddepartmentid.departName)
       return state.jcb.selList
     },
-
+    getJcbselById:(state,getters)=>(id)=> {
+      const tmp= state.jcb.selList.find( todo=> todo.id==id)
+      return tmp
+    },
     jxgl_zxjcplan_list:(state) => {
       state.zxjcplan.list.forEach((item,index)=>{
         item.departName=item.__ddepartmentid.departName

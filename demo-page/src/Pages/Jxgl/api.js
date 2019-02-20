@@ -79,6 +79,20 @@ export function addJcb (parameter,type){
     }
   })
 }
+
+//添加检查表配置
+//jsonData
+export function addJcbOpt (parameter,type){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.addDefJcb.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
 //删除检查表
 //jsonData
 export function delJcb (parameter,type){
