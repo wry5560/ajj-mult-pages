@@ -290,6 +290,10 @@ export const asrsajjdic = {
     {label: "个体防护", value: "个体防护"},
     {label: "作业许可", value: "作业许可"},
     {label: "其他现场管理", value: "其他现场管理"}
+  ],
+  "风险":[
+    {label: "基础管理", value: "基础管理"},
+    {label: "现场管理", value: "现场管理"}
   ]
 }
 

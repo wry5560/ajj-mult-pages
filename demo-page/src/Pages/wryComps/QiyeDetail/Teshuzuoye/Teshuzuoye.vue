@@ -147,8 +147,8 @@
             this.tszylistTable.pagination.total=res.totalCount
             this.tszylistTable.dataSource.forEach((item)=>{
               item.index=(this.tszylistTable.pagination.current -1)*this.tszylistTable.pagination.pageSize+item.index
-              item.kssj=moment(item.kssj).format('YYYY-MM-DD HH-MM')
-              item.jssj=moment(item.jssj).format('YYYY-MM-DD HH-MM')
+              item.kssj=moment(item.kssj).format('YYYY-MM-DD HH-mm')
+              item.jssj=moment(item.jssj).format('YYYY-MM-DD HH-mm')
             })
             this.tszylistTable.tableIsLoading=false
           })

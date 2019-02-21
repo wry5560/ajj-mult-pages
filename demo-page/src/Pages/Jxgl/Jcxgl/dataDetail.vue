@@ -2,7 +2,7 @@
   <div style="padding-left: 24px">
     <detail-list style="margin-bottom: 16px;margin-top: 16px">
         <detail-list-item term="条目类型" :lg="12">{{data.tmlx}}</detail-list-item>
-        <detail-list-item term="检查类型" :lg="12">{{data.jclx}}</detail-list-item>
+        <detail-list-item term="检查类型" :lg="12">{{data.jclx + ' - '+ data.jclx2}}</detail-list-item>
     </detail-list>
     <detail-list  style="margin-bottom: 16px">
       <detail-list-item term="检查内容" :lg="24">{{data.jcnr}}</detail-list-item>

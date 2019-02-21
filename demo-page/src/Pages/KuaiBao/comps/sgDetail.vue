@@ -278,9 +278,9 @@
                   this.sgDetail.sgxz=this.sgDetail.sgxz ? ls["事故性质"].find(item =>item.value==this.sgDetail.sgxz).label :''
                   this.sgDetail.shlb=this.sgDetail.shlb ? ls["事故伤害类型"].find(item =>item.value==this.sgDetail.shlb).label :''
                   this.sgDetail.sglx=this.sgDetail.sglx ? ls["事故类型"].find(item =>item.value==this.sgDetail.sglx).label :''
-                  this.sgDetail.fssj=moment(this.sgDetail.fssj).format('YYYY-MM-DD HH:MM')
-                  this.sgDetail.uptimeBF=moment(this.sgDetail.uptime).format('YYYY-MM-DD HH:MM')
-                  this.sgDetail.uptime=moment(this.sgDetail.uptime).format('YYYY-MM-DD HH:MM')
+                  this.sgDetail.fssj=moment(this.sgDetail.fssj).format('YYYY-MM-DD HH:mm')
+                  this.sgDetail.uptimeBF=moment(this.sgDetail.uptime).format('YYYY-MM-DD HH:mm')
+                  this.sgDetail.uptime=moment(this.sgDetail.uptime).format('YYYY-MM-DD HH:mm')
                   this.timelineData.isend=this.sgDetail.isend
               }else{
                 this.$message.error(res.message)
@@ -305,10 +305,10 @@
                 this.sgDetail.sgxz=this.sgDetail.sgxz ? ls["事故性质"].find(item =>item.value==this.sgDetail.sgxz).label :''
                 this.sgDetail.shlb=this.sgDetail.shlb ? ls["事故伤害类型"].find(item =>item.value==this.sgDetail.shlb).label :''
                 this.sgDetail.sglx=this.sgDetail.sglx ? ls["事故类型"].find(item =>item.value==this.sgDetail.sglx).label :''
-                this.sgDetail.fssj=moment(this.sgDetail.fssj).format('YYYY-MM-DD HH:MM')
-                this.sgDetail.uptimeBF=moment(this.sgDetail.uptime).format('YYYY-MM-DD HH:MM')
-                this.sgDetail.uptime=moment(this.sgDetail.xbtime).format('YYYY-MM-DD HH:MM')
-                this.sgDetail.xbtime=moment(this.sgDetail.xbtime).format('YYYY-MM-DD HH:MM')
+                this.sgDetail.fssj=moment(this.sgDetail.fssj).format('YYYY-MM-DD HH:mm')
+                this.sgDetail.uptimeBF=moment(this.sgDetail.uptime).format('YYYY-MM-DD HH:mm')
+                this.sgDetail.uptime=moment(this.sgDetail.xbtime).format('YYYY-MM-DD HH:mm')
+                this.sgDetail.xbtime=moment(this.sgDetail.xbtime).format('YYYY-MM-DD HH:mm')
                 this.timelineData.isend=this.sgDetail.isend
               }else{
                 this.$message.error(res.message)
@@ -344,11 +344,11 @@
               if (index==0){
                 steps[0].auditstate=' '
                 steps[0].audituser='上报人：'+ item.__uaudituser.userName
-                if (item.audittime){steps[0].audittime= moment(item.audittime).format('YYYY-MM-DD HH:MM')}
+                if (item.audittime){steps[0].audittime= moment(item.audittime).format('YYYY-MM-DD HH:mm')}
               }else{
                 steps[index].auditstate=item.auditstate==1 ?'审核通过':item.auditstate==9 ?'审核不通过':'',
                 steps[index].audituser='审核人：'+ item.__uaudituser.userName
-                if (item.audittime){steps[index].audittime=  moment(item.audittime).format('YYYY-MM-DD HH:MM')}
+                if (item.audittime){steps[index].audittime=  moment(item.audittime).format('YYYY-MM-DD HH:mm')}
               }
             })
             this.stepsData.lcLoading=false
@@ -371,7 +371,7 @@
                 this.timelineData.timelines.push({
                   lcname:item.lcname,
                   audituser:item.__uaudituser.userName ? item.__uaudituser.userName:'',
-                  audittime:item.audittime ? moment(item.audittime).format('YYYY-MM-DD HH:MM'):'',
+                  audittime:item.audittime ? moment(item.audittime).format('YYYY-MM-DD HH:mm'):'',
                   auditstate:item.lcsortnum=='1'? '上报':item.auditstate==1 ? '审核通过':item.auditstate==9 ? '审核不通过':'',
                   auditdesc:item.auditdesc ? item.auditdesc:'',
                   color:item.isend=='0'? 'blue':item.auditstate=='1'?'green':'red'
@@ -398,7 +398,7 @@
 //              message: 'Received values of form:',
 //              description: JSON.stringify(values)
 //            })
-            values.fssj=values.fssj.format('YYYY-MM-DD HH:MM')
+            values.fssj=values.fssj.format('YYYY-MM-DD HH:mm')
             console.log(values.fssj)
             // debugger
             // if (values.sgdj) values.sgdj=this.selectOptions.sgdj.find(item=>item[1]==values.sgdj)[0]

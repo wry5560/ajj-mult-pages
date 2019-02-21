@@ -202,12 +202,12 @@
           data.key=index+ data.id + data.xbid
           data.upuser=data.__upuser.userName
           if (data.isend=='1'){data.lcname='已完结'}
-          data.uptime=moment(data.uptime).format('YYYY-MM-DD \xa0 HH:MM')
+          data.uptime=moment(data.uptime).format('YYYY-MM-DD \xa0 HH:mm')
           if(data.xbid!=0){
             data.idBf=data.id
             data.id="续"+data.id+"-"+data.xbid
             data.xbnum='-'
-            data.uptime=moment(data.xbtime).format('YYYY-MM-DD \xa0 HH:MM')
+            data.uptime=moment(data.xbtime).format('YYYY-MM-DD \xa0 HH:mm')
           }
         })
         this.$store.commit('ADD_KUAIBAO',tempData)

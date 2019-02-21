@@ -189,7 +189,7 @@
 //              description: JSON.stringify(values)
 //            })
             this.modalOption.commitLoading=true
-            values.fssj=values.fssj.format('YYYY-MM-DD HH:MM')
+            values.fssj=values.fssj.format('YYYY-MM-DD HH:mm')
 //            debugger
             if (values.sgdj) values.sgdj=this.selectOptions.sgdj.find(item=>item[0]==values.sgdj)[1]
             if (values.sglx) values.sglx=this.selectOptions.sglx.find(item=>item[0]==values.sglx)[1]
@@ -222,7 +222,7 @@
         this.$refs.sgCommit.form.validateFields((err, values) => {
           if (!err) {
             this.modalOption.commitLoading=true
-            values.fssj=values.fssj.format('YYYY-MM-DD HH:MM')
+            values.fssj=values.fssj.format('YYYY-MM-DD HH:mm')
 //            debugger
             if (values.sgdj) values.sgdj=this.selectOptions.sgdj.find(item=>item[0]==values.sgdj)[1]
             if (values.sglx) values.sglx=this.selectOptions.sglx.find(item=>item[0]==values.sglx)[1]
@@ -324,7 +324,7 @@
           data.key=index+data.id
           data.upuser=data.__upuser.userName
           if (data.isend=='1'){data.lcname='已完结'}
-          data.uptime=moment(data.uptime).format('YYYY-MM-DD \xa0 HH:MM')
+          data.uptime=moment(data.uptime).format('YYYY-MM-DD \xa0 HH:mm')
         })
         this.$store.commit('ADD_KUAIBAO',tempData)
         this.dataSource = tempData
@@ -343,7 +343,7 @@
             if (item.isend=='1'){item.lcname='已完结'}
             item.xbnum='-'
             tmpData.push({...item})
-            item.uptime=moment(item.xbtime).format('YYYY-MM-DD \xa0 HH:MM')
+            item.uptime=moment(item.xbtime).format('YYYY-MM-DD \xa0 HH:mm')
             this.dataSource.find(i => i.id==item.id).children.push(item)
             item.idBf=item.id
             item.id="续 "+ item.id + "-"+item.xbid

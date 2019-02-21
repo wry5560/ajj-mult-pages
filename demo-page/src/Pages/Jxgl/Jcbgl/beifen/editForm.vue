@@ -39,7 +39,7 @@
         <a-pagination
           v-model="pagination.current"
           style="margin-top: 8px; padding-left: 16px;float: left"
-          :total="paginationTotal"
+          :total="pagination.total"
           :pageSizeOptions="pagination.pageSizeOptions"
           :pageSize="pagination.pageSize"
           showSizeChanger
@@ -48,12 +48,9 @@
           @change="changeCurrentPage"
           @showSizeChange="showSizeChange"
           size="small"/>
-        <!--<a-button type="primary" style="float: right;margin-top: 8px; margin-bottom: 8px;margin-right: 16px" size="small" @click="emitCommit">确定选择</a-button>-->
-        <a-popconfirm title="您确认删除这些记录吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
-          <a-button type="primary" style="float: right;margin-top: 8px; margin-bottom: 8px;margin-right: 8px" size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>
-        </a-popconfirm>
+        <a-button type="primary" style="float: right;margin-top: 8px; margin-bottom: 8px;margin-right: 16px" size="small" @click="emitCommit">确定选择</a-button>
         <a-button  style="float: right;margin-top: 8px; margin-bottom: 8px;margin-right: 8px" size="small" @click="emitCancel">返回</a-button>
-        <!--<p style="float: right;margin-top: 8px;margin-right: 16px" >共选择 {{table.rowSelection.selectedRowKeys.length}} 条</p>-->
+        <p style="float: right;margin-top: 8px;margin-right: 16px" >共选择 {{table.rowSelection.selectedRowKeys.length}} 条</p>
         <div style="clear: both"></div>
       </div>
     </div>
@@ -90,7 +87,7 @@
           <!--<a href="javascript:;" @click="showModal('edit',record)">修改</a>-->
           <!--<a-divider v-if="" type="vertical" />-->
           <a-popconfirm title="您确认删除该条记录吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="deleteRowData(record)">
-            <a href="javascript:;" >删除</a>
+            <a href="javascript:;">删除</a>
           </a-popconfirm>
         </span>
             <span slot="defaultcustomRender" slot-scope="text,record,index">
@@ -147,7 +144,7 @@
     props:{
       tableHeight:Number,
       jcbId:String,
-      selData:{
+      nowData:{
         Array,
         default: function () {
           return []
@@ -169,17 +166,17 @@
           searchValue:''
         },
         table:{
-          dataSource:[...this.selData],
+          dataSource:[],
           columns:[
             {title: '序号', dataIndex: 'index', width: '50px',align: 'center'},
             {title: '条目类型',dataIndex: 'tmlx', width: '80px', align: 'center'},
-            {title: '检查类型', dataIndex: 'jclx0', width: '240px', align: 'left',titleAlign:'center'},
-            {title: '检查内容', dataIndex: 'jcnr', width: '240px', align: 'left',titleAlign:'center'},
-            {title: '检查依据', dataIndex: 'jcyj', width: '240px', align: 'left',titleAlign:'center'},
+            {title: '检查类型', dataIndex: 'jclx0', width: '250px', align: 'left',titleAlign:'center'},
+            {title: '检查内容', dataIndex: 'jcnr', width: '250px', align: 'left',titleAlign:'center'},
+            {title: '检查依据', dataIndex: 'jcyj', width: '250px', align: 'left',titleAlign:'center'},
 //            {title: '隐患提示', dataIndex: 'yhts', width: '150px',align: 'center'},
 //            {title: '系统未落实提示', dataIndex: 'systs', width: '150px', align: 'center',},
 //            {title: '所属组织', dataIndex: 'departName', width: '120px',align: 'center'},
-             {title: '操作', dataIndex: 'actions', width: '60px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
+            // {title: '操作', dataIndex: 'actions', width: '150px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
           ],
           size:'small',
           tableIsLoading:false,
@@ -250,9 +247,6 @@
         const start=(this.pagination.current-1)*this.pagination.pageSize
         const end=(this.pagination.current)*this.pagination.pageSize
         return this.table.dataSource.slice(start,end)
-      },
-      paginationTotal(){
-          return this.table.dataSource.length
       }
     },
     beforeCreate(){
@@ -265,7 +259,7 @@
       }},
 
     created(){
-//      this.reqTableData()
+      this.reqTableData()
       this.table.columns=initColumn(this.table.columns)
       this.modalOption.table.columns=initColumn( this.modalOption.table.columns)
     },
@@ -382,27 +376,12 @@
         })
       },
       deleteRowData(record){
-        if (record=='multi'){
-            this.$emit('delSels',this.table.rowSelection.selectedRowKeys)
-            this.table.rowSelection.selectedRowKeys.forEach((key)=>{
-                const index=this.table.dataSource.findIndex(i=>key==i.key)
-              this.table.dataSource.splice(index,1)
-            })
-          this.table.rowSelection.selectedRowKeys=[]
-        }else{
-          this.$emit('delSels',[record.key])
-          const index=this.table.dataSource.findIndex(i=>record.key==i.key)
-          this.table.dataSource.splice(index,1)
-        }
-        this.table.dataSource.forEach((item,index)=>item.index=index+1)
-
-
 //          debugger
-//          const index1=this.modalOption.table.dataSource.findIndex(item=>item.key==record.key)
-//          this.modalOption.table.dataSource.splice(index1,1)
-//          this.modalOption.table.dataSource.forEach((item,index)=>item.index=index+1)
-//          const index2=this.table.rowSelection.selectedRowKeys.findIndex(item=>item==record.key)
-//          this.table.rowSelection.selectedRowKeys.splice(index2,1)
+          const index1=this.modalOption.table.dataSource.findIndex(item=>item.key==record.key)
+          this.modalOption.table.dataSource.splice(index1,1)
+          this.modalOption.table.dataSource.forEach((item,index)=>item.index=index+1)
+          const index2=this.table.rowSelection.selectedRowKeys.findIndex(item=>item==record.key)
+          this.table.rowSelection.selectedRowKeys.splice(index2,1)
 //        let parameter={
 //          param1:'',
 //        }

@@ -276,7 +276,7 @@
             this.yjyllistTable.pagination.total=res.totalCount
             this.yjyllistTable.dataSource.forEach((item)=>{
               item.index=(this.yjyllistTable.pagination.current -1)*this.yjyllistTable.pagination.pageSize+item.index
-              item.yltime=moment(item.yltime).format('YYYY-MM-DD HH-MM')
+              item.yltime=moment(item.yltime).format('YYYY-MM-DD HH-mm')
             })
             this.yjyllistTable.tableIsLoading=false
           })

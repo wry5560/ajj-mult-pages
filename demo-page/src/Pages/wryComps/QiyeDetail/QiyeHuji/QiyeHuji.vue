@@ -671,7 +671,7 @@
               this.aqglzdTable.dataSource=this.get_qiye_aqglzd()
               // debugger
               this.aqglzdTable.dataSource.forEach((item)=>{
-                item.updateTime=moment(item.updateTime).format('YYYY-MM-DD HH-MM')
+                item.updateTime=moment(item.updateTime).format('YYYY-MM-DD HH-mm')
                 item.index=(this.aqglzdTable.pagination.current -1)*this.aqglzdTable.pagination.pageSize+item.index
               })
               this.aqglzdTable.pagination.total=res.totalCount
@@ -740,8 +740,8 @@
             .then((res)=>{
               this.bgxxTable.dataSource=this.get_qiye_bgxx()
               this.bgxxTable.dataSource.forEach((item)=>{
-                item.changetime=moment(item.changetime).format('YYYY-MM-DD HH-MM')
-                item.audittime=item.audittime?moment(item.audittime).format('YYYY-MM-DD HH-MM'):''
+                item.changetime=moment(item.changetime).format('YYYY-MM-DD HH-mm')
+                item.audittime=item.audittime?moment(item.audittime).format('YYYY-MM-DD HH-mm'):''
                 item.index=(this.bgxxTable.pagination.current -1)*this.bgxxTable.pagination.pageSize+item.index
               })
               this.bgxxTable.pagination.total=res.totalCount

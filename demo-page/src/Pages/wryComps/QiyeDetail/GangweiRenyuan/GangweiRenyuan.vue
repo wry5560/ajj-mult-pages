@@ -545,7 +545,7 @@
             this.rylistTable.dataSource=this.get_gwry_rylist()
             // debugger
             this.rylistTable.dataSource.forEach((item)=>{
-              // item.updateTime=moment(item.updateTime).format('YYYY-MM-DD HH-MM')
+              // item.updateTime=moment(item.updateTime).format('YYYY-MM-DD HH-mm')
               item.index=(this.rylistTable.pagination.current -1)*this.rylistTable.pagination.pageSize+item.index
             })
             this.rylistTable.pagination.total=res.totalCount
@@ -614,8 +614,8 @@
           .then((res)=>{
             this.gwqdlistTable.dataSource=this.get_gwry_gwqdlist()
             this.gwqdlistTable.dataSource.forEach((item)=>{
-              // item.changetime=moment(item.changetime).format('YYYY-MM-DD HH-MM')
-              // item.audittime=item.audittime?moment(item.audittime).format('YYYY-MM-DD HH-MM'):''
+              // item.changetime=moment(item.changetime).format('YYYY-MM-DD HH-mm')
+              // item.audittime=item.audittime?moment(item.audittime).format('YYYY-MM-DD HH-mm'):''
               item.index=(this.gwqdlistTable.pagination.current -1)*this.gwqdlistTable.pagination.pageSize+item.index
             })
             this.gwqdlistTable.pagination.total=res.totalCount
@@ -652,8 +652,8 @@
           .then((res)=>{
             this.pxlistTable.dataSource=this.get_gwry_pxlist()
             this.pxlistTable.dataSource.forEach((item)=>{
-              // item.changetime=moment(item.changetime).format('YYYY-MM-DD HH-MM')
-              // item.audittime=item.audittime?moment(item.audittime).format('YYYY-MM-DD HH-MM'):''
+              // item.changetime=moment(item.changetime).format('YYYY-MM-DD HH-mm')
+              // item.audittime=item.audittime?moment(item.audittime).format('YYYY-MM-DD HH-mm'):''
               item.index=(this.pxlistTable.pagination.current -1)*this.pxlistTable.pagination.pageSize+item.index
             })
             this.pxlistTable.pagination.total=res.totalCount

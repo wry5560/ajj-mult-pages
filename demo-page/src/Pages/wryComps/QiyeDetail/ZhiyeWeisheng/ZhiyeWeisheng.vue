@@ -537,7 +537,7 @@
             this.jsgzTable.dataSource=this.get_zyws_jsbz()
             // debugger
             this.jsgzTable.dataSource.forEach((item)=>{
-              item.updateTime=moment(item.updateTime).format('YYYY-MM-DD HH-MM')
+              item.updateTime=moment(item.updateTime).format('YYYY-MM-DD HH-mm')
               item.index=(this.jsgzTable.pagination.current -1)*this.jsgzTable.pagination.pageSize+item.index
             })
             this.jsgzTable.pagination.total=res.totalCount

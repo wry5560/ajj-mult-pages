@@ -3,7 +3,7 @@
     <!--下面是顶部的按钮栏-->
     <div  class="header-buttons-bar" style="padding-left: 5px">
       <a-button type='primary' @click="showModal('add')"size="small">新增{{this.pageTitle}}</a-button>
-      <a-popconfirm title="您确认删除该条记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
+      <a-popconfirm title="您确认删除这些记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
         <!--<a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>-->
       </a-popconfirm>
       <a-button @click="refresh"size="small">刷新</a-button>
@@ -15,6 +15,7 @@
         v-model="search.searchValue"
         size="small"
         @search="onSearch"
+        :disabled="search.showAdvanced"
       />
       <a-button size="small"  style="margin-left: 5px"  @click="toggleShowAdvancedSearch">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>
       <a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.tmlx && !search.advancedForm.jclx" @click="clearSearch">清除</a-button>
@@ -22,25 +23,37 @@
     <transition name="fade">
       <div v-if="search.showAdvanced">
         <a-row >
-          <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item label="条目类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-              <a-select style="width:100%" size="small" placeholder="请选择条目类型" v-model="search.advancedForm.tmlx">
-                <a-select-option v-for="(item) in modalOption.selectOptions.tmlx" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
-              </a-select>
+          <a-col :lg="7" :md="12" :sm="24">
+            <a-form-item label="检查内容" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+              <a-input style="width:100%" size="small" placeholder="请输入检查内容" v-model="search.advancedForm.inputs[0]" @pressEnter="onAdvancedSearch">
+              </a-input>
             </a-form-item>
           </a-col>
-          <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item label="检查类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-              <a-select style="width:100%"  size="small" placeholder="请选择检查类型" v-model="search.advancedForm.jclx">
-                <a-select-option v-for="(item) in modalOption.selectOptions.jclx" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
+          <a-col :lg="7" :md="12" :sm="24">
+            <a-form-item label="检查依据" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+              <a-input style="width:100%" size="small" placeholder="请输入检查依据" v-model="search.advancedForm.inputs[1]" @pressEnter="onAdvancedSearch">
+              </a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :lg="7" :md="12" :sm="24">
+            <a-form-item label="条目类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+              <a-select style="width:100%" size="small" placeholder="请选择条目类型" v-model="search.advancedForm.tmlx" allowClear>
+                <a-select-option v-for="(item) in modalOption.selectOptions.tmlx" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col  :lg="2" :md="12" :sm="24">
             <a-form-item>
-              <a-button type='primary'size="small" style="margin-left: 8px" @click="onSearch" >搜索</a-button>
+              <a-button type='primary'size="small" style="margin-left: 8px" @click="onAdvancedSearch" >搜索</a-button>
             </a-form-item>
           </a-col>
+          <a-col :lg="7" :md="12" :sm="24">
+            <a-form-item label="检查类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+              <a-cascader :options="modalOption.selectOptions['风险']"  style="width:100%" size="small" :loadData="selLoadData" placeholder="请选择检查类型" v-model="search.advancedForm.jclx" changeOnSelect>
+              </a-cascader>
+            </a-form-item>
+          </a-col>
+
         </a-row>
       </div>
     </transition>
@@ -144,6 +157,7 @@
 
 <script>
   import {  mapGetters,mapActions } from 'vuex'
+  import {GeneralQuerySelChildren} from '../api'
   import editForm from './editForm'
   import dataDetail from './dataDetail'
   import AmapModal from  '../../wryComps/AmapModal.vue'
@@ -152,7 +166,7 @@
   const pageName='jxgl_jcxgl'
   const modalTitle="检查标准"   //模态框的title标题
 
-  const selOptions=['tmlx','jclx']          //选择项所需要的配置，localstorage中的配置名称
+  const selOptions=['tmlx','风险']          //选择项所需要的配置，localstorage中的配置名称
   const selOptionMutation='INIT_JCX_SELECTED_OPTIONS'   //将选择项配置保存到store的mutation方法名
   //修改以下获取store数据的getters 配置
   const getList='jxgl_jcx_list'                //获取table的list
@@ -183,6 +197,7 @@
           searchOption:{},
           showAdvanced:false,
           advancedForm:{
+            inputs:['',''],
             jclx:undefined,
             tmlx:undefined,
           },
@@ -192,8 +207,8 @@
           columns:[
             {title: '序号', dataIndex: 'index', width: '50px',align: 'center'},
             {title: '条目类型',dataIndex: 'tmlx', width: '80px', align: 'center'},
-            {title: '检查类型', dataIndex: 'jclx', width: '120px', align: 'left',titleAlign:'center'},
-            {title: '检查子类型', dataIndex: 'jclx2', width: '120px', align: 'left',titleAlign:'center'},
+            {title: '检查类型', dataIndex: 'jclx0', width: '200px', align: 'left',titleAlign:'center'},
+//            {title: '检查子类型', dataIndex: 'jclx2', width: '120px', align: 'left',titleAlign:'center'},
             {title: '检查内容', dataIndex: 'jcnr', width: '200px', align: 'left',titleAlign:'center'},
             {title: '检查依据', dataIndex: 'jcyj', width: '200px', align: 'left',titleAlign:'center'},
             // {title: '隐患提示', dataIndex: 'yhts', width: '150px',align: 'center'},
@@ -204,11 +219,11 @@
           size:'small',
           tableIsLoading:false,
           scrollSize: { x:920, y: window.innerHeight - 112},
-          // rowSelection:{
-          //   selectedRowKeys: [],
-          //   onChange: this.onSelectChange,
-          //   columnWidth:'20px',
-          // }
+//           rowSelection:{
+//             selectedRowKeys: [],
+//             onChange: this.onSelectChange,
+//             columnWidth:'20px',
+//           }
           rowSelection:null
         },
         pagination:{
@@ -242,7 +257,7 @@
     computed:{
       recordData(){
         return this.$store.getters[getDetailById](this.modalOption.recordId)
-      }
+      },
     },
     beforeCreate(){
 //        debugger
@@ -269,10 +284,12 @@
 
         //初始化选择项,存入vuex相应store的state中
         const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
+
         const tmp=[]
-        selOptions.forEach(item=>{tmp.push({name:item,value:ls[item]})})
+        selOptions.forEach(item=>{tmp.push({name:item,value:ls[item],lable:item,isLeaf:false})})
         this.$store.commit(selOptionMutation,tmp)
         this.modalOption.selectOptions=this.$store.getters[getSelOpitons]
+        this.modalOption.selectOptions['风险'].forEach(item=>item.isLeaf=false)
 
         const lsSearch=JSON.parse(localStorage.getItem('/asrsajjfixsearch'))['检查条目列表']
         this.search.placeholder="请输入"+lsSearch["0"][0].dispNm+"..."
@@ -296,10 +313,33 @@
         this.search.advancedForm.jclx=undefined
         this.search.advancedForm.tmlx=undefined
       },
+      selLoadData(selectedOptions){
+        const targetOption = selectedOptions[selectedOptions.length - 1];
+//          alert(JSON.stringify(selectedOptions))
+        targetOption.loading=true
+        const parameter ={
+          param1 : targetOption.value
+        }
+        GeneralQuerySelChildren(parameter)
+          .then((res)=>{
+            if(res.success){
+//              alert(JSON.stringify(res.data))
+              targetOption.loading=false
+              targetOption.children=res.data
+              targetOption.children.forEach((item)=>{
+                item.value=item.VALUE
+                delete item.VALUE
+              })
+              this.modalOption.selectOptions["风险"]=[...this.modalOption.selectOptions["风险"]]
+            }else{
+                this.$message.error(res.message)
+            }
+          })
+          .catch((err)=>{JSON.stringify(err)})
+      },
       onSearch(){
         this.table.tableIsLoading=true
         const searchItems=this.search.searchOption["0"][0].procSql.split('|')
-        const advancedSearchItems=this.search.searchOption["1"]
         const filterOption=[]
         const normalVlaue={
           "operate":"more",
@@ -316,20 +356,60 @@
         }))
         normalVlaue.value=JSON.stringify(valueB)
         filterOption.push(normalVlaue)
+        this.expandedRowKeys=[]
+        const parameter={
+          filter:JSON.stringify(filterOption),
+          param1:sys_relateDepId2,
+          limit:this.pagination.pageSize,
+          start:(this.pagination.current -1)*this.pagination.pageSize
+        }
+        this.$store.dispatch(reqList,parameter)
+          .then((res)=>{
+            this.table.dataSource=this.$store.getters[getList]
+            this.table.dataSource.forEach((item,index)=>{
+              item.index=index+(this.pagination.current -1)*this.pagination.pageSize+1
+            })
+            this.pagination.total=res.totalCount
+            this.table.tableIsLoading=false
+          })
+          .catch(err=>console.log(JSON.stringify(err)))
+      },
+      onAdvancedSearch(){
+        this.table.tableIsLoading=true
+        const searchItems=this.search.searchOption["0"][0].procSql.split('|')
+        const searchInputs=this.search.advancedForm.inputs
+        const filterOption=[{}]
+        const normalVlaue={
+          "operate":"more",
+        }
         const advancedVlaue={
           "fix":"",
         }
-        const tmlxSelValue=this.search.advancedForm.tmlx?`(a.tmlx = '${this.search.advancedForm.tmlx}') `: null
-        const jclxSelValue=this.search.advancedForm.jclx?`(a.jclx = '${this.search.advancedForm.jclx}') `: null
-        if (tmlxSelValue){
-          advancedVlaue.fix= jclxSelValue ? tmlxSelValue +' and '+jclxSelValue:tmlxSelValue
-          filterOption.push(advancedVlaue)
-        }else if(jclxSelValue){
-          advancedVlaue.fix= jclxSelValue
-          filterOption.push(advancedVlaue)
-        }
+//        debugger
+        const SelValues=[]
+        searchItems.forEach((item,index)=>{
+          if (searchInputs[index] && searchInputs[index] !=''){
+            SelValues.push(`(${item} like  '%${searchInputs[index]}%')`)
+          }
+        })
+        this.search.advancedForm.tmlx &&this.search.advancedForm.tmlx!='' ? SelValues.push(`(a.tmlx = '${this.search.advancedForm.tmlx}') `): null
+        this.search.advancedForm.jclx[0] &&this.search.advancedForm.jclx[0]!='' ? SelValues.push(`(a.jclx = '${this.search.advancedForm.jclx[0]}') `): null
+        this.search.advancedForm.jclx[1] &&this.search.advancedForm.jclx[1]!='' ? SelValues.push(`(a.jclx2 = '${this.search.advancedForm.jclx[1]}') `): null
+        SelValues.forEach((value,index)=>{
+            index>0 ? advancedVlaue.fix=advancedVlaue.fix+' and '+value
+               :advancedVlaue.fix=value
+        })
+        if (advancedVlaue.fix!='') {filterOption.push(advancedVlaue)}
+//        if (tmlxSelValue){
+//          advancedVlaue.fix=advancedVlaue.fix+ jclxSelValue ? tmlxSelValue +' and '+jclxSelValue:tmlxSelValue
+//          filterOption.push(advancedVlaue)
+//        }else if(jclxSelValue){
+//          advancedVlaue.fix=advancedVlaue.fix+ jclxSelValue
+//          filterOption.push(advancedVlaue)
+//        }else{
+//          filterOption.push(advancedVlaue)
+//        }
         this.expandedRowKeys=[]
-        this.tableIsLoading=true
         const parameter={
           filter:JSON.stringify(filterOption),
           param1:sys_relateDepId2,
@@ -389,11 +469,15 @@
         if (data=='post')this.reqTableData()
         this.modalOption.visible=false
       },
+
+
       handleCommit(){
         this.$refs.commitForm.form.validateFields((err, values) => {
           if (!err) {
             //若存在选择项value和显示内容不相同，需转换内容后再提交
             this.modalOption.commitLoading=true
+            values.jclx2=values.jclx.length>1 ? values.jclx[1]:null
+            values.jclx=values.jclx[0]
             if (this.modalOption.modelType=='edit'){
               values.id=this.modalOption.recordId
 //              values.wzbzbm=this.$store.getters[getDetailById](this.modalOption.recordId).wzbzbm
@@ -447,6 +531,8 @@
         console.log(this.search.advancedForm)
       },
       deleteRowData(record){
+
+
         let parameter={
           jsonData:JSON.stringify(this.$store.getters[getDetailById](record.id)),
         }
@@ -478,6 +564,7 @@
             this.table.dataSource=this.$store.getters[getList]
             this.table.dataSource.forEach((item,index)=>{
                 item.index=index+(this.pagination.current -1)*this.pagination.pageSize+1
+              item.jclx0=item.jclx + ' - '+item.jclx2
             })
             this.pagination.total=res.totalCount
             this.table.tableIsLoading=false

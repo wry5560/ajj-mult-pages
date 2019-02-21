@@ -24,6 +24,19 @@ export function GeneralPostQuery(parameter) {
   })
 }
 
+//查询选择项的子选项
+//jsonData
+export function GeneralQuerySelChildren (parameter) {
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajj.queryFxlx.json',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
 //新增检查项
 //jsonData
 export function createJcx (parameter){

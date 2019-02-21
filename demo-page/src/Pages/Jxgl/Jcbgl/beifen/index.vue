@@ -5,17 +5,17 @@
       <span v-if="!isEdit">
         <span style="font-size: 16px;margin:16px">检查表名称：<strong>{{JcbOption.jcbname}}</strong></span>
         <span style="font-size: 16px;margin-right: 16px">开始时间：<strong>{{JcbOption.startTime}}</strong></span>
-        <a-button type='primary' @click="showEdit"size="small">新增检查表</a-button>
+        <a-button type='primary' @click="showEdit"size="small">编辑检查表</a-button>
         <a-button @click="refresh"size="small">刷新</a-button>
       </span>
       <span v-if="isEdit">
           <span style="font-size: 16px;margin:16px;">检查表名称：
             <a-input style="width:250px;margin-right: 8px" size="small" placeholder="请输入检查表名称" v-model="jcbName"/>
           </span>
-          <a-button type='primary' @click="commitJcbOption"size="small" style="margin-left: -16px">确认保存</a-button>
-          <a-button @click="showModal('add')"size="small">查看已选项目{{this.table.rowSelection.selectedRowKeys.length>0 ? '('+ this.table.rowSelection.selectedRowKeys.length + ')':''}}</a-button>
+          <a-button type='primary' @click="commitJcbOption"size="small" style="margin-left: -16px">保存检查表</a-button>
+          <a-button type='primary' @click="showModal('add')"size="small">增加检查标准</a-button>
           <a-popconfirm title="您确认删除这些记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
-            <!--<a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>-->
+            <a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>
            </a-popconfirm>
            <a-button  @click="editCancel" size="small">取消</a-button>
         <span style="color:#e00300">需保存生效！</span>
@@ -42,7 +42,7 @@
         :size="table.size"
         :loading="table.tableIsLoading"
         :scroll="table.scrollSize"
-        :rowSelection="isEdit?table.rowSelection:null"
+        :rowSelection="table.rowSelection"
       >
         <span slot="actionCell" slot-scope="text,record,index" >
           <!--<a href="javascript:;" @click="showModal('query',record)">查看</a>-->
@@ -99,9 +99,8 @@
           @addSuccess="addSuccess"
           @addJcx="addJcx"
           @cancel="modalCancel"
-          @delSels="delSels"
           :jcbId="jcbId"
-          :selData="table.selDatas"
+          :nowData="this.table.dataSource"
           />
 
         <!--<data-detail-->
@@ -181,7 +180,6 @@
         isEdit:false,
         table:{
           dataSource:[],
-          selDatas:[],
           tempDataSource:[],
           columns:[
             {title: '序号', dataIndex: 'index', width: '40px',align: 'center'},
@@ -192,7 +190,7 @@
 //            {title: '隐患提示', dataIndex: 'yhts', width: '120px',align: 'left',titleAlign:'center'},
 //            {title: '系统未落实提示', dataIndex: 'systs', width: '120px', align: 'left',titleAlign:'center'},
 //            {title: '所属组织', dataIndex: 'departName', width: '80px',align: 'left',titleAlign:'center'},
-//            {title: '操作', dataIndex: 'actions', width: '80px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
+            {title: '操作', dataIndex: 'actions', width: '80px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
           ],
           size:'small',
           tableIsLoading:false,
@@ -202,7 +200,7 @@
             onChange: this.onSelectChange,
             columnWidth:'20',
           },
-//          rowSelectionNull:null
+//          rowSelection:null
         },
         pagination:{
           total:0,
@@ -243,13 +241,13 @@
       columns(){
        return this.isEdit
           ? this.table.columns
-          : this.table.columns.slice(0,5)
+          : this.table.columns.slice(0,8)
       },
       tableData(){
         const start=(this.pagination.current-1)*this.pagination.pageSize
         const end=(this.pagination.current)*this.pagination.pageSize
         return this.table.dataSource.slice(start,end)
-      },
+      }
     },
     beforeCreate(){
 //        debugger
@@ -300,18 +298,10 @@
       showModal(type,record){
         switch (type) {
           case 'add':
-            this.modalOption.title='已选检查标准列表'
+            this.modalOption.title='新增'+ modalTitle
             this.modalOption.modalType='add'
             this.modalOption.modalClass ='nomal-modal table-modal no-footer'
             this.table.tmpDataSource=this.table.dataSource
-            this.table.selDatas=[]
-            this.table.rowSelection.selectedRowKeys.forEach((item)=>{
-              const index = this.table.dataSource.findIndex(i=>i.key==item)
-              this.table.selDatas.push(this.table.dataSource[index])
-            })
-            this.table.selDatas.forEach((item,index)=>{
-                item.index=index+1
-            })
                 break;
 //          case 'query':
 //            this.modalOption.title=modalTitle+'详情'
@@ -362,9 +352,10 @@
         }
         this.table.tableIsLoading=true
         const jcb=[]
-        this.table.rowSelection.selectedRowKeys.forEach((item)=>{
-          const index=this.table.dataSource.findIndex(i=>i.key==item)
-          if (index>-1) jcb.push(this.table.dataSource[index])
+        this.table.dataSource.forEach((item)=>{
+          delete item.index
+          delete item.key
+          jcb.push(item)
         })
         let parameter={
           jsonData:JSON.stringify({
@@ -377,7 +368,6 @@
             this.$message.success('提交成功！')
             this.isEdit=false
             this.table.tempDataSource=[]
-            this.table.rowSelection.selectedRowKeys=[]
             this.reqTableData()
           }else{
             this.$message.error(res.message+'请稍后再试！')
@@ -388,23 +378,6 @@
       showEdit(){
         this.isEdit=true
         this.table.tempDataSource=[...this.table.dataSource]
-        this.table.tableIsLoading=true
-        this.table.dataSource=[]
-        const parameter={
-          limit:10000,
-          start:0
-        }
-        this.$store.dispatch('reqJcbSelList',parameter)
-          .then((res)=>{
-            this.table.dataSource=this.$store.getters['jxgl_jcbsel_list']
-            this.table.dataSource.forEach((item,index)=>{
-              item.index=index+(this.pagination.current -1)*this.pagination.pageSize+1
-              item.jclx0=item.jclx2 && item.jclx2 !=''? item.jclx +' - '+ item.jclx2 : item.jclx
-            })
-            this.pagination.total=res.totalCount
-            this.table.tableIsLoading=false
-          })
-          .catch(err=>console.log(JSON.stringify(err)))
       },
       editCancel(){
         this.table.dataSource=[...this.table.tempDataSource]
@@ -465,12 +438,6 @@
 //          }
 //        })
 //      },
-      delSels(selKeys){
-          selKeys.forEach(key=>{
-              const index=this.table.rowSelection.selectedRowKeys.findIndex(i=>i==key)
-            if (index>-1)this.table.rowSelection.selectedRowKeys.splice(index,1)
-          })
-      },
       deleteRowData(record){
         if (record=='multi'){
           this.table.rowSelection.selectedRowKeys.forEach((key)=>{
@@ -529,6 +496,7 @@
       },
       reqTableData(){
         this.table.tableIsLoading=true
+
         this.$store.dispatch(reqJcbOption)
           .then((res)=>{
             if(res.data.length>0){
@@ -558,6 +526,8 @@
             }
           })
           .catch(err=>console.log(JSON.stringify(err)))
+
+
       },
 
       changeCurrentPage(page, pageSize){
