@@ -2,14 +2,15 @@ const path = require('path')
 const webpack = require('webpack')
 const settings={
   // proxyTarget:'https://www.easy-mock.com/mock/5c1134372a95a012b1c7497d', //开发时的代理服务器地址，使用mock数据
-  proxyTarget:'http://feooe.myds.me:6200/', //开发时的代理服务器地址，使用ajj项目测试服务器
+  proxyTarget:'http://feooe.myds.me:6200/', //开发时的代理服务器地址，使用ajj项目测试服务器/
+  // proxyTarget:'http://feooe.myds.me:8090/', //开发时的代理服务器地址，使用ajj项目测试服务器
   // proxyTarget:'http://192.168.1.100:8090/', //开发时的代理服务器地址，使用ajj项目测试服务器
   isPathRewrite:true,  //开发时代理服务器是否需要重定向接口地址,当使用http://feooe.myds.me:6200/做开发服务器时，需要设置为true
   // isPathRewrite:false,  //开发时代理服务器是否需要重定向接口地址
   pathRewrite:{'^/api':'/asrsajj'},  //开发时代理服务器接口地址重定向配置
 
   // pubilcUrl:'/asrsajj/90_asrs/sgkb/paiban_v/',        //排班打包地址
-  // pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanuser_v/'     //排班人员设置打包地址
+  pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanuser_v/'     //排班人员设置打包地址
   // pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanWhole/'     //查询当日所有排班人员设置打包地址
 
   // pubilcUrl:'/asrsajj/90_asrs/sgkb/sgkb/'     //事故快报打包地址
@@ -25,9 +26,10 @@ const settings={
   // pubilcUrl:'/asrsajj/90_asrs/jxgl/jcxgl/'     //绩效，检查项管理
   // pubilcUrl:'/asrsajj/90_asrs/jxgl/jcbgl/'     //绩效，日常检查表管理
   // pubilcUrl:'/asrsajj/90_asrs/jxgl/zxjcplan/'     //绩效，专项检查计划管理
+  // pubilcUrl:'/asrsajj/90_asrs/jxgl/zxjcplan_ycx/'     //绩效，一次性专项检查计划管理
 
 
-  pubilcUrl:'/asrsajj/90_asrs/xqqda/'     //企业档案
+  // pubilcUrl:'/asrsajj/90_asrs/xqqda/'     //企业档案
 
 
 }

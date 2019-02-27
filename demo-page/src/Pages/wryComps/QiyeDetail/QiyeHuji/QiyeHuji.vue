@@ -771,26 +771,26 @@
 
 <style lang="scss" scoped>
 .content-list{
-  width: calc(100% - 150px);
-  padding:36px;
-  .content-wrapper{
-    width: 100%;
-    margin-bottom: 50px;
-    .header{
-      margin-bottom: 15px;
-      .title{
-        border-left: 4px solid #1478f0;
-        padding-left: 8px;
-        font-size: 16px;
-        color: #575757;
-        font-weight: 600;
-      };
-      .button-bar{
+   width: calc(100% - 150px);
+   padding:36px;
+   .content-wrapper{
+     width: 100%;
+     margin-bottom: 50px;
+     .header{
+       margin-bottom: 15px;
+       .title{
+         border-left: 4px solid #1478f0;
+         padding-left: 8px;
+         font-size: 16px;
+         color: #575757;
+         font-weight: 600;
+       };
+       .button-bar{
 
-      }
-    };
-  };
-}
+       }
+     };
+   };
+ }
 
 .wry-col-title{
   text-align: right;

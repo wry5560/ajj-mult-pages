@@ -549,7 +549,7 @@
   }
 
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
   .ant-form-item{
     margin-bottom: 0;
     margin-right: 8px;

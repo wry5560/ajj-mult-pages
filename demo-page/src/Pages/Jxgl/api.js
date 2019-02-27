@@ -121,11 +121,12 @@ export function delJcb (parameter,type){
 }
 
 //新增专项检查计划
-//jsonData
+//参数jsonData：｛defjcbplan:{},defjcbdetail:[{},{},{}],defjcbplanqy:[{},{}]｝
 export function createZxjcplan (parameter){
   // this.tableIsLoading=true
   return axios({
-    url: '/other/Ajjjx.createJcplan.json',
+    // url: '/other/Ajjjx.createJcplan.json',
+    url: '/other/Ajjjx.addZxjc.json',
     method: 'post',
     data: parameter,
     headers: {
@@ -135,11 +136,38 @@ export function createZxjcplan (parameter){
 }
 
 //编辑专项检查计划
-//jsonData
+//参数jsonData：｛defjcbplan:{},defjcbdetail:[{},{},{}],defjcbplanqy:[{},{}]｝
 export function editZxjcplan(parameter){
   // this.tableIsLoading=true
   return axios({
     url: '/other/Ajjjx.editJcplan.json',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+//启用专项检查计划
+//param1:专项计划ID
+export function startZxjcplan(parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.startJcplan.json',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+//停用专项检查计划
+//param1:专项计划ID
+export function stopZxjcplan(parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.stopJcplan.json',
     method: 'post',
     data: parameter,
     headers: {
@@ -210,6 +238,34 @@ export function delZxjcplanQy(parameter){
   // this.tableIsLoading=true
   return axios({
     url: '/other/Ajjjx.delplandw.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+//查询一次性专项检查进度及统计
+// 参数：param1:专项计划ID
+export function queryZxtj (parameter) {
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.queryZxtj.json',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+//查询周期性专项检查进度及统计
+// 参数：param1:专项计划ID
+export function queryZxtjzq (parameter) {
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.queryZxtjzq.json',
     method: 'post',
     data: parameter,
     headers: {

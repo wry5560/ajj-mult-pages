@@ -1,76 +1,76 @@
 <template>
-  <div :class="pageNmae" style="height: 100%">
-    <!--下面是顶部的按钮栏-->
-    <div  class="header-buttons-bar" style="padding-left: 5px">
-      <a-button type='primary' @click="showModal('add')"size="small">新增{{this.pageTitle}}</a-button>
-      <a-popconfirm title="您确认删除这些记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
-        <!--<a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>-->
-      </a-popconfirm>
-      <a-button @click="refresh"size="small">刷新</a-button>
 
-      <!--搜索条-->
-      <a-input-search
-        :placeholder="search.placeholder"
-        style="width: 250px"
-        v-model="search.searchValue"
-        size="small"
-        @search="onSearch"
-        :disabled="search.showAdvanced"
-      />
-      <a-button size="small"  style="margin-left: 5px"  @click="toggleShowAdvancedSearch">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>
-      <a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.tmlx && !search.advancedForm.jclx" @click="clearSearch">清除</a-button>
-    </div>
-    <transition name="fade">
-      <div v-if="search.showAdvanced">
-        <a-row >
-          <a-col :lg="7" :md="12" :sm="24">
-            <a-form-item label="检查内容" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-              <a-input style="width:100%" size="small" placeholder="请输入检查内容" v-model="search.advancedForm.inputs[0]" @pressEnter="onAdvancedSearch">
-              </a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="7" :md="12" :sm="24">
-            <a-form-item label="检查依据" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-              <a-input style="width:100%" size="small" placeholder="请输入检查依据" v-model="search.advancedForm.inputs[1]" @pressEnter="onAdvancedSearch">
-              </a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="7" :md="12" :sm="24">
-            <a-form-item label="条目类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-              <a-select style="width:100%" size="small" placeholder="请选择条目类型" v-model="search.advancedForm.tmlx" allowClear>
-                <a-select-option v-for="(item) in modalOption.selectOptions.tmlx" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col  :lg="2" :md="12" :sm="24">
-            <a-form-item>
-              <a-button type='primary'size="small" style="margin-left: 8px" @click="onAdvancedSearch" >搜索</a-button>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="7" :md="12" :sm="24">
-            <a-form-item label="检查类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-              <a-cascader :options="modalOption.selectOptions['风险']"  style="width:100%" size="small" :loadData="selLoadData" placeholder="请选择检查类型" v-model="search.advancedForm.jclx" changeOnSelect>
-              </a-cascader>
-            </a-form-item>
-          </a-col>
-
-        </a-row>
+    <div :class="pageName" style="height: 100%">
+      <!--下面是顶部的按钮栏-->
+      <div  class="header-buttons-bar" style="padding-left: 5px">
+        <a-button type='primary' @click="showModal('add')"size="small">新增{{this.pageTitle}}</a-button>
+        <a-popconfirm title="您确认删除这些记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">
+          <!--<a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>-->
+        </a-popconfirm>
+        <!--搜索条-->
+        <a-input-search
+          :placeholder="search.placeholder"
+          style="width: 250px"
+          v-model="search.searchValue"
+          size="small"
+          @search="onSearch"
+          :disabled="search.showAdvanced"
+        />
+        <a-button size="small"  style="margin-left: 5px"  @click="toggleShowAdvancedSearch">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>
+        <a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.tmlx && !search.advancedForm.jclx" @click="clearSearch">清除</a-button>
+        <a-button @click="refresh"size="small">刷新</a-button>
       </div>
-    </transition>
-    <!--下面是表格区域，分为表格主体和分页器-->
+      <transition name="fade">
+        <div v-if="search.showAdvanced">
+          <a-row >
+            <a-col :lg="7" :md="12" :sm="24">
+              <a-form-item label="检查内容" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+                <a-input style="width:100%" size="small" placeholder="请输入检查内容" v-model="search.advancedForm.inputs[0]" @pressEnter="onAdvancedSearch">
+                </a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :lg="7" :md="12" :sm="24">
+              <a-form-item label="检查依据" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+                <a-input style="width:100%" size="small" placeholder="请输入检查依据" v-model="search.advancedForm.inputs[1]" @pressEnter="onAdvancedSearch">
+                </a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :lg="7" :md="12" :sm="24">
+              <a-form-item label="条目类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+                <a-select style="width:100%" size="small" placeholder="请选择条目类型" v-model="search.advancedForm.tmlx" allowClear>
+                  <a-select-option v-for="(item) in modalOption.selectOptions.tmlx" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col  :lg="2" :md="12" :sm="24">
+              <a-form-item>
+                <a-button type='primary'size="small" style="margin-left: 8px" @click="onAdvancedSearch" >搜索</a-button>
+              </a-form-item>
+            </a-col>
+            <a-col :lg="7" :md="12" :sm="24">
+              <a-form-item label="检查类型" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+                <a-cascader :options="modalOption.selectOptions['风险']"  style="width:100%" size="small" :loadData="selLoadData" placeholder="请选择检查类型" v-model="search.advancedForm.jclx" changeOnSelect>
+                </a-cascader>
+              </a-form-item>
+            </a-col>
 
-    <div>
-      <a-table
-        bordered
-        :rowClassName="rowClass"
-        :dataSource="table.dataSource"
-        :columns="table.columns"
-        :pagination= "false"
-        :size="table.size"
-        :loading="table.tableIsLoading"
-        :scroll="table.scrollSize"
-        :rowSelection="table.rowSelection"
-      >
+          </a-row>
+        </div>
+      </transition>
+      <!--下面是表格区域，分为表格主体和分页器-->
+
+      <div>
+        <a-table
+          bordered
+          :rowClassName="rowClass"
+          :dataSource="table.dataSource"
+          :columns="table.columns"
+          :pagination= "false"
+          :size="table.size"
+          :loading="table.tableIsLoading"
+          :scroll="table.scrollSize"
+          :rowSelection="table.rowSelection"
+        >
         <span slot="actionCell" slot-scope="text,record,index" >
           <a href="javascript:;" @click="showModal('query',record)">查看</a>
           <!--<a-divider v-if="" type="vertical" />-->
@@ -82,7 +82,7 @@
             <a href="javascript:;">删除</a>
           </a-popconfirm>
         </span>
-        <span slot="defaultcustomRender" slot-scope="text,record,index">
+          <span slot="defaultcustomRender" slot-scope="text,record,index">
           <template>
             <a-tooltip :mouseEnterDelay="0.8">
               <template slot='title'>
@@ -92,67 +92,68 @@
             </a-tooltip>
           </template>
         </span>
-      </a-table>
-      <div class="bottom-pagination-warpper">
-        <a-pagination
-          v-model="pagination.current"
-          style="float:right;"
-          :total="pagination.total"
-          :pageSizeOptions="pagination.pageSizeOptions"
-          :pageSize="pagination.pageSize"
-          showSizeChanger
-          showQuickJumper
-          :showTotal="total =>`共${total}条数据`"
-          @change="changeCurrentPage"
-          @showSizeChange="showSizeChange"
-          size="small"/>
-        <div style="clear: both"></div>
+        </a-table>
+        <div class="bottom-pagination-warpper">
+          <a-pagination
+            v-model="pagination.current"
+            style="float:right;"
+            :total="pagination.total"
+            :pageSizeOptions="pagination.pageSizeOptions"
+            :pageSize="pagination.pageSize"
+            showSizeChanger
+            showQuickJumper
+            :showTotal="total =>`共${total}条数据`"
+            @change="changeCurrentPage"
+            @showSizeChange="showSizeChange"
+            size="small"/>
+          <div style="clear: both"></div>
+        </div>
+      </div>
+
+      <!--下面是弹出框-->
+      <div>
+        <a-modal
+          :title="modalOption.title"
+          @cancel="modalCancel"
+          :visible="modalOption.visible"
+          :destroyOnClose="true"
+          :maskClosable="false"
+          :wrapClassName="modalOption.modalClass"
+          :width="modalOption.width"
+          :bodyStyle="modalOption.bodyStyle"
+        >
+          <a-spin  :spinning="modalLoading">
+          <edit-form
+            v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"
+            :selectOptions="modalOption.selectOptions"
+            :recordId="modalOption.recordId"
+            :modelType="modalOption.modelType"
+            ref="commitForm"/>
+
+          <data-detail
+            v-if="this.modalOption.modelType=='query'"
+            :recordId="modalOption.recordId" />
+
+          <amap-modal
+            v-if="modalOption.modelType=='map'"
+            :recordId="modalOption.recordId"
+            :recordGps="{lng:recordData.lng,lat:recordData.lat}"
+            :height="modalOption.bodyStyle['max-height']"
+            @closeMap="closeMap"
+            :city="modalOption.mapCity"
+            :default-center="modalOption.defaultCenter"
+            :commitGpsAction="modalOption.commitGpsAction"/>
+          </a-spin>
+          <template slot="footer" >
+            <a-button v-show="this.modalOption.modelType!='map'" key="back" @click="modalCancel" size="small">返 回</a-button>
+            <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
+              <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='map'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
+            </a-popconfirm>
+          </template>
+        </a-modal>
       </div>
     </div>
 
-    <!--下面是弹出框-->
-    <div>
-      <a-modal
-        :title="modalOption.title"
-        @cancel="modalCancel"
-        :visible="modalOption.visible"
-        :destroyOnClose="true"
-        :maskClosable="false"
-        :wrapClassName="modalOption.modalClass"
-        :width="modalOption.width"
-        :bodyStyle="modalOption.bodyStyle"
-      >
-
-        <edit-form
-          v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"
-          :selectOptions="modalOption.selectOptions"
-          :recordId="modalOption.recordId"
-          :modelType="modalOption.modelType"
-          ref="commitForm"/>
-
-        <data-detail
-          v-if="this.modalOption.modelType=='query'"
-          :recordId="modalOption.recordId" />
-
-        <amap-modal
-          v-if="modalOption.modelType=='map'"
-          :recordId="modalOption.recordId"
-          :recordGps="{lng:recordData.lng,lat:recordData.lat}"
-          :height="modalOption.bodyStyle['max-height']"
-          @closeMap="closeMap"
-          :city="modalOption.mapCity"
-          :default-center="modalOption.defaultCenter"
-          :commitGpsAction="modalOption.commitGpsAction"/>
-
-        <template slot="footer" >
-          <a-button v-show="this.modalOption.modelType!='map'" key="back" @click="modalCancel" size="small">返 回</a-button>
-          <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
-          <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='map'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
-          </a-popconfirm>
-        </template>
-      </a-modal>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -163,7 +164,7 @@
   import AmapModal from  '../../wryComps/AmapModal.vue'
   import { initColumn } from '@/utils/tableColumnInit'
 
-  const pageName='jxgl_jcxgl'
+  const pageName='jxgl_zxjc_jcxsel'
   const modalTitle="检查标准"   //模态框的title标题
 
   const selOptions=['tmlx','风险']          //选择项所需要的配置，localstorage中的配置名称
@@ -189,6 +190,7 @@
     },
     data(){
       return{
+        modalLoading:false,
         pageTitle:modalTitle,
         pageNmae:pageName,
         search:{
@@ -312,6 +314,13 @@
         this.search.showAdvanced=!this.search.showAdvanced
         this.search.advancedForm.jclx=undefined
         this.search.advancedForm.tmlx=undefined
+        if (this.search.showAdvanced){
+            this.table.scrollSize={ x:920, y: window.innerHeight - 190}
+           document.getElementsByClassName('ant-table-body')[0].style['']=`${window.innerHeight}px`
+
+        }else{
+          this.table.scrollSize={ x:920, y: window.innerHeight - 112}
+        }
       },
       selLoadData(selectedOptions){
         const targetOption = selectedOptions[selectedOptions.length - 1];
@@ -368,6 +377,7 @@
             this.table.dataSource=this.$store.getters[getList]
             this.table.dataSource.forEach((item,index)=>{
               item.index=index+(this.pagination.current -1)*this.pagination.pageSize+1
+              item.jclx0=item.jclx + ' - '+item.jclx2
             })
             this.pagination.total=res.totalCount
             this.table.tableIsLoading=false
@@ -393,8 +403,11 @@
           }
         })
         this.search.advancedForm.tmlx &&this.search.advancedForm.tmlx!='' ? SelValues.push(`(a.tmlx = '${this.search.advancedForm.tmlx}') `): null
-        this.search.advancedForm.jclx[0] &&this.search.advancedForm.jclx[0]!='' ? SelValues.push(`(a.jclx = '${this.search.advancedForm.jclx[0]}') `): null
-        this.search.advancedForm.jclx[1] &&this.search.advancedForm.jclx[1]!='' ? SelValues.push(`(a.jclx2 = '${this.search.advancedForm.jclx[1]}') `): null
+        if(this.search.advancedForm.jclx){
+          this.search.advancedForm.jclx[0] &&this.search.advancedForm.jclx[0]!='' ? SelValues.push(`(a.jclx = '${this.search.advancedForm.jclx[0]}') `): null
+          this.search.advancedForm.jclx[1] &&this.search.advancedForm.jclx[1]!='' ? SelValues.push(`(a.jclx2 = '${this.search.advancedForm.jclx[1]}') `): null
+        }
+
         SelValues.forEach((value,index)=>{
             index>0 ? advancedVlaue.fix=advancedVlaue.fix+' and '+value
                :advancedVlaue.fix=value
@@ -421,6 +434,7 @@
             this.table.dataSource=this.$store.getters[getList]
             this.table.dataSource.forEach((item,index)=>{
               item.index=index+(this.pagination.current -1)*this.pagination.pageSize+1
+              item.jclx0=item.jclx + ' - '+item.jclx2
             })
             this.pagination.total=res.totalCount
             this.table.tableIsLoading=false
@@ -465,17 +479,15 @@
         this.modalOption.commitLoading=false
         this.modalOption.visible=false
       },
-      closeMap(data){
-        if (data=='post')this.reqTableData()
-        this.modalOption.visible=false
-      },
+
 
 
       handleCommit(){
         this.$refs.commitForm.form.validateFields((err, values) => {
           if (!err) {
             //若存在选择项value和显示内容不相同，需转换内容后再提交
-            this.modalOption.commitLoading=true
+//            this.modalOption.commitLoading=true
+            this.modalLoading=true
             values.jclx2=values.jclx.length>1 ? values.jclx[1]:null
             values.jclx=values.jclx[0]
             if (this.modalOption.modelType=='edit'){
@@ -493,14 +505,14 @@
                     this.$message.success('提交成功！')
                     this.reqTableData()
                     setTimeout(()=>{
-                        this.modalOption.commitLoading=false
+                        this.modalLoading=false
                         this.modalOption.visible=false
                       }
                       ,300
                     )
                   }else{
                     this.$message.error(res.message+'请稍后再试！')
-                    this.modalOption.commitLoading=false
+                    this.modalLoading=false
                   }
                 })
                     break
@@ -511,14 +523,14 @@
                     this.$message.success('提交成功！')
                     this.reqTableData()
                     setTimeout(()=>{
-                        this.modalOption.commitLoading=false
+                        this.modalLoading=false
                         this.modalOption.visible=false
                       }
                       ,300
                     )
                   }else{
                     this.$message.error(res.message+'请稍后再试！')
-                    this.modalOption.commitLoading=false
+                    this.modalLoading=false
                   }
                 })
                 break
@@ -531,8 +543,6 @@
         console.log(this.search.advancedForm)
       },
       deleteRowData(record){
-
-
         let parameter={
           jsonData:JSON.stringify(this.$store.getters[getDetailById](record.id)),
         }

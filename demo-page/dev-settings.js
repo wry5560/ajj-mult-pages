@@ -10,6 +10,8 @@ import { constantRouterMap } from '@/Pages/Jxgl/router.config' //绩效管理模
 // import { constantRouterMap } from '@/Pages/KuaiBao/router.config' //事故快报模块路由
 // import { constantRouterMap } from './src/Pages/PaiBan/router.config'  //人员排班模块路由
 
+// import { constantRouterMap } from './src/Pages/Jc/router.config'  //检查执法模块路由
+
 
 // const apiHost= 'https://www.easy-mock.com/mock/5c1134372a95a012b1c7497d/api' //mock模拟数据后台,生产环境使用
 export const settings = {

@@ -1,10 +1,20 @@
-import {GeneralQuery,GeneralPostQuery,createJcx,editJcx,delJcx,addJcb,addJcbOpt,delJcb,createZxjcplan,editZxjcplan,delZxjcplan,addZxjcJcx,delZxjcplanJcx,addZxjcQy,delZxjcplanQy} from './api'
+import {GeneralQuery,GeneralPostQuery,createJcx,editJcx,delJcx,addJcb,addJcbOpt,delJcb,createZxjcplan,startZxjcplan,stopZxjcplan,editZxjcplan,delZxjcplan,addZxjcJcx,delZxjcplanJcx,addZxjcQy,delZxjcplanQy,queryZxtj,queryZxtjzq} from './api'
 import message from 'ant-design-vue/es/message'
 const jixiao = {
   state:{
     jcx:{list:[],selectedOptions:[]},
     jcb:{list:[],selectedOptions:[],selList:[],option:[]},
-    zxjcplan:{list:[],selectedOptions:[],jcxlist:[],selList:[],qyList:[],qySelList:[]}
+    zxjcplan:{
+      list:[],
+      selectedOptions:[],
+      jcxlist:[],
+      selList:[],
+      qyList:[],
+      qySelList:[],
+      zxtj:[],
+      zxtjzq:[]
+    },
+
   },
   mutations: {
 
@@ -27,6 +37,9 @@ const jixiao = {
     INIT_ZXJCPLAN_LIST: (state, payload) => {
       state.zxjcplan.list=payload
     },
+    INIT_ZXJCPLAN_SELECTED_OPTIONS:(state,payload)=>{
+      state.zxjcplan.selectedOptions=payload
+    },
     INIT_ZXJCPLAN_JCX_LIST: (state, payload) => {
       state.zxjcplan.jcxlist=payload
     },
@@ -38,6 +51,12 @@ const jixiao = {
     },
     INIT_ZXJCSEL_QY_LIST:(state, payload) => {
       state.zxjcplan.qySelList=payload
+    },
+    INIT_ZXJCSEL_ZXTJ:(state, payload) => {
+      state.zxjcplan.zxtj=payload
+    },
+    INIT_ZXJCSEL_ZXTJZQ:(state, payload) => {
+      state.zxjcplan.zxtzq=payload
     },
   },
   actions: {
@@ -247,6 +266,33 @@ const jixiao = {
           })
       })
     },
+    //启用专项检查计划
+    startZxjcplan:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          ...params
+        }
+        startZxjcplan(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+    //停用专项检查计划
+    stopZxjcplan:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          ...params
+        }
+        stopZxjcplan(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+
     //修改专项检查计划
     editZxjcplan:(store,params)=>{
       return new Promise((resolve, reject) => {
@@ -301,7 +347,7 @@ const jixiao = {
       return new Promise((resolve, reject) => {
         const parameter={
           sqlId:'S350017',
-          param2:'日常',
+          param2:'专项',
           param3:sys_relateDepId2,
           ...params
         }
@@ -417,6 +463,34 @@ const jixiao = {
           })
       })
     },
+
+    //查询某一一次性专项检查计划的统计信息
+    queryZxtj:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          ...params
+        }
+        queryZxtj(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+
+    //查询某一周期性专项检查计划的统计信息
+    queryZxtjzq:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          ...params
+        }
+        queryZxtjzq(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
   },
 
   getters:{
@@ -458,6 +532,16 @@ const jixiao = {
         item.index=index+1
       })
       return state.zxjcplan.list
+    },
+    jxgl_zxjcplan_selOptions:(state)=>{
+      const selOptions={}
+      state.zxjcplan.selectedOptions.forEach(option=>{
+        selOptions[option.name]=[]
+        if(option.value&&option.value.length>0){option.value.forEach(item=>{
+          selOptions[option.name].push({label:item.label,value:item.value})
+        })}
+      })
+      return selOptions
     },
     getJcplanById:(state)=>(id)=> {
       return state.zxjcplan.list.find( todo=> todo.id==id)

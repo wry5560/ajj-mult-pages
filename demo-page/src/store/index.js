@@ -11,6 +11,7 @@ import peizhi from '../Pages/Peizhi/store'
 import jxgl from '../Pages/Jxgl/store'
 import Qiye from '../Pages/Qiye/store'
 import QiyeDetial from '../Pages/wryComps/QiyeDetail/store'
+import JianchaZhifa from '../Pages/Jc/store'
 
 
 Vue.use(Vuex)
@@ -25,7 +26,8 @@ export default new Vuex.Store({
     peizhi,
     jxgl,
     Qiye,
-    QiyeDetial
+    QiyeDetial,
+    JianchaZhifa
   },
   state: {
 

@@ -1,5 +1,5 @@
 <template>
-  <div :class="pageNmae" style="height: 100%">
+  <div :class="pageName" style="height: 100%">
     <!--下面是顶部的按钮栏-->
     <div  class="header-buttons-bar" style="padding: 5px">
       <span v-if="!isEdit">
@@ -66,9 +66,10 @@
           </template>
         </span>
       </a-table>
+      <div class="bottom-pagination-warpper">
       <a-pagination
         v-model="pagination.current"
-        style="margin-top: 8px; float:right; padding-right: 16px;"
+        style=" float:right;"
         :total="pagination.total"
         :pageSizeOptions="pagination.pageSizeOptions"
         :pageSize="pagination.pageSize"
@@ -78,6 +79,8 @@
         @change="changeCurrentPage"
         @showSizeChange="showSizeChange"
         size="small"/>
+        <div style="clear: both"></div>
+      </div>
     </div>
 
     <!--下面是弹出框-->
@@ -387,6 +390,7 @@
       },
       showEdit(){
         this.isEdit=true
+        this.jcbName=''
         this.table.tempDataSource=[...this.table.dataSource]
         this.table.tableIsLoading=true
         this.table.dataSource=[]
@@ -579,7 +583,7 @@
   }
 
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
   .ant-form-item{
     margin-bottom: 0;
     margin-right: 8px;

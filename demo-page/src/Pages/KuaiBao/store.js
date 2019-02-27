@@ -10,8 +10,8 @@ const kuaibao = {
       // state.kuaibaoList.push(payload)
     },
     ADD_XUBAO:(state,payload)=>{
-      state.xbList[payload.id]=[]
       state.xbList[payload.id]=payload.xbData
+
     },
     ADD_LC_INFO:(state,payload)=>{
       state.lcInfo=payload
@@ -19,6 +19,14 @@ const kuaibao = {
   },
   actions: {
 
+  },
+  getters:{
+    getKuaibaoById:(state)=>(id)=> {
+      return state.kuaibaoList.find( todo=> todo.id==id)
+    },
+    getXubaoById:(state)=>(id,xbid)=> {
+      return state.xbList[id].find( todo=> todo.xbid==xbid)
+    },
   }
 }
 

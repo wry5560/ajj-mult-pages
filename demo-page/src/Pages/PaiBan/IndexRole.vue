@@ -98,11 +98,15 @@
           <p>{{modal.ModalText}}</p>
         </a-modal>
         <div  class="header-buttons-bar">
+          <a-button size="small" type="primary" style="margin-left: 8px" :disabled="levelPanes.selectedKey=='7'" @click="showSelTable">批量添加</a-button>
           <a-button @click="refresh" size="small" >刷 新</a-button>
           <a-popover  trigger="click" placement="bottomLeft" @visibleChange="popoverVisibleChange">
             <a-button @click="openMultiChange" v-if="!toMultiChange" size="small" :style="{'margin-left':'5px'}" :disabled="staffTable.rowSelection.selectedRowKeys.length<2">批量修改</a-button>
             <a-button @click="toConfirm" v-else="toMultiChange" size="small" :style="{'margin-left':'5px'}" >保存修改</a-button>
-            <div slot="content"style="width: 200px"><editable-level-cell v-if="toMultiChange" @levelChange="onLevelChange"  :selectItem="selectItem" type="multi"></editable-level-cell></div>
+            <div slot="content"style="width: 200px">
+              <editable-level-cell v-if="toMultiChange" @levelChange="onLevelChange"  :selectItem="selectItem" type="multi"></editable-level-cell>
+              <a-button @click="toConfirm" type="primary" size="small" :style="{'margin-top':'5px'}" >保存</a-button>
+            </div>
           </a-popover>
           <a-button @click="deleteStaffLevel('multi')" size="small" :disabled="levelPanes.selectedKey=='6'||staffTable.rowSelection.selectedRowKeys.length<2">批量删除</a-button>
           <a-button-group >
@@ -146,21 +150,35 @@
           :rowSelection="staffTable.rowSelection"
         >
           <template slot="editLevel" slot-scope="text, record,index">
+            <a-tooltip :mouseEnterDelay="0.8">
             <span v-if="record.editable">
+
               <editable-level-cell  @levelChange="onLevelChange" :text="mapLevelName(text)" :selectItem="selectItem" :record="record"></editable-level-cell>
             </span>
-            <span v-else>{{mapLevelName(text)}}</span>
+            <div v-else style="width: 100%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{mapLevelName(text)}}</div>
+            </a-tooltip>
           </template>
           <span slot="actionCell" slot-scope="text,record,index" >
             <a href="javascript:;" @click="changeEditable(record)">修改级别</a>
             <a-divider  type="vertical" />
             <a  href="javascript:;" @click="deleteStaffLevel(record)" :disabled="levelPanes.selectedKey=='6'">删除</a>
           </span>
+          <span slot="defaultcustomRender" slot-scope="text,record,index">
+          <template>
+            <a-tooltip :mouseEnterDelay="0.8">
+              <template slot='title'>
+                {{text}}
+              </template>
+              <div style="width: 100%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{text}}</div>
+            </a-tooltip>
+          </template>
+        </span>
         </a-table>
+        <div class="bottom-pagination-warpper" style="padding-right: 216px">
         <a-pagination
           v-model="staffTable.pagination.current"
           size="small"
-          style="margin-top: 8px;margin-right:16px;float:right;"
+          style="float:right;"
           :total="paginationTotal"
           showSizeChanger
           showQuickJumper
@@ -170,6 +188,79 @@
           :pageSize="staffTable.pagination.pageSize"
           @showSizeChange="showSizeChange"
         />
+          <div style="clear: both"></div>
+        </div>
+
+
+        <a-modal
+          :title="modalOption.title"
+          @cancel="modalCancel"
+          :visible="modalOption.visible"
+          :destroyOnClose="true"
+          :maskClosable="false"
+          :wrapClassName="modalOption.modalClass"
+          :width="modalOption.width"
+          :bodyStyle="modalOption.bodyStyle"
+        >
+          <a-spin  :spinning="modalLoading">
+            <a-table
+              bordered
+              :dataSource="tableSelData"
+              :rowClassName="rowClass"
+              :columns="selColumns"
+              :pagination='false'
+              size="small"
+              :loading="staffTable.tableIsLoading"
+              :scroll="staffTable.scrollSize"
+              :rowSelection="modalOption.table.rowSelection"
+            >
+              <template slot="editLevel" slot-scope="text, record,index">
+            <span v-if="record.editable">
+              <editable-level-cell  @levelChange="onLevelChange" :text="mapLevelName(text)" :selectItem="selectItem" :record="record"></editable-level-cell>
+            </span>
+                <span v-else>{{mapLevelName(text)}}</span>
+              </template>
+              <span slot="actionCell" slot-scope="text,record,index" >
+            <a href="javascript:;" @click="changeEditable(record)">修改级别</a>
+            <a-divider  type="vertical" />
+            <a  href="javascript:;" @click="deleteStaffLevel(record)" :disabled="levelPanes.selectedKey=='6'">删除</a>
+          </span>
+              <span slot="defaultcustomRender" slot-scope="text,record,index">
+          <template>
+            <a-tooltip :mouseEnterDelay="0.8">
+              <template slot='title'>
+                {{text}}
+              </template>
+              <div style="width: 100%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{text}}</div>
+            </a-tooltip>
+          </template>
+        </span>
+
+            </a-table>
+
+
+          </a-spin>
+          <template slot="footer">
+            <a-pagination
+              v-model="modalOption.pagination.current"
+              size="small"
+              style="float: left"
+              :total="modalOption.pagination.total"
+              showSizeChanger
+              showQuickJumper
+              :showTotal="total => `共${total}条数据`"
+              @change="changeModalCurrentPage"
+              :pageSizeOptions="modalOption.pagination.pageSizeOptions"
+              :pageSize="modalOption.pagination.pageSize"
+              @showSizeChange="showModalSizeChange"
+            />
+            <a-button  key="back" @click="modalCancel" size="small">返回</a-button>
+            <a-popconfirm title="您确认添加选中人员吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
+              <a-button  key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">添加</a-button>
+            </a-popconfirm>
+          </template>
+
+        </a-modal>
       </a-layout-content>
     </a-layout>
   </div>
@@ -178,6 +269,7 @@
 <script>
 import EditableLevelCell from './EditableLevelCell'
 import {reqStaffList,reqAllStaff,levelName,postChangeLevel} from "./api"
+import { initColumn } from '@/utils/tableColumnInit'
 
 const levelArr=['一级','二级','三级','四级','五级','']
 let timer=null
@@ -189,6 +281,7 @@ let timer=null
     data(){
       return{
         showAdvance:false,
+        modalLoading:false,
         hasToPost:false,
         toMultiChange:false,
         multiChangeLoading:false,
@@ -198,6 +291,41 @@ let timer=null
           confirmLoading:false,
           ModalText:'',
           changeData:[],
+        },
+        modalOption: {
+          title: '批量添加人员',
+          width: '85%',
+          visible: false,
+          bodyStyle: {
+            "max-height": window.innerHeight - 250 + 'px',
+            height:window.innerHeight - 250 + 'px',
+            "min-height": 100
+          },
+          commitLoading: false,
+          mapCity: '珠海',
+//          commitGpsAction: editGpsAction,
+          defaultCenter: {
+            lng: 113.536232,
+            lat: 22.120977
+          },
+          selectOptions: {},
+          recordId: '',
+          modalType: '',
+          modalClass: 'nomal-modal table-modal ',
+
+          table:{
+            rowSelection:{
+              selectedRowKeys: [],
+              onChange: this.onModalSelectChange,
+              columnWidth:'20px',
+          },
+          },
+          pagination:{
+            total:0,
+            current:1,
+            pageSize:20,
+            pageSizeOptions:['10','20','50','100','500']
+          },
         },
         levelPanes:{
           editable:false,
@@ -259,9 +387,9 @@ let timer=null
     computed:{
         columns(){
           this.filteredInfo=this.filteredInfo ||{}
-          const  columns=[
+          let  columns=[
               {title: '排班顺序', dataIndex: 'id', width: '40px', key:'id',align: 'center',},
-              {title: '人员名称',dataIndex: 'name', width: '100px',key:'sgnm', align: 'center',filteredValue: [this.filteredInfo.name] || null,onFilter: (value, record) => record.name.includes(value),scopedSlots: {customRender: 'flitered'}},
+              {title: '人员名称',dataIndex: 'name', width: '100px',key:'sgnm', align: 'center',filteredValue: [this.filteredInfo.name] || null,onFilter: (value, record) => record.name.includes(value)},
               {title: '性别', dataIndex: 'sex', width: '50px',key:'xbNum', align: 'center',},
               {title: '联系电话', dataIndex: 'phone', width: '100px', key:'uptime',align: 'center',},
               {title: '所属组织', dataIndex: 'departmentName', width: '120px',key:'upuser', align: 'center',},
@@ -269,12 +397,47 @@ let timer=null
               {title: '操作', dataIndex: 'actions', width: '100px', key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
 //          {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
               ]
+          columns=initColumn(columns)
           return columns
         },
+      selColumns(){
+//        this.filteredInfo=this.filteredInfo ||{}
+        let  columns=[
+          {title: '序号', dataIndex: 'index', width: '40px', key:'id',align: 'center',},
+          {title: '人员名称',dataIndex: 'name', width: '100px',key:'sgnm', align: 'center',filteredValue: [this.filteredInfo.name] || null,onFilter: (value, record) => record.name.includes(value),scopedSlots: {customRender: 'flitered'}},
+          {title: '性别', dataIndex: 'sex', width: '50px',key:'xbNum', align: 'center',},
+          {title: '联系电话', dataIndex: 'phone', width: '100px', key:'uptime',align: 'center',},
+          {title: '所属组织', dataIndex: 'departmentName', width: '120px',key:'upuser', align: 'center',},
+          {title: '排班级别', dataIndex: 'level', width: '100px',key:'isend', align: 'center'},
+//          {title: '操作', dataIndex: 'actions', width: '100px', key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
+//          {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
+        ]
+        columns=initColumn(columns)
+        return columns
+      },
       tableData(){
           const start=(this.staffTable.pagination.current-1)* this.staffTable.pagination.pageSize
           const end=this.staffTable.pagination.current * this.staffTable.pagination.pageSize
-        return this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List'].slice(start,end)
+          return this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List'].slice(start,end)
+      },
+      tableSelData(){
+//          debugger
+        const start=(this.modalOption.pagination.current-1)* this.modalOption.pagination.pageSize
+        const end=this.modalOption.pagination.current * this.modalOption.pagination.pageSize
+        const aaa={...this.levelPanes.levelList}
+        const wholeMenber=[...this.levelPanes.levelList.lv7List]
+        const delMember=[...this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List']]
+        delMember.forEach((item)=>{
+              const index=wholeMenber.findIndex(i=> item.userId==i.userId)
+          wholeMenber.splice(index,1)
+        })
+//        const returnData=[]
+        this.modalOption.pagination.total=wholeMenber.length
+        wholeMenber.forEach((item,index)=>item.index=index+1)
+        return wholeMenber.slice(start,end)
+      },
+      tableSelTotal(){
+          return this.levelPanes.levelList.lv7List.length-this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List'].length
       },
       selectItem(){
         const {lv1name,lv2name,lv3name,lv4name,lv5name}=this.levelPanes.levelList
@@ -283,6 +446,9 @@ let timer=null
       paginationTotal(){
         return this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'Num']
       },
+      modalPaginationTotal(){
+        return this.tableSelData.length
+      },
       nowLevelList(){
         return this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List']
       }
@@ -290,6 +456,25 @@ let timer=null
     created (){
 //      this.reqLevelData()
       this.reqStaffData()
+
+    },
+    mounted(){
+      this.$nextTick(function () {
+        let _this=this
+        window.onresize = function(){
+          _this.modalOption.bodyStyle['max-height']= window.innerHeight -250+'px'
+          _this.modalOption.bodyStyle['height']= window.innerHeight -250+'px'
+
+        }
+//        document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
+
+        //初始化选择项,存入vuex相应store的state中
+//        const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
+//        const tmp=[]
+//        selOptions.forEach(item=>{tmp.push({name:item,value:ls[item]})})
+//        this.$store.commit(selOptionMutation,tmp)
+//        this.modalOption.selectOptions=this.$store.getters[getSelOpitons]
+      })
     },
     methods:{
       openMultiChange(){
@@ -385,6 +570,54 @@ let timer=null
       changeEditable(record){
         record.editable=true
       },
+      showSelTable(){
+        this.modalOption.visible=true
+      },
+      modalCancel(){
+        this.modalLoading= false
+        this.modalOption.visible = false
+      },
+      handleCommit(){
+        this.modalLoading=true
+        const changeMans=[]
+        this.modalOption.table.rowSelection.selectedRowKeys.forEach((item)=>{
+//            debugger
+            const tmp=this.levelPanes.levelList.lv7List.find(i=>i.userId==item)
+            const changeman={...tmp}
+          changeman.id=changeman.userId
+          changeman.level=levelArr[Number(this.levelPanes.selectedKey)-1]
+          changeman.sortNum=10000
+            changeMans.push(changeman)
+        })
+        const data={
+          jsonData:JSON.stringify({users:changeMans}),
+          param1:departmentId,
+          param2:levelArr[this.levelPanes.selectedKey-1]
+        }
+        postChangeLevel(data)
+          .then((res)=>{
+            if(res.success){
+              this.$message.success('修改成功')
+              // this.modal.changeData[3].editable=false
+              // this.changeLevel(this.modal.changeData[0],this.modal.changeData[1],this.modal.changeData[2])
+              // this.initLevelNum()
+              // this.initLevelIndex()
+              this.reqStaffData()
+              this.staffTable.rowSelection.selectedRowKeys=[]
+              this.modalOption.table.rowSelection.selectedRowKeys=[]
+              this.modal.changeData=[]
+              this.toMultiChange=false
+              this.modalLoading=false
+              this.modalOption.visible=false
+            }else{
+              this.$message.error(res.message)
+              this.modalLoading=false
+            }
+          }).catch((err)=>{
+          this.$message.error("发生系统异常")
+          this.modalLoading=false
+          console.log(JSON.stringify(err))})
+      },
 
       handleModalOk(){
 //          debugger
@@ -451,7 +684,7 @@ let timer=null
         if (record=='multi'){
           const changeMans=[]
           const manList=this.nowLevelList
-          this.staffTable.rowSelection.selectedRowKeys.forEach((index)=>{changeMans.push(manList[index])})
+          this.staffTable.rowSelection.selectedRowKeys.forEach((key)=>{changeMans.push(manList.find(i=>i.key==key))})
           let nameString=''
           changeMans.forEach((man)=>{
             nameString = nameString+','+ man.name
@@ -470,10 +703,11 @@ let timer=null
         }
       },
       deleteStaffLevel(record){
+//          debugger
         if (record=='multi'){
           const changeMans=[]
           const manList=this.nowLevelList
-          this.staffTable.rowSelection.selectedRowKeys.forEach((key)=>{changeMans.push(manList[key])})
+          this.staffTable.rowSelection.selectedRowKeys.forEach((key)=>{changeMans.push(manList.find(i=>i.key==key))})
           let nameString=''
           changeMans.forEach((man)=>{
             nameString = nameString+','+ man.name
@@ -537,18 +771,30 @@ let timer=null
         console.log('selectedRowKeys changed: ', selectedRowKeys);
         this.staffTable.rowSelection.selectedRowKeys = selectedRowKeys
       },
+
+      onModalSelectChange(selectedRowKeys){
+        this.modalOption.table.rowSelection.selectedRowKeys = selectedRowKeys
+      },
+
       //分页器的方法
       changeCurrentPage(page, pageSize){
-        console.log(page)
-        console.log(pageSize)
+//        console.log(page)
+//        console.log(pageSize)
         this.staffTable.pagination.current=page
+        this.staffTable.pagination.pageSize=pageSize
       },
       //分页器每页数量变化后的方法
       showSizeChange(current, size){
-        console.log(current)
-        console.log(size)
-        this.staffTable.pagination.current=current
+//        console.log(current)
+//        console.log(size)
+        const start=(this.staffTable.pagination.current-1 )* this.staffTable.pagination.pageSize
+        if(start==0){
+          this.staffTable.pagination.current=1
+        }else{
+          this.staffTable.pagination.current= Math.ceil(start/size)
+        }
         this.staffTable.pagination.pageSize=size
+//        this.reqModalTableData()
       },
       //请求左侧级别数据，使用排班接口
       reqLevelData(){
@@ -606,6 +852,7 @@ let timer=null
                 userData.departmentName=user.__uuserid.departmentName
                 userData.level=user.userlevel
                 userData.userId=user.__uuserid.userId
+                userData.key=user.__uuserid.userId
                 userData.editable=false
                 if (!userData.level){this.levelPanes.levelList.lv6List.push(userData)}else{
                   const levelIndex = levelArr.findIndex(level => level==userData.level) + 1
@@ -677,6 +924,21 @@ let timer=null
         if (index%2==1) return 'even-rows'
       },
 
+      changeModalCurrentPage(page, pageSize){
+        this.modalOption.pagination.current=page
+        this.modalOption.pagination.pageSize=pageSize
+//        this.reqModalTableData()
+      },
+      showModalSizeChange(current, size){
+        const start=(this.modalOption.pagination.current-1 )* this.modalOption.pagination.pageSize
+        if(start==0){
+          this.modalOption.pagination.current=1
+        }else{
+          this.modalOption.pagination.current= Math.ceil(start/size)
+        }
+        this.modalOption.pagination.pageSize=size
+//        this.reqModalTableData()
+      },
     }
   }
 </script>

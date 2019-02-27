@@ -235,6 +235,7 @@
       onSelectChange(selectedRowKeys){
         this.table.rowSelection.selectedRowKeys = selectedRowKeys
       },
+
       refresh(){
         this.reqTableData()
       },

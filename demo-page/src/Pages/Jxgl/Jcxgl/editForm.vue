@@ -13,7 +13,14 @@
         <a-col :lg="12" :md="12" :sm="24">
           <a-form-item label="检查类型" :labelCol="{ span: 5 }" :wrapperCol="{ span: 19 }">
             <a-cascader :options="selectOptions['风险']"  style="width:100%" size="small" :loadData="selLoadData" placeholder="请选择检查类型"
-                        v-decorator="['jclx',{rules: [{ required: true, message: '请选择检查类型', whitespace: true,type:'array'}],initialValue: [initialValues.jclx,initialValues.jclx2]}]"/>
+                        v-decorator="['jclx',{rules: [{ required: true, message: '请选择检查类型', whitespace: true,type:'array',validator:function(rule, value, cb) {
+
+                         if (value[0]) {
+                             cb();
+                             return;
+                         }
+                         cb('请选择检查类型')
+                        }}],initialValue: [initialValues.jclx,initialValues.jclx2]}]"/>
           </a-form-item>
         </a-col>
         <a-col :lg="24">

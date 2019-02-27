@@ -14,9 +14,7 @@
     </div>
     <div>
       <a-table
-        bordered
         :dataSource="dataSource"
-        :rowClassName="rowClass"
         :columns="columns"
         :pagination= "false"
         size="small"
@@ -30,29 +28,18 @@
         <!--<div style="text-align:center">事故名称</div>-->
         <!--</template>-->
         <span slot="actionCell" slot-scope="text,record,index" >
-          <a v-if="record.isend!=0 ||activeTab=='2'"href="javascript:;" @click="gotoSgDetail(record)">查看详情</a>
+          <a v-if="record.isend!=0"href="javascript:;" @click="gotoSgDetail(record)">查看详情</a>
           <!--<a-divider v-if="record.isend==0" type="vertical" />-->
-          <a v-if="record.isend==0 &&activeTab!='2'" href="javascript:;" @click="gotoSgDetail(record,'true')">审核</a>
+          <a v-if="record.isend==0" href="javascript:;" @click="gotoSgDetail(record,'true')">审核</a>
         </span>
         <template slot="status" slot-scope="isend">
           <a-badge :status="`${isend==0 ? 'processing':'success'}`" :text="`${isend==0 ? '审批中':'已审批'}`"/>
         </template>
-        <span slot="defaultcustomRender" slot-scope="text,record,index">
-          <template>
-            <a-tooltip :mouseEnterDelay="0.8">
-              <template slot='title'>
-                {{text}}
-              </template>
-              <div style="width: 100%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{text}}</div>
-            </a-tooltip>
-          </template>
-        </span>
       </a-table>
-      <div class="bottom-pagination-warpper">
       <a-pagination
         size="small"
         v-model="pagination.current"
-        style="float:right;"
+        style="margin-top: 4px;float:right;padding-right: 16px;"
         :total="pagination.total"
         :pageSizeOptions="pagination.pageSizeOptions"
         :pageSize="pagination.pageSize"
@@ -61,8 +48,6 @@
         :showTotal="total => `共${total}条数据`"
         @change="changeCurrentPage"
         @showSizeChange="showSizeChange"/>
-        <div style="clear: both"></div>
-      </div>
     </div>
     <a-modal
       title="事故上报"
@@ -77,9 +62,7 @@
       :okButtonProps="modalOption.okButtonProps"
       :cancelButtonProps="modalOption.cancelButtonProps"
     >
-      <a-spin  :spinning="modalLoading">
       <sg-form ref="sgCommit" :showSubmit="false"></sg-form>
-      </a-spin>
       <template slot="footer">
         <a-button key="back" @click="modalCancel">返 回</a-button>
         <a-button key="submit" type="primary" :loading="modalOption.commitLoading" @click="sgCommit">上 报</a-button>
@@ -92,7 +75,6 @@
   import {reqKuaiBaoList,postSchedule} from './api'
   import SgForm from './comps/sgForm.vue'
   import moment from 'moment'
-  import { initColumn } from '@/utils/tableColumnInit'
 
   export default{
     moment,
@@ -101,7 +83,6 @@
     },
     data(){
       return {
-        modalLoading:false,
         activeTab:'1',
         noEndNum:0,
         modalOption:{
@@ -122,15 +103,14 @@
         },
         dataSource: [],
         columns: [
-          {title: '编号', dataIndex: 'id', width: '80px', key:'id',align: 'center',},
-          {title: '续报数', dataIndex: 'xbnum', width: '50px',key:'xbnum', align: 'center',},
-          {title: '接报来源',dataIndex: 'jbly', width: '100px',key:'jbly', align: 'left',titleAlign:'center'},
-          {title: '接报时间',dataIndex: 'jbtime', width: '100px',key:'jbtime', align: 'center'},
-          {title: '上报人', dataIndex: 'upuser', width: '80px',key:'upuser', align: 'center',},
-          {title: '上报时间', dataIndex: 'uptime', width: '100px', key:'uptime',align: 'center',},
-          {title: '审批状态', dataIndex: 'isend', width: '100px',key:'isend', align: 'center',scopedSlots: {customRender: 'status'}},
-          {title: '流程节点', dataIndex: 'lcname', width: '100px', key:'lcname',align: 'center',},
-          {title: '操作', dataIndex: 'actions', width: '100px', key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
+          {title: '编号', dataIndex: 'id', width: 120, key:'id',align: 'center',},
+          {title: '事故名称',dataIndex: 'sgnm', width: 100,key:'sgnm', align: 'left',slots:{title:'centerCell'}},
+          {title: '续报数', dataIndex: 'xbnum', width: 50,key:'xbnum', align: 'center',},
+          {title: '上报时间', dataIndex: 'uptime', width: 100, key:'uptime',align: 'center',},
+          {title: '上报人', dataIndex: 'upuser', width: 100,key:'upuser', align: 'center',},
+          {title: '审批状态', dataIndex: 'isend', width: 100,key:'isend', align: 'center',scopedSlots: {customRender: 'status'}},
+          {title: '流程节点', dataIndex: 'lcname', width: 100, key:'lcname',align: 'center',},
+          {title: '操作', dataIndex: 'actions', width: 100, key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
 //         {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
         ],
       }
@@ -139,23 +119,19 @@
     },
     created(){
       this.reqTableData()
-      this.columns=initColumn(this.columns)
     },
     mounted(){
 //      console.log(this.modalOption)
       let _this=this
       window.onresize = function(){
 //        console.log(_this.modalOption.bodyStyle['max-height'])
-        _this.table.scrollSize.y= window.innerHeight - 112                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      -250+'px'
+        _this.modalOption.bodyStyle['max-height']= window.innerHeight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     -250+'px'
       }
-//      document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
+      document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
     },
     methods:{
       showModal(){
         this.modalOption.visible=true
-      },
-      rowClass(record,index){
-        if (index%2==1) return 'even-rows'
       },
       tabChange(activeKey){
         activeKey=='1'? this.activeTab='1': this.activeTab='2'
@@ -165,20 +141,23 @@
         this.$refs.sgCommit.form.validateFields((err, values) => {
 //            debugger
           if (!err) {
-
-            this.modalLoading=true
+//            this.$notification['error']({
+//              message: 'Received values of form:',
+//              description: JSON.stringify(values)
+//            })
+            this.modalOption.commitLoading=true
             postSchedule().then((res)=>{
               if (res.success==true){
                 this.$message.success('上报成功！')
                 setTimeout(()=>{
-                    this.modalLoading=false
+                    this.modalOption.commitLoading=false
                     this.modalOption.visible=false
                   }
                   ,500
                 )
               }else{
                 this.$message.error(res.message+'请稍后再试！')
-                this.modalLoading=false
+                this.modalOption.commitLoading=false
               }
             })
           }
@@ -186,7 +165,7 @@
 //        this.modalOption.visible=false
       },
       modalCancel(){
-        this.modalLoading=false
+        this.modalOption.commitLoading=false
         this.modalOption.visible=false
       },
       gotoSgsb(){
@@ -200,13 +179,12 @@
         this.tableIsLoading=true
         const parameter={
           param1:sys_relateDepId2,
-          sqlId:this.activeTab=='2'?'S360006':'S360016',
           param4:1,
 //          param5:1,
           limit:this.pagination.pageSize,
           start:(this.pagination.current -1)*this.pagination.pageSize
         }
-        if(this.activeTab=='1') parameter.param2=1
+        this.activeTab=='1'? parameter.param2=1 :parameter.param3=1
         reqKuaiBaoList(parameter)
           .then((res)=>{
             if(res.success){
@@ -225,7 +203,6 @@
           data.upuser=data.__upuser.userName
           if (data.isend=='1'){data.lcname='已完结'}
           data.uptime=moment(data.uptime).format('YYYY-MM-DD \xa0 HH:mm')
-          data.jbtime=moment(data.jbtime).format('YYYY-MM-DD \xa0 HH:mm')
           if(data.xbid!=0){
             data.idBf=data.id
             data.id="续"+data.id+"-"+data.xbid
@@ -246,6 +223,8 @@
         this.pagination.current=page
         this.pagination.pageSize=pageSize
         this.reqTableData()
+        console.log(page)
+        console.log(pageSize)
       },
       showSizeChange(current, size){
         const start=(this.pagination.current-1 )* this.pagination.pageSize
@@ -256,6 +235,8 @@
         }
         this.pagination.pageSize=size
         this.reqTableData()
+        console.log(current)
+        console.log(size)
       },
     },
     watch:{

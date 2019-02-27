@@ -1,4 +1,5 @@
 export function initColumn(columns=[]) {
+
   const tmpColumns=[...columns]
 
   tmpColumns.forEach((column)=>{

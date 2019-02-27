@@ -2,21 +2,19 @@
   <div class="kuaibao-index">
     <div  class="header-buttons-bar">
       <!--<a-button @click="handleAdd">Add</a-button>-->
-      <a-button type='primary' @click="showModal('sb')"size="small" :style="{'margin-left':'5px'}">事件上报</a-button>
+      <a-button type='primary' @click="showModal('sb')"size="small" :style="{'margin-left':'5px'}">事故上报</a-button>
       <a-button @click="reqTableData"size="small">刷 新</a-button>
-      <!--<a-input-search-->
-        <!--:placeholder="search.placeholder"-->
-        <!--style="width: 250px"-->
-        <!--v-model="search.searchValue"-->
-        <!--size="small"-->
-        <!--@search="onSearch"-->
-      <!--/>-->
+      <a-input-search
+        :placeholder="search.placeholder"
+        style="width: 250px"
+        v-model="search.searchValue"
+        size="small"
+        @search="onSearch"
+      />
     </div>
     <div>
       <a-table
-        bordered
         :dataSource="dataSource"
-        :rowClassName="rowClass"
         :columns="columns"
         :pagination= "false"
         size="small"
@@ -33,25 +31,13 @@
           <a-divider v-if="record.xbid==0" type="vertical" />
           <a v-if="record.xbid==0" href="javascript:;" @click="showModal(record)">续报</a>
         </span>
-        <span slot="bh" slot-scope="text,record,index" >{{text}}</span>
         <template slot="status" slot-scope="isend">
           <a-badge :status="`${isend==0 ? 'processing':'success'}`" :text="`${isend==0 ? '审批中':'已审批'}`"/>
         </template>
-        <span slot="defaultcustomRender" slot-scope="text,record,index">
-          <template>
-            <a-tooltip :mouseEnterDelay="0.8">
-              <template slot='title'>
-                {{text}}
-              </template>
-              <div style="width: 100%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{text}}</div>
-            </a-tooltip>
-          </template>
-        </span>
       </a-table>
-      <div class="bottom-pagination-warpper">
       <a-pagination
         v-model="pagination.current"
-        style="float:right; "
+        style="margin-top: 8px; float:right; padding-right: 16px;"
         :total="pagination.total"
         :pageSizeOptions="pagination.pageSizeOptions"
         :pageSize="pagination.pageSize"
@@ -61,31 +47,25 @@
         @change="changeCurrentPage"
         @showSizeChange="showSizeChange"
         size="small"/>
-        <div style="clear: both"></div>
-      </div>
     </div>
     <a-modal
-      :title="sbType=='sb'?'事件上报':'事件续报'"
+      :title="sbType=='sb'?'事故上报':'事故续报'"
+      okText="上 报"
       @cancel="modalCancel"
       :visible="modalOption.visible"
       :destroyOnClose="true"
       :maskClosable="false"
       wrapClassName="nomal-modal"
-      width="65%"
+      width="90%"
       :bodyStyle="modalOption.bodyStyle"
-
+      :okButtonProps="modalOption.okButtonProps"
+      :cancelButtonProps="modalOption.cancelButtonProps"
     >
-      <a-spin  :spinning="modalLoading">
       <sg-form :sbType="sbType" :sbData="sbData" :selectOptions="selectOptions" ref="sgCommit" :showSubmit="false"></sg-form>
-      </a-spin>
       <template slot="footer">
-        <a-button key="back" size="small"@click="modalCancel">返 回</a-button>
-        <a-popconfirm title="您确认上报当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="sgCommit">
-        <a-button v-if="sbType=='sb'" key="submit" size="small"type="primary" :loading="modalOption.commitLoading" >上 报</a-button>
-        </a-popconfirm>
-        <a-popconfirm title="您确认上报当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="xbCommit">
-        <a-button style="margin-left: 8px" v-if="sbType!='sb'" key="submit" size="small"type="primary" :loading="modalOption.commitLoading">续 报</a-button>
-        </a-popconfirm>
+        <a-button key="back" @click="modalCancel">返 回</a-button>
+        <a-button v-if="sbType=='sb'" key="submit" type="primary" :loading="modalOption.commitLoading" @click="sgCommit">上 报</a-button>
+        <a-button v-if="sbType!='sb'" key="submit" type="primary" :loading="modalOption.commitLoading" @click="xbCommit">续 报</a-button>
       </template>
     </a-modal>
   </div>
@@ -96,7 +76,6 @@
   import SgForm from './comps/sgForm.vue'
   import moment from 'moment'
   import Vue from 'vue'
-  import { initColumn } from '@/utils/tableColumnInit'
 
   moment.locale('zh-cn');
 
@@ -113,7 +92,6 @@
           placeholder:'',
           searchOption:{}
         },
-        modalLoading:false,
         sbType:'sb',
         sbData:{},
         expandedRowKeys:[],
@@ -143,16 +121,14 @@
         },
         dataSource: [],
         columns: [
-//          {title: '序号', dataIndex: 'index', width: '80px', key:'index',align: 'center'},
-          {title: '编号', dataIndex: 'id', width: '80px', key:'id',align: 'left',titleAlign:'center',scopedSlots: {customRender: 'bh'}},
-          {title: '续报数', dataIndex: 'xbnum', width: '40px',key:'xbnum', align: 'center',},
-          {title: '接报来源',dataIndex: 'jbly', width: '120px',key:'jbly', align: 'left',titleAlign:'center'},
-          {title: '接报时间',dataIndex: 'jbtime', width: '100px',key:'jbtime', align: 'center'},
-          {title: '详细描述',dataIndex: 'jbms', width: '150px',key:'jbms', align: 'left',titleAlign:'center'},
-          {title: '发生时间',dataIndex: 'fstime', width: '100px',key:'fstime', align: 'center'},
-          {title: '审批状态', dataIndex: 'isend', width: '80px',key:'isend', align: 'center',scopedSlots: {customRender: 'status'}},
-          {title: '流程节点', dataIndex: 'lcname', width:'80px', key:'lcname',align: 'center',},
-          {title: '操作', dataIndex: 'actions', width: '100px', key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
+          {title: '编号', dataIndex: 'id', width: 120, key:'id',align: 'center',style:{'padding-left':'20px'}},
+          {title: '事故名称',dataIndex: 'sgnm', width: 100,key:'sgnm', align: 'left',slots:{title:'centerCell'}},
+          {title: '续报数', dataIndex: 'xbnum', width: 50,key:'xbnum', align: 'center',},
+          {title: '上报时间', dataIndex: 'uptime', width: 100, key:'uptime',align: 'center',},
+          {title: '上报人', dataIndex: 'upuser', width: 100,key:'upuser', align: 'center',},
+          {title: '审批状态', dataIndex: 'isend', width: 100,key:'isend', align: 'center',scopedSlots: {customRender: 'status'}},
+          {title: '流程节点', dataIndex: 'lcname', width: 100, key:'lcname',align: 'center',},
+          {title: '操作', dataIndex: 'actions', width: 100, key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
 //         {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
         ],
         // innerColumns: [
@@ -178,16 +154,14 @@
       }},
     created(){
       this.reqTableData()
-      this.columns=initColumn(this.columns)
     },
     mounted(){
 //      console.log(this.modalOption)
-      this.$nextTick(function () {
       let _this=this
       window.onresize = function(){
-         _this.table.scrollSize.y= window.innerHeight - 112                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 -250+'px'
+        _this.modalOption.bodyStyle['max-height']= window.innerHeight                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     -250+'px'
       }
-//      document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
+      document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
       //初始化选择项配置
         const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
         ls['企业类型'].forEach((item)=>{this.selectOptions.hyType.push([item.label,item.value])})
@@ -199,51 +173,45 @@
       const lsSearch=JSON.parse(localStorage.getItem('/asrsajjfixsearch'))['事故快报信息列表']
       this.search.placeholder="请输入"+lsSearch["0"][0].dispNm+"..."
       this.search.searchOption=lsSearch
-    })
-  },
+      console.log(lsSearch["0"])
+    },
     methods:{
       showModal(type){
         this.sbType=type=='sb'? 'sb':'xb'
         this.sbData=type=='sb'? {}:type
         this.modalOption.visible=true
       },
-      rowClass(record,index){
-        if (index%2==1) return 'even-rows'
-      },
       sgCommit(){
-//          debugger
         this.$refs.sgCommit.form.validateFields((err, values) => {
           if (!err) {
 //            this.$notification['error']({
 //              message: 'Received values of form:',
 //              description: JSON.stringify(values)
 //            })
-            this.modalLoading=true
-            values.jbtime=values.jbtime.format('YYYY-MM-DD HH:mm')
-            values.fstime=values.fstime.format('YYYY-MM-DD HH:mm')
+            this.modalOption.commitLoading=true
+            values.fssj=values.fssj.format('YYYY-MM-DD HH:mm')
 //            debugger
-//            if (values.sgdj) values.sgdj=this.selectOptions.sgdj.find(item=>item[0]==values.sgdj)[1]
-//            if (values.sglx) values.sglx=this.selectOptions.sglx.find(item=>item[0]==values.sglx)[1]
-//            if (values.shlb) values.shlb=this.selectOptions.shlb.find(item=>item[0]==values.shlb)[1]
-//            if (values.sgxz) values.sgxz=this.selectOptions.sgxz.find(item=>item[0]==values.sgxz)[1]
+            if (values.sgdj) values.sgdj=this.selectOptions.sgdj.find(item=>item[0]==values.sgdj)[1]
+            if (values.sglx) values.sglx=this.selectOptions.sglx.find(item=>item[0]==values.sglx)[1]
+            if (values.shlb) values.shlb=this.selectOptions.shlb.find(item=>item[0]==values.shlb)[1]
+            if (values.sgxz) values.sgxz=this.selectOptions.sgxz.find(item=>item[0]==values.sgxz)[1]
             const parameter={
               jsonData:JSON.stringify(values),
-              param1:sys_relateDepId2,
-              param2:values.shr
+              param1:sys_relateDepId2
             }
             addSgkb(parameter).then((res)=>{
                 if (res.success==true){
-                  this.$message.success('上报信息完成！')
+                  this.$message.success('上报成功！')
                   this.reqTableData()
                   setTimeout(()=>{
-                      this.modalLoading=false
+                      this.modalOption.commitLoading=false
                       this.modalOption.visible=false
                     }
-                    ,300
+                    ,500
                   )
                 }else{
                   this.$message.error(res.message+'请稍后再试！')
-                  this.modalLoading=false
+                  this.modalOption.commitLoading=false
                 }
             })
           }
@@ -253,33 +221,31 @@
       xbCommit(){
         this.$refs.sgCommit.form.validateFields((err, values) => {
           if (!err) {
-            this.modalLoading=true
-            values.jbtime=values.jbtime.format('YYYY-MM-DD HH:mm')
-            values.fstime=values.fstime.format('YYYY-MM-DD HH:mm')
+            this.modalOption.commitLoading=true
+            values.fssj=values.fssj.format('YYYY-MM-DD HH:mm')
 //            debugger
-//            if (values.sgdj) values.sgdj=this.selectOptions.sgdj.find(item=>item[0]==values.sgdj)[1]
-//            if (values.sglx) values.sglx=this.selectOptions.sglx.find(item=>item[0]==values.sglx)[1]
-//            if (values.shlb) values.shlb=this.selectOptions.shlb.find(item=>item[0]==values.shlb)[1]
-//            if (values.sgxz) values.sgxz=this.selectOptions.sgxz.find(item=>item[0]==values.sgxz)[1]
+            if (values.sgdj) values.sgdj=this.selectOptions.sgdj.find(item=>item[0]==values.sgdj)[1]
+            if (values.sglx) values.sglx=this.selectOptions.sglx.find(item=>item[0]==values.sglx)[1]
+            if (values.shlb) values.shlb=this.selectOptions.shlb.find(item=>item[0]==values.shlb)[1]
+            if (values.sgxz) values.sgxz=this.selectOptions.sgxz.find(item=>item[0]==values.sgxz)[1]
             values.id=this.sbType
             const parameter={
               jsonData:JSON.stringify(values),
-              param1:sys_relateDepId2,
-              param2:values.shr
+              param1:sys_relateDepId2
             }
             addSgkbxb(parameter).then((res)=>{
               if (res.success==true){
-                this.$message.success('续报成功！')
+                this.$message.success('上报成功！')
                 this.reqTableData()
                 setTimeout(()=>{
-                    this.modalLoading=false
+                    this.modalOption.commitLoading=false
                     this.modalOption.visible=false
                   }
-                  ,300
+                  ,500
                 )
               }else{
                 this.$message.error(res.message+'请稍后再试！')
-                this.modalLoading=false
+                this.modalOption.commitLoading=false
               }
             })
           }else{
@@ -289,7 +255,7 @@
 //        this.modalOption.visible=false
       },
       modalCancel(){
-        this.modalLoading=false
+        this.modalOption.commitLoading=false
         this.modalOption.visible=false
       },
       gotoSgsb(){
@@ -305,10 +271,9 @@
           this.expandedRowKeys=[]
         this.tableIsLoading=true
         const parameter={
-          sqlId:'S360006',
           param1:sys_relateDepId2,
-          param4:1,
           param5:1,
+
         }
         reqKuaiBaoList(parameter)
           .then((res)=>{
@@ -326,7 +291,6 @@
           this.expandedRowKeys.push(record.key)
           this.tableIsLoading=true
           const parameter={
-            sqlId:'S360006',
             param1:sys_relateDepId2,
             param6:record.id,
           }
@@ -357,13 +321,10 @@
         const tempData = res.data.filter(i=>{return !i.xbid || i.xbid== 0})
         tempData.forEach((data,index)=>{
           if(data.xbnum && data.xbnum !=0){data.children=[]}else{ data.xbnum = 0}
-//          data.index=index
           data.key=index+data.id
           data.upuser=data.__upuser.userName
           if (data.isend=='1'){data.lcname='已完结'}
           data.uptime=moment(data.uptime).format('YYYY-MM-DD \xa0 HH:mm')
-          data.jbtime=moment(data.jbtime).format('YYYY-MM-DD \xa0 HH:mm')
-          data.fstime=moment(data.fstime).format('YYYY-MM-DD \xa0 HH:mm')
         })
         this.$store.commit('ADD_KUAIBAO',tempData)
         this.dataSource = tempData
@@ -383,8 +344,6 @@
             item.xbnum='-'
             tmpData.push({...item})
             item.uptime=moment(item.xbtime).format('YYYY-MM-DD \xa0 HH:mm')
-            item.jbtime=moment(item.jbtime).format('YYYY-MM-DD \xa0 HH:mm')
-            item.fstime=moment(item.fstime).format('YYYY-MM-DD \xa0 HH:mm')
             this.dataSource.find(i => i.id==item.id).children.push(item)
             item.idBf=item.id
             item.id="续 "+ item.id + "-"+item.xbid
@@ -397,8 +356,8 @@
         this.pagination.current=page
         this.pagination.pageSize=pageSize
         this.reqTableData()
-//        console.log(page)
-//        console.log(pageSize)
+        console.log(page)
+        console.log(pageSize)
       },
       showSizeChange(current, size){
         const start=(this.pagination.current-1 )* this.pagination.pageSize
@@ -409,8 +368,8 @@
         }
         this.pagination.pageSize=size
         this.reqTableData()
-//        console.log(current)
-//        console.log(size)
+        console.log(current)
+        console.log(size)
       },
       routeChange(to,from){
         if(from.path=='/sgsb'){

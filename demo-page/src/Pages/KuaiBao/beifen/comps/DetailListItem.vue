@@ -1,5 +1,5 @@
 <template>
-      <a-col :lg="lg" :md="md">
+      <a-col :lg="lg">
         <div class="term">{{term}}</div>
         <div class="content">
           <slot></slot>
@@ -24,11 +24,6 @@
       lg:{
         type:Number,
         default:12,
-        required:false
-      },
-      md:{
-        type:Number,
-        default:24,
         required:false
       },
       col: {

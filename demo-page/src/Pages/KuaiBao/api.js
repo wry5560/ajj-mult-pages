@@ -7,6 +7,18 @@
 import { axios } from '@/utils/request'
 import Qs from 'qs'
 
+//通用查询api
+export function GeneralQuery(parameter) {
+  return axios({
+    url: process.env.NODE_ENV === 'production'
+      ?'/base/General.query.json'
+      : '/base/General.query.json',
+    method: 'get',
+    params: parameter,
+  })
+}
+
+
 // param1 sys_relateDepId2  查询流程名称
 
 export function reqSbLc(parameter) {
@@ -63,7 +75,7 @@ export function reqKuaiBaoList(parameter) {
       // : '/kuaibaoList',
       : '/base/General.query.json',
     method: 'get',
-    params: {sqlId:'S360006',...parameter},
+    params: {...parameter},
     headers: {
       "Content-Type": "application/json;charset=UTF-8",
     }
@@ -124,8 +136,8 @@ export function sgAudit (parameter){
   return axios({
     url: '/other/Ajjsgkb.sgaudit.json',
     // url: '/sgCommit',
-    method: 'post',
-    data: parameter,
+    method: 'get',
+    params: parameter,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
     }
@@ -149,3 +161,21 @@ export function addSgkbxb (parameter){
   })
 }
 
+//回复 审核
+//param1:id  流程的ID
+//param2:feedback 回复内容
+
+export function addSgkbFeedback(parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjsgkb.feedback.json',
+    // url: '/sgCommit',
+    method: 'get',
+    // method: 'post',
+    // data: parameter,
+    params: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}

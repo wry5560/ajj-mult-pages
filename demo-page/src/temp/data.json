@@ -1,106 +1,39 @@
 {
-  "jcb": [
+  "cmd": 0,
+  "data": [
     {
-      "id": "A-15",
-      "jcyj": "测试测试",
-      "ACTIVE_FLAG": "1",
-      "isphoto": null,
-      "jclx": "设备设施",
-      "systs": "测试测试",
-      "jcnr": "测试测试22",
-      "yhts": "测试测试",
-      "jclx2": null,
-      "__ddepartmentid": {
-        "areaid": "横琴",
-        "companyId": "555555",
-        "companyNm": "客户",
-        "departId": "9361",
-        "departName": "区安监局",
-        "firstItemId": "2",
-        "firstItemName": "演示企业",
-        "fullPath": "2|9361|",
-        "isRH": null,
-        "ltype": "0",
-        "relateDep1Id": "9361",
-        "relateDep2Id": "9361",
-        "relateDep3Id": "9361",
-        "relateDep4Id": "9361",
-        "relateDep5Id": "9361",
-        "shortNm": "横琴",
-        "topManageDepId": "2",
-        "topManageDepName": null
-      },
-      "sortNum": null,
-      "tmlx": "日常",
-      "departName": "区安监局"
+      "sfxs": "0",
+      "label": "土砂石开采",
+      "jgfl": "采矿",
+      "VALUE": "土砂石开采"
     },
     {
-      "id": "A-18",
-      "jcyj": "测试测试",
-      "ACTIVE_FLAG": "1",
-      "isphoto": null,
-      "jclx": "防护、保险、信号等装置装备",
-      "systs": "测试测试",
-      "jcnr": "测试测试",
-      "yhts": "测试测试",
-      "jclx2": null,
-      "__ddepartmentid": {
-        "areaid": "横琴",
-        "companyId": "555555",
-        "companyNm": "客户",
-        "departId": "9361",
-        "departName": "区安监局",
-        "firstItemId": "2",
-        "firstItemName": "演示企业",
-        "fullPath": "2|9361|",
-        "isRH": null,
-        "ltype": "0",
-        "relateDep1Id": "9361",
-        "relateDep2Id": "9361",
-        "relateDep3Id": "9361",
-        "relateDep4Id": "9361",
-        "relateDep5Id": "9361",
-        "shortNm": "横琴",
-        "topManageDepId": "2",
-        "topManageDepName": null
-      },
-      "sortNum": null,
-      "tmlx": "日常",
-      "departName": "区安监局"
+      "sfxs": "0",
+      "label": "化学矿开采",
+      "jgfl": "采矿",
+      "VALUE": "化学矿开采"
     },
     {
-      "id": "A-19",
-      "jcyj": "测试测试",
-      "ACTIVE_FLAG": "1",
-      "isphoto": null,
-      "jclx": "原辅物料、产品 ",
-      "systs": "测试测试",
-      "jcnr": "测试测试",
-      "yhts": "测试测试",
-      "jclx2": null,
-      "__ddepartmentid": {
-        "areaid": "横琴",
-        "companyId": "555555",
-        "companyNm": "客户",
-        "departId": "9361",
-        "departName": "区安监局",
-        "firstItemId": "2",
-        "firstItemName": "演示企业",
-        "fullPath": "2|9361|",
-        "isRH": null,
-        "ltype": "0",
-        "relateDep1Id": "9361",
-        "relateDep2Id": "9361",
-        "relateDep3Id": "9361",
-        "relateDep4Id": "9361",
-        "relateDep5Id": "9361",
-        "shortNm": "横琴",
-        "topManageDepId": "2",
-        "topManageDepName": null
-      },
-      "sortNum": null,
-      "tmlx": "日常",
-      "departName": "区安监局"
+      "sfxs": "0",
+      "label": "采盐",
+      "jgfl": "采矿",
+      "VALUE": "采盐"
+    },
+    {
+      "sfxs": "0",
+      "label": "石棉及其他非金属矿采选",
+      "jgfl": "采矿",
+      "VALUE": "石棉及其他非金属矿采选"
     }
-  ]
+  ],
+  "limit": 50,
+  "message": null,
+  "resultInfo": {
+    "status": 0,
+    "statusText": null
+  },
+  "start": 0,
+  "success": true,
+  "time": 1551241489769,
+  "totalCount": 0
 }
