@@ -37,7 +37,7 @@ const qyhuji = {
       return new Promise((resolve, reject) => {
         const parameter={
           // sqlId:'S610069.wg',
-          // param2:sys_relateDepId5,
+          // param2:sys_relateDepId2,
           ...params
         }
         queryQySfaq(parameter)
@@ -57,7 +57,7 @@ const qyhuji = {
       return new Promise((resolve, reject) => {
         const parameter={
           // sqlId:'S610069.wg',
-          // param2:sys_relateDepId5,
+          // param2:sys_relateDepId2,
           ...params
         }
         queryAjdwInfoByDepart(parameter)

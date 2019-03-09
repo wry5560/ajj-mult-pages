@@ -1,6 +1,6 @@
 <template>
   <div class="jxgl-tj">
-    <a-card :bordered="false" :loading="table.tableIsLoading">
+    <a-card :bordered="false" :loading="table.tableIsLoading" :bodyStyle="{'padding-top':'12px'}">
       <a-row>
         <a-col :sm="8" :xs="24">
           <div class="head-info center" >
@@ -18,7 +18,7 @@
         </a-col>
         <a-col :sm="8" :xs="24">
           <div class="head-info center" >
-            <a-progress type="circle" :percent="percent" :width="80" />
+            <a-progress type="circle" :percent="percent" :width="60" />
           </div>
         </a-col>
       </a-row>
@@ -225,20 +225,21 @@
       }
       p {
         color: rgba(0, 0, 0, .85);
-        font-size: 48px;
+        font-size: 36px;
         line-height: 32px;
         margin: 0;
       }
       em {
         background-color: #e8e8e8;
         position: absolute;
-        height: 56px;
+        height: 44px;
         width: 1px;
         top: 0;
         right: 0;
       }
     }
   }
+
   .content-list{
     padding-left:36px;
     .content-wrapper{

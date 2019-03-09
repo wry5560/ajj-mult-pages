@@ -29,9 +29,11 @@
         :expandedRowKeys="expandedRowKeys"
       >
         <span slot="actionCell" slot-scope="text,record,index" >
-          <a href="javascript:;" @click="gotoSgDetail(record)">查看详情</a>
+          <a  :disabled="record.sfkch!=1 || record.upuserId != userId" href="javascript:;" @click="showModal('ch',record)">撤回</a>
+          <a-divider :disabled="record.sfkch!=1 || record.upuserId!=userId" type="vertical" />
+          <a href="javascript:;" @click="gotoSgDetail(record)">详情</a>
           <a-divider v-if="record.xbid==0" type="vertical" />
-          <a v-if="record.xbid==0" href="javascript:;" @click="showModal(record)">续报</a>
+          <a v-if="record.xbid==0" href="javascript:;" @click="showModal('xb',record)">续报</a>
         </span>
         <span slot="bh" slot-scope="text,record,index" >{{text}}</span>
         <template slot="status" slot-scope="isend">
@@ -76,7 +78,7 @@
 
     >
       <a-spin  :spinning="modalLoading">
-      <sg-form :sbType="sbType" :sbData="sbData" :selectOptions="selectOptions" ref="sgCommit" :showSubmit="false"></sg-form>
+      <sg-form  :sbType="sbType" :sbData="sbData" :selectOptions="selectOptions" ref="sgCommit" :showSubmit="false"></sg-form>
       </a-spin>
       <template slot="footer">
         <a-button key="back" size="small"@click="modalCancel">返 回</a-button>
@@ -84,7 +86,10 @@
         <a-button v-if="sbType=='sb'" key="submit" size="small"type="primary" :loading="modalOption.commitLoading" >上 报</a-button>
         </a-popconfirm>
         <a-popconfirm title="您确认上报当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="xbCommit">
-        <a-button style="margin-left: 8px" v-if="sbType!='sb'" key="submit" size="small"type="primary" :loading="modalOption.commitLoading">续 报</a-button>
+        <a-button style="margin-left: 8px" v-if="sbType=='xb'" key="submit" size="small"type="primary" :loading="modalOption.commitLoading">续 报</a-button>
+        </a-popconfirm>
+        <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="chCommit">
+          <a-button style="margin-left: 8px" v-if="sbType=='ch'" key="submit" size="small"type="primary" :loading="modalOption.commitLoading">确认</a-button>
         </a-popconfirm>
       </template>
     </a-modal>
@@ -92,7 +97,7 @@
 </template>
 
 <script>
-  import {reqKuaiBaoList,addSgkb,reqSbLc,addSgkbxb,searchKuaiBaoList} from './api'
+  import {reqKuaiBaoList,addSgkb,reqSbLc,addSgkbxb,searchKuaiBaoList,GeneralQuery,chehuiSgkb} from './api'
   import SgForm from './comps/sgForm.vue'
   import moment from 'moment'
   import Vue from 'vue'
@@ -108,6 +113,10 @@
     },
     data(){
       return {
+        form: this.$form.createForm(this),
+        userId:userId,
+        shrList:[],
+        record:null,
         search:{
           searchValue:'',
           placeholder:'',
@@ -125,7 +134,7 @@
           },
           commitLoading:false
         },
-        scrollSize: { x:1022, y: window.innerHeight - 120},
+        scrollSize: { x:1080, y: window.innerHeight - 120},
         tableIsLoading: false,
         pagination:{
           total:0,
@@ -145,7 +154,8 @@
         columns: [
 //          {title: '序号', dataIndex: 'index', width: '80px', key:'index',align: 'center'},
           {title: '编号', dataIndex: 'id', width: '80px', key:'id',align: 'left',titleAlign:'center',scopedSlots: {customRender: 'bh'}},
-          {title: '续报数', dataIndex: 'xbnum', width: '40px',key:'xbnum', align: 'center',},
+          {title: '续报数', dataIndex: 'xbnum', width: '60px',key:'xbnum', align: 'center',},
+          {title: '续报标题', dataIndex: 'xbtitle', width: '100px',key:'xbnum', align: 'center',},
           {title: '接报来源',dataIndex: 'jbly', width: '120px',key:'jbly', align: 'left',titleAlign:'center'},
           {title: '接报时间',dataIndex: 'jbtime', width: '100px',key:'jbtime', align: 'center'},
           {title: '详细描述',dataIndex: 'jbms', width: '150px',key:'jbms', align: 'left',titleAlign:'center'},
@@ -202,9 +212,10 @@
     })
   },
     methods:{
-      showModal(type){
-        this.sbType=type=='sb'? 'sb':'xb'
-        this.sbData=type=='sb'? {}:type
+      showModal(type,record){
+        this.sbType=type
+        this.sbData=type=='sb'? {}:record
+        this.record=record
         this.modalOption.visible=true
       },
       rowClass(record,index){
@@ -261,7 +272,7 @@
 //            if (values.sglx) values.sglx=this.selectOptions.sglx.find(item=>item[0]==values.sglx)[1]
 //            if (values.shlb) values.shlb=this.selectOptions.shlb.find(item=>item[0]==values.shlb)[1]
 //            if (values.sgxz) values.sgxz=this.selectOptions.sgxz.find(item=>item[0]==values.sgxz)[1]
-            values.id=this.sbType
+            values.id=this.record.id
             const parameter={
               jsonData:JSON.stringify(values),
               param1:sys_relateDepId2,
@@ -287,6 +298,51 @@
           }
         })
 //        this.modalOption.visible=false
+      },
+      chCommit(){
+        this.$refs.sgCommit.form.validateFields((err, values) => {
+          if (!err) {
+//              debugger
+            this.modalLoading=true
+            values.jbtime=values.jbtime.format('YYYY-MM-DD HH:mm')
+            values.fstime=values.fstime.format('YYYY-MM-DD HH:mm')
+            values.xbid=this.record.xbid.toString()
+            values.id=this.record.xbid==0 ? this.record.id:this.record.idBf
+            const sgData={...this.record}
+            sgData.id=this.record.xbid==0 ? this.record.id:this.record.idBf
+            const chly=values.chly
+            const shr=values.shr
+            delete values.chly
+//            values.xbid=this.record.xbid
+            delete sgData.idBf
+            sgData.jbtime=values.jbtime
+            sgData.fstime=values.fstime
+            sgData.jbly=values.jbly
+            sgData.jbms=values.jbms
+            console.log(JSON.stringify(sgData))
+            const parameter={
+              jsonData:encodeURI(JSON.stringify(values)),
+              param1:encodeURI(chly),
+              param2:'3',
+              param3:shr
+            }
+            chehuiSgkb(parameter).then((res)=>{
+              if (res.success==true){
+                this.$message.success('上报信息完成！')
+                this.reqTableData()
+                setTimeout(()=>{
+                    this.modalLoading=false
+                    this.modalOption.visible=false
+                  }
+                  ,300
+                )
+              }else{
+                this.$message.error(res.message+'请稍后再试！')
+                this.modalLoading=false
+              }
+            })
+          }
+        })
       },
       modalCancel(){
         this.modalLoading=false
@@ -360,6 +416,8 @@
 //          data.index=index
           data.key=index+data.id
           data.upuser=data.__upuser.userName
+          data.upuserId=data.__upuser.userId
+
           if (data.isend=='1'){data.lcname='已完结'}
           data.uptime=moment(data.uptime).format('YYYY-MM-DD \xa0 HH:mm')
           data.jbtime=moment(data.jbtime).format('YYYY-MM-DD \xa0 HH:mm')
@@ -379,6 +437,7 @@
           if(item.xbid && item.xbid>0){
             item.key=item.id + item.xbid+itemIndex
             item.upuser=item.__upuser.userName
+            item.upuserId=item.__upuser.userId
             if (item.isend=='1'){item.lcname='已完结'}
             item.xbnum='-'
             tmpData.push({...item})
@@ -453,9 +512,39 @@
             }
           })
           .catch(err=>{})
+      },
+      chehui(record){
+        this.record=record;
+        this.sbType='ch'
+        this.modalOption.visible=true
+      },
+      reqShrList(){
+        const parameter={
+          sqlId:'S360015',
+          param1:sys_relateDepId2,
+          param2:1,
+          limit:1000,
+          start:0
+        }
+        GeneralQuery(parameter)
+          .then((res)=>{
+            if(res.success){
+              this.shrList=[]
+              res.data.forEach((item)=>{
+                this.shrList.push({
+                  value:item.id,
+                  label:item.name
+                })
+              })
+            }else{
+              message.error('获取审核人列表失败！')
+            }
+          })
+          .catch(err=>console.log(JSON.stringify(err)))
       }
-
     },
+
+
 
   }
 </script>

@@ -19,21 +19,21 @@
           </a-form-item>
         </a-col>
       </a-row>
-      <a-row :gutter="16">
-        <a-col :lg="11" :md="12" :sm="24">
-          <a-form-item label="排序号" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-            <a-input-number style="width: 100%"  placeholder="请输入排序号" v-decorator="['sortNum',{rules: [{ required: true, message: '请输入排序号', whitespace: true,type:'number'}],initialValue: initialValues.sortNum}]" />
-          </a-form-item>
-        </a-col>
-        <a-col :lg="11">
-          <a-form-item label="所属部门" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-            <a-select   placeholder="请选择所属部门" allowClear @focus="reqDepartments" :labelInValue="true"
-                        v-decorator="['departName',{rules: [{ required: true, message: '请选择所属部门', whitespace: true,validateTrigger:'blur',type:'object'}],initialValue: initialValues.depart}]" >
-              <a-select-option v-for="(item) in privateSelectOptions.departNames" :key="item.id" :value="item.id">{{item.name}}</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-      </a-row>
+      <!--<a-row :gutter="16">-->
+        <!--<a-col :lg="11" :md="12" :sm="24">-->
+          <!--<a-form-item label="排序号" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">-->
+            <!--<a-input-number style="width: 100%"  placeholder="请输入排序号" v-decorator="['sortNum',{rules: [{ required: true, message: '请输入排序号', whitespace: true,type:'number'}],initialValue: initialValues.sortNum}]" />-->
+          <!--</a-form-item>-->
+        <!--</a-col>-->
+        <!--<a-col :lg="11">-->
+          <!--<a-form-item label="所属部门" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">-->
+            <!--<a-select   placeholder="请选择所属部门" allowClear @focus="reqDepartments" :labelInValue="true"-->
+                        <!--v-decorator="['departName',{rules: [{ required: true, message: '请选择所属部门', whitespace: true,validateTrigger:'blur',type:'object'}],initialValue: initialValues.depart}]" >-->
+              <!--<a-select-option v-for="(item) in privateSelectOptions.departNames" :key="item.id" :value="item.id">{{item.name}}</a-select-option>-->
+            <!--</a-select>-->
+          <!--</a-form-item>-->
+        <!--</a-col>-->
+      <!--</a-row>-->
     </a-form>
   </div>
 </template>

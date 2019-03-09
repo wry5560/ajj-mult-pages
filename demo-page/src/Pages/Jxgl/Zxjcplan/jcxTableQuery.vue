@@ -568,6 +568,7 @@
         }
         this.$store.dispatch(reqSelList,parameter)
           .then((res)=>{
+            debugger
             this.modalOption.table.dataSource=this.$store.getters[getSelList]
             this.table.dataSource.forEach((item)=>{
               const index=this.modalOption.table.dataSource.findIndex(i=>i.id==item.laiyuanId)

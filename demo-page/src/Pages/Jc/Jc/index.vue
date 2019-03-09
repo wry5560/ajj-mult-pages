@@ -93,6 +93,12 @@
 
           <a href="javascript:;" @click="showModal('jc',record)">检查</a>
         </span>
+        <span slot="jcYdCell" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="showModal('jcYdDetail',record)">{{text}}</a>
+        </span>
+        <span slot="jcJdCell" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="showModal('jcJdDetail',record)">{{text}}</a>
+        </span>
         <span slot="defaultcustomRender" slot-scope="text,record,index">
           <template>
             <a-tooltip :mouseEnterDelay="0.8">
@@ -127,6 +133,7 @@
       <a-modal
         :title="modalOption.title"
         @cancel="modalCancel"
+        :style="modalOption.style"
         :visible="modalOption.visible"
         :destroyOnClose="true"
         :maskClosable="false"
@@ -134,29 +141,35 @@
         :width="modalOption.width"
         :bodyStyle="modalOption.bodyStyle"
       >
-        <a-spin  :spinning="modalLoading">
 
+        <a-spin  :spinning="modalLoading">
+          <!--页面特殊组件-->
+         <jc-form v-if="modalOption.modelType =='jc'" @cancel="modalCancel" :departmentId="modalOption.recordId" :qyid="qyid" :height="modalOption.bodyStyle.height" />
+
+          <jc-detail v-if="modalOption.modelType =='jcDetail'" :jcType="modalOption.jcType"  @cancel="modalCancel" :departmentId="modalOption.recordId" :qyid="qyid" :height="modalOption.bodyStyle.height"/>
+
+          <!--基础增删组件-->
           <edit-form
-            v-if="this.modalOption.modelType =='add'||this.modalOption.modelType =='edit'"
+            v-if="modalOption.modelType =='add'||modalOption.modelType =='edit'"
             :selectOptions="modalOption.selectOptions"
             :recordId="modalOption.recordId"
             :modelType="modalOption.modelType"
             ref="commitForm"/>
-
           <data-detail
-            v-if="this.modalOption.modelType=='query'"
+            v-if="modalOption.modelType=='query'"
             :recordId="modalOption.recordId" />
 
         </a-spin>
         <template slot="footer" >
-          <a-button v-show="this.modalOption.modelType!='map'" key="back" @click="modalCancel" size="small">返 回</a-button>
-          <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
-            <a-button v-show="this.modalOption.modelType!='query'&&this.modalOption.modelType!='map'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>
+          <a-button v-show="modalOption.modelType !='jc'" key="back" @click="modalCancel" size="small">返 回</a-button>
+          <!--<a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">-->
+          <a-popconfirm title="您确认导出当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="exportJcdDetail">
+            <!--<a-button v-show="modalOption.modelType !='jc'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>-->
+            <a-button v-show="modalOption.modelType !='jc'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">导出现场检查单</a-button>
           </a-popconfirm>
         </template>
       </a-modal>
     </div>
-
   </div>
 </template>
 
@@ -168,7 +181,10 @@
   import {GeneralQuerySelChildren} from '../api'
 
   //组件
+  import jcForm from '../comps/jcForm.vue'
+  import jcDetail from '../comps/jcDetail.vue'
 
+  //页面全局变量
 
   const pageName='jiancha'
   const modalTitle="检查"   //模态框的title标题通用变量
@@ -191,42 +207,18 @@
   export default {
     name:pageName,
     components:{
-
+      jcForm,
+      jcDetail
     },
 
     data(){
         return{
-
+          pageLoading:false,
           modalLoading:false,                //弹框的loading动画开关
           pageTitle:modalTitle,
           pageName:pageName,
-          options: [
-            {
-              value: "zhejiang",
-              label: "Zhejiang",
-              isLeaf: false
-            },
-            {
-              value: "jiangsu",
-              label: "Jiangsu",
-              isLeaf: false
-            },
-            {
-              value: "jiangsu1",
-              label: "Jiangsu",
-              isLeaf: false
-            },
-            {
-              value: "jiangsu2",
-              label: "Jiangsu",
-              isLeaf: false
-            },
-            {
-              value: "jiangsu3",
-              label: "Jiangsu",
-              isLeaf: false
-            }
-          ],
+
+          qyid:'',
           //搜索配置
           search:{
             placeholder:'',
@@ -250,6 +242,8 @@
               {title: '企业类型', dataIndex: 'qylx0', width: '200px', align: 'left',titleAlign:'center'},
               {title: '安全负责人', dataIndex: 'safefzr', width: '100px', align: 'center',titleAlign:'center'},
               {title: '安全负责人电话', dataIndex: 'safefzrlxfs', width: '100px', align: 'center',titleAlign:'center'},
+              {title: '本月检查数', dataIndex: 'jcnum', width: '80px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'jcYdCell'}},
+              {title: '本季检查数', dataIndex: 'jdjcnum', width: '80px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'jcJdCell'}},
               {title: '本季隐患数', dataIndex: 'jdyhnum', width: '80px', align: 'center',titleAlign:'center'},
               {title: '本年隐患数', dataIndex: 'bnyhnum', width: '80px', align: 'center',titleAlign:'center'},
               {title: '本年已整改数', dataIndex: 'bnyzgnum', width: '80px', align: 'center',titleAlign:'center'},
@@ -257,7 +251,7 @@
             ],
             size:'small',
             tableIsLoading:false,
-            scrollSize: { x:1050, y: window.innerHeight - 112},
+            scrollSize: { x:1450, y: window.innerHeight - 112},
 //           rowSelection:{
 //             selectedRowKeys: [],
 //             onChange: this.onSelectChange,
@@ -277,12 +271,15 @@
 
           //弹出框配置
           modalOption:{
+            style:{top:'20px'},
             title:'',
-            width:'65%',
+            width:'95%',
             visible:false,
             bodyStyle:{
-              "max-height":window.innerHeight-250 + 'px',
-              "min-height":100
+//              "max-height":window.innerHeight-80 + 'px',
+              "height":window.innerHeight-80 + 'px',
+              'padding':0
+//              "min-height":window.innerHeight-80 + 'px',
             },
             commitLoading:false,
             mapCity:'珠海',
@@ -294,6 +291,7 @@
             selectOptions:{},
             recordId:'',
             modelType:'',
+            jcType:'',
             modalClass:'nomal-modal'
           }
 
@@ -324,8 +322,9 @@
         let _this=this
         window.onresize = function(){
           _this.table.scrollSize.y=  _this.search.showAdvanced ? window.innerHeight - 190 :window.innerHeight - 112
+          _this.modalOption.bodyStyle.height=window.innerHeight-80 + 'px'
         }
-        // document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
+         document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight}px`
 
         //初始化选择项,存入vuex相应store的state中
         const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
@@ -347,8 +346,8 @@
     },
 
     methods:{
-      // ...mapGetters(['yingji_wz_list','yingji_wz_selOptions','getWzById']),
-      // ...mapActions(['reqWzList','createYjwz','editYjwz','delYjwz','editYjwzGps']),
+       ...mapGetters(['jczf_jcjl_info']),
+       ...mapActions(['exportJcDetail','downloadJcDetailFile']),
 
 
 //------------------------------------------------------------------通用方法区域-----------------------------------------------------------------------
@@ -367,10 +366,10 @@
         this.search.advancedForm.gmjjhyfl=undefined
         this.search.advancedForm.jghy=undefined
         if (this.search.showAdvanced){
-          this.table.scrollSize={ x:920, y: window.innerHeight - 190}
+          this.table.scrollSize.y= window.innerHeight - 190
           document.getElementsByClassName('ant-table-body')[0].style['']=`${window.innerHeight}px`
         }else{
-          this.table.scrollSize={ x:920, y: window.innerHeight - 112}
+          this.table.scrollSize.y= window.innerHeight - 112
         }
       },
 
@@ -504,15 +503,46 @@
           case 'jc':
             this.modalOption.title='企业检查'
             this.modalOption.modelType='jc'
-            this.modalOption.width='85%'                             //修改弹出框的宽度
-            this.modalOption.modalClass ='nomal-modal '
+            this.modalOption.recordId=record.departmentId
+            this.qyid=record.id
+//            this.modalOption.width='90%'                             //修改弹出框的宽度
+            this.modalOption.bodyStyle.height=window.innerHeight-80 + 'px'
+            this.modalOption.modalClass ='nomal-modal no-footer'
+            break;
+          case 'jcYdDetail' :
+            this.modalOption.title='企业检查详情'
+            this.modalOption.modelType='jcDetail'
+            this.modalOption.jcType=type
+            this.modalOption.recordId=record.departmentId
+            this.modalOption.bodyStyle.height=window.innerHeight-120 + 'px'
+            this.qyid=record.id
+//            this.modalOption.width='90%'                             //修改弹出框的宽度
+            this.modalOption.modalClass ='nomal-modal'
+            break;
+          case 'jcJdDetail':
+            this.modalOption.title='企业检查详情'
+            this.modalOption.modelType='jcDetail'
+            this.modalOption.jcType=type
+            this.modalOption.recordId=record.departmentId
+            this.modalOption.bodyStyle.height=window.innerHeight-120 + 'px'
+            this.qyid=record.id
+//            this.modalOption.width='90%'                             //修改弹出框的宽度
+            this.modalOption.modalClass ='nomal-modal'
             break;
         }
         this.modalOption.visible=true
       },
-      modalCancel(){
-        this.modalLoading=false
-        this.modalOption.visible=false
+      modalCancel(type){
+        if(type=='success') {
+          this.refresh()
+          setTimeout(()=>{
+            this.modalLoading=false
+            this.modalOption.visible=false
+          },300)
+        }else{
+          this.modalLoading=false
+          this.modalOption.visible=false
+        }
       },
 
       //----------------------------------------------分页器通用方法------------------------------
@@ -703,6 +733,57 @@
           })
           .catch((err)=>{JSON.stringify(err)})
       },
+
+      //导出现场检查单
+      exportJcdDetail(){
+        this.modalLoading=true
+          const data={
+            zfjc: this.jczf_jcjl_info()[0].jcd,
+            zfjcdetail:this.jczf_jcjl_info()[0].jcddetail,
+          }
+        data.zfjc.jctimestart=moment( data.zfjc.jctimestart).format('YYYY-MM-DD HH:ss')
+        data.zfjc.jctimeend=moment( data.zfjc.jctimeend).format('YYYY-MM-DD HH:ss')
+        data.zfjc.fctimestart=moment( data.zfjc.fctimestart).format('YYYY-MM-DD HH:ss')
+        data.zfjc.fctimeend=moment( data.zfjc.fctimeend).format('YYYY-MM-DD HH:ss')
+        const parameter={
+          jsonData:JSON.stringify(data),
+          param2: "10002074"
+        }
+        this.exportJcDetail(parameter)
+          .then((res)=>{
+            if(res.success){
+              const param={
+                  param1:encodeURI(res.data[0].filePath)
+              }
+              this.downloadJcDetailFile(param)
+                .then((data)=>{
+                  let blob = new Blob([data], {
+                    type : "application/msword"
+                  });
+                  let fileName = '现场检查记录';
+                  /*
+                   * var a = document.createElement("a"); document.body.appendChild(a); a.download = fileName; a.href = URL.createObjectURL(blob); window.location =
+                   * URL.createObjectURL(blob);
+                   */
+                  if (window.navigator.msSaveOrOpenBlob) {
+                    navigator.msSaveBlob(blob, fileName);
+                  } else {
+                    let link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = fileName;
+                    link.click();
+                    window.URL.revokeObjectURL(link.href);
+                  }
+                    this.modalLoading=false
+
+                })
+            }else{
+              this.$message.error(res.message)
+              this.modalLoading=false
+            }
+          })
+          .catch((err)=>{JSON.stringify(err)})
+      }
     }
   }
 

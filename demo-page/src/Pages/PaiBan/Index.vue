@@ -87,6 +87,7 @@
           if (a==0){
             this.openKeys=[]
           }
+          this.initStaffList()
         },
       clickMonth(record){
         this.selMonth=record.key
@@ -148,9 +149,12 @@
               {type:'四级',titleText:'',nameList:[]},
               {type:'五级',titleText:'',nameList:[]}
             ]
+            res.data.sort((a,b)=>{
+                return a.sortNum-b.sortNum
+            })
             res.data.forEach(item=>{
               staffList.forEach(level =>{
-                if (level.type===item.userlevel) level.nameList.push({name:item.__uuserid.userName,id:item.__uuserid.userId,sex:item.__uuserid.sex,mobilePhone:item.__uuserid.mobilePhone})
+                if (level.type===item.userlevel) level.nameList.push({name:item.__uuserid.userName,id:item.__uuserid.userId,sex:item.__uuserid.sex,mobilePhone:item.__uuserid.mobilePhone,sortNum:item.sortNum})
               })
             })
             staffList[0].titleText=res.data[0].lv1name;

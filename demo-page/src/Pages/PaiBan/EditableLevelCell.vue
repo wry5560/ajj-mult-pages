@@ -1,25 +1,27 @@
 <template>
   <div class='editable-cell'>
     <div class='editable-cell-input-wrapper'>
-      <a-select
-        size="small"
-        style="width:100%"
-        defaultValue=""
-        :defaultOpen="defaultOpen"
-        @change="handleChange"
-        notFoundContent="请选择级别"
-      >
-        <a-select-option v-for="(item,index) in selectItem" :key="index">
-          {{item}}
-        </a-select-option>
-      </a-select>
+      <!--<a-select-->
+        <!--size="small"-->
+        <!--style="width:100%"-->
+        <!--defaultValue=""-->
+        <!--:defaultOpen="defaultOpen"-->
+        <!--@change="handleChange"-->
+        <!--notFoundContent="请选择级别"-->
+      <!--&gt;-->
+        <!--<a-select-option v-for="(item,index) in selectItem" :key="index">-->
+          <!--{{item}}-->
+        <!--</a-select-option>-->
+      <!--</a-select>-->
+      <a-input-number  size="small" style="width:60%" :defaultValue="value"></a-input-number>
+
     </div>
   </div>
 </template>
 <script>
   export default {
     props: {
-      text: String,
+      text: [String,Number],
       selectItem:Array,
       record:Object,
       type:String

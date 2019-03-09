@@ -2,10 +2,12 @@
 		 pageEncoding="utf-8" errorPage="/hasNoRight.jsp"%>
 
 		 <script>
-     	var sys_relateDepId2 = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getRelateDep2()%>';
-     	var sys_relateDepId5 = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getRelateDep5()%>';
-     	var departmentId = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getDepartmentId()%>';
-     	var departmentNm = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getDepartmentNm()%>';
-     	var userId = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getUserId()%>';
-     	var userNm = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getUserName()%>';
-     	</script>
+         var sys_relateDepId2 = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getRelateDep2()%>';
+         var sys_relateDepId5 = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getRelateDep5()%>';
+         var departmentId = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getDepartmentId()%>';
+         var departmentNm = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getDepartmentNm()%>';
+         var userId = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getUserId()%>';
+         var userNm = '<%=((cn.com.gsoft.base.listener.UserSession) request.getSession().getAttribute("userSession")).getUserName()%>';
+         var sys_menuId= '<%=request.getAttribute("menuId")%>';
+         var userLevel = '<%=((cn.com.gsoft.base.listener.UserSession)request.getSession().getAttribute("userSession")).getUserLevel()%>';
+      </script>

@@ -28,7 +28,10 @@ const peizhi = {
         GeneralQuery(parameter)
           .then((res)=>{
             if(res.success){
-              res.data.forEach(item=>item.key=item.id)
+              res.data.forEach((item,index)=>{
+                item.key=item.id
+                item.index=index+1
+              })
               commit('INIT_KBSHRY_LIST',res.data)
               resolve(res)
             }else{
@@ -112,15 +115,15 @@ const peizhi = {
       const list=[]
       state.kuaibaoShry.list.forEach((item,index)=>{
         const tmp={}
-        tmp.index=index
+        tmp.index=index+1
         tmp.userName=item.__uuserid.userName
         tmp.userlevel=item.userlevel
         tmp.sortNum=item.sortNum
-        tmp.departName=item.__ddepartmentid.departName
+        tmp.departName=item.__uuserid.departmentName
         tmp.userId=item.__uuserid.userId
         tmp.key=item.id
         tmp.id=item.id
-        tmp.departId=item.__ddepartmentid.departId
+        tmp.departId=item.__uuserid.departmentId
         list.push(tmp)
       })
       return list
@@ -131,11 +134,11 @@ const peizhi = {
       tmp.userName=target.__uuserid.userName
       tmp.userlevel=target.userlevel
       tmp.sortNum=target.sortNum
-      tmp.departName=target.__ddepartmentid.departName
+      tmp.departName=target.__uuserid.departmentName
       tmp.userId=target.__uuserid.userId
       tmp.key=target.id
       tmp.id=target.id
-      tmp.departId=target.__ddepartmentid.departId
+      tmp.departId=target.__uuserid.departmentId
       return tmp
     },
     peizhi_kbshry_selOptions:(state)=>{

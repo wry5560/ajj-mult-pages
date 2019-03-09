@@ -65,20 +65,20 @@
                 <a-col :span="8" style="text-align: center">{{levelPanes.levelList.lv5Num}}人</a-col>
               </a-row>
             </a-menu-item>
-            <a-menu-item class="role-item " key="6">
-              <a-row style="background:none;">
-                <a-col :span="8" style="text-align: center">其他</a-col>
-                <a-col :span="8" style="text-align: center">-</a-col>
-                <a-col :span="8" style="text-align: center">{{this.levelPanes.levelList.lv6Num}}人</a-col>
-              </a-row>
-            </a-menu-item>
-            <a-menu-item class="role-item " key="7">
-              <a-row style="background:none;">
-                <a-col :span="8" style="text-align: center">全部</a-col>
-                <a-col :span="8" style="text-align: center">-</a-col>
-                <a-col :span="8" style="text-align: center">{{this.levelPanes.levelList.lv7Num}}人</a-col>
-              </a-row>
-            </a-menu-item>
+            <!--<a-menu-item class="role-item " key="6">-->
+              <!--<a-row style="background:none;">-->
+                <!--<a-col :span="8" style="text-align: center">其他</a-col>-->
+                <!--<a-col :span="8" style="text-align: center">-</a-col>-->
+                <!--<a-col :span="8" style="text-align: center">{{this.levelPanes.levelList.lv6Num}}人</a-col>-->
+              <!--</a-row>-->
+            <!--</a-menu-item>-->
+            <!--<a-menu-item class="role-item " key="7">-->
+              <!--<a-row style="background:none;">-->
+                <!--<a-col :span="8" style="text-align: center">全部</a-col>-->
+                <!--<a-col :span="8" style="text-align: center">-</a-col>-->
+                <!--<a-col :span="8" style="text-align: center">{{this.levelPanes.levelList.lv7Num}}人</a-col>-->
+              <!--</a-row>-->
+            <!--</a-menu-item>-->
           </a-menu>
           <div class="editable-bar" >
             <a v-if="!levelPanes.editable &&!levelPanes.loading" href="javascript:" @click="editLevelName">修改级别名称</a>
@@ -99,20 +99,21 @@
         </a-modal>
         <div  class="header-buttons-bar">
           <a-button size="small" type="primary" style="margin-left: 8px" :disabled="levelPanes.selectedKey=='7'" @click="showSelTable">批量添加</a-button>
-          <a-button @click="refresh" size="small" >刷 新</a-button>
+
           <a-popover  trigger="click" placement="bottomLeft" @visibleChange="popoverVisibleChange">
-            <a-button @click="openMultiChange" v-if="!toMultiChange" size="small" :style="{'margin-left':'5px'}" :disabled="staffTable.rowSelection.selectedRowKeys.length<2">批量修改</a-button>
-            <a-button @click="toConfirm" v-else="toMultiChange" size="small" :style="{'margin-left':'5px'}" >保存修改</a-button>
+            <!--<a-button @click="openMultiChange" v-if="!toMultiChange" size="small" :style="{'margin-left':'5px'}" :disabled="staffTable.rowSelection.selectedRowKeys.length<2">批量修改</a-button>-->
+            <!--<a-button @click="toConfirm" v-if="toMultiChange" size="small" :style="{'margin-left':'5px'}" >保存修改</a-button>-->
             <div slot="content"style="width: 200px">
               <editable-level-cell v-if="toMultiChange" @levelChange="onLevelChange"  :selectItem="selectItem" type="multi"></editable-level-cell>
               <a-button @click="toConfirm" type="primary" size="small" :style="{'margin-top':'5px'}" >保存</a-button>
             </div>
           </a-popover>
           <a-button @click="deleteStaffLevel('multi')" size="small" :disabled="levelPanes.selectedKey=='6'||staffTable.rowSelection.selectedRowKeys.length<2">批量删除</a-button>
-          <a-button-group >
-            <a-button @click="sortUP" size="small" icon="up" style="margin-right: 0" :disabled="levelPanes.selectedKey=='6'||levelPanes.selectedKey=='7'||staffTable.rowSelection.selectedRowKeys.length!=1"></a-button>
-            <a-button @click="sortDown"size="small"  icon="down" :disabled="levelPanes.selectedKey=='6'||levelPanes.selectedKey=='7'||staffTable.rowSelection.selectedRowKeys.length!=1"></a-button>
-          </a-button-group>
+          <!--<a-button-group >-->
+            <!--<a-button @click="sortUP" size="small" icon="up" style="margin-right: 0" :disabled="levelPanes.selectedKey=='6'||levelPanes.selectedKey=='7'||staffTable.rowSelection.selectedRowKeys.length!=1"></a-button>-->
+            <!--<a-button @click="sortDown"size="small"  icon="down" :disabled="levelPanes.selectedKey=='6'||levelPanes.selectedKey=='7'||staffTable.rowSelection.selectedRowKeys.length!=1"></a-button>-->
+          <!--</a-button-group>-->
+          <a-button @click="refresh" size="small" >刷 新</a-button>
           <a-input-search
             placeholder="请输入人员名称..."
             style="width: 200px"
@@ -151,15 +152,18 @@
         >
           <template slot="editLevel" slot-scope="text, record,index">
             <a-tooltip :mouseEnterDelay="0.8">
-            <span v-if="record.editable">
-
-              <editable-level-cell  @levelChange="onLevelChange" :text="mapLevelName(text)" :selectItem="selectItem" :record="record"></editable-level-cell>
-            </span>
-            <div v-else style="width: 100%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{mapLevelName(text)}}</div>
+            <span>
+              <editable-sort-cell  :editable="record.editable" :text="record.sortNum"  :record="record"></editable-sort-cell>
+              </span>
+            <!--<span v-if="record.editable">-->
+              <!--<editable-level-cell  @levelChange="onLevelChange" :text="mapLevelName(text)" :selectItem="selectItem" :record="record"></editable-level-cell>-->
+            <!--</span>-->
+            <!--<div v-else style="width: 100%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{text}}</div>-->
             </a-tooltip>
           </template>
           <span slot="actionCell" slot-scope="text,record,index" >
-            <a href="javascript:;" @click="changeEditable(record)">修改级别</a>
+            <a href="javascript:;"  v-if="!record.editable" @click="changeEditable(record)">修改排序</a>
+            <a href="javascript:;" v-if="record.editable"  @click="changeSortNum(record)">保存排序</a>
             <a-divider  type="vertical" />
             <a  href="javascript:;" @click="deleteStaffLevel(record)" :disabled="levelPanes.selectedKey=='6'">删除</a>
           </span>
@@ -221,8 +225,8 @@
                 <span v-else>{{mapLevelName(text)}}</span>
               </template>
               <span slot="actionCell" slot-scope="text,record,index" >
-            <a href="javascript:;" @click="changeEditable(record)">修改级别</a>
-            <a-divider  type="vertical" />
+            <!--<a href="javascript:;" @click="changeEditable(record)">修改级别</a>-->
+            <!--<a-divider  type="vertical" />-->
             <a  href="javascript:;" @click="deleteStaffLevel(record)" :disabled="levelPanes.selectedKey=='6'">删除</a>
           </span>
               <span slot="defaultcustomRender" slot-scope="text,record,index">
@@ -268,7 +272,8 @@
 
 <script>
 import EditableLevelCell from './EditableLevelCell'
-import {reqStaffList,reqAllStaff,levelName,postChangeLevel} from "./api"
+import EditableSortCell from './EditableSortCell'
+import {reqStaffList,reqAllStaff,levelName,postChangeLevel,delPaibanLevelMan} from "./api"
 import { initColumn } from '@/utils/tableColumnInit'
 
 const levelArr=['一级','二级','三级','四级','五级','']
@@ -276,7 +281,8 @@ let timer=null
   export default {
     name:'IndexRole',
     components:{
-      EditableLevelCell
+      EditableLevelCell,
+      EditableSortCell
     },
     data(){
       return{
@@ -291,6 +297,7 @@ let timer=null
           confirmLoading:false,
           ModalText:'',
           changeData:[],
+          modalType:''
         },
         modalOption: {
           title: '批量添加人员',
@@ -388,12 +395,13 @@ let timer=null
         columns(){
           this.filteredInfo=this.filteredInfo ||{}
           let  columns=[
-              {title: '排班顺序', dataIndex: 'id', width: '40px', key:'id',align: 'center',},
-              {title: '人员名称',dataIndex: 'name', width: '100px',key:'sgnm', align: 'center',filteredValue: [this.filteredInfo.name] || null,onFilter: (value, record) => record.name.includes(value)},
+              {title: '序号', dataIndex: 'index', width: '80px', key:'id',align: 'center',},
+              {title: '人员名称',dataIndex: 'name', width: '100px',key:'sgnm', align: 'left',titleAlign:'center',filteredValue: [this.filteredInfo.name] || null,onFilter: (value, record) => record.name.includes(value)},
               {title: '性别', dataIndex: 'sex', width: '50px',key:'xbNum', align: 'center',},
-              {title: '联系电话', dataIndex: 'phone', width: '100px', key:'uptime',align: 'center',},
-              {title: '所属组织', dataIndex: 'departmentName', width: '120px',key:'upuser', align: 'center',},
-              {title: '排班级别', dataIndex: 'level', width: '100px',key:'isend', align: 'center',scopedSlots: {customRender: 'editLevel'}},
+              {title: '联系电话', dataIndex: 'phone', width: '80px', key:'uptime',align: 'center',},
+              {title: '所属组织', dataIndex: 'departmentName', width: '150px',key:'upuser',align: 'left',titleAlign:'center',},
+              {title: '排班级别', dataIndex: 'level', width: '80px',key:'isend', align: 'center'},
+              {title: '排班顺序', dataIndex: 'sortNum', width: '80px', key:'id',align: 'center',scopedSlots: {customRender: 'editLevel'}},
               {title: '操作', dataIndex: 'actions', width: '100px', key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
 //          {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
               ]
@@ -404,11 +412,11 @@ let timer=null
 //        this.filteredInfo=this.filteredInfo ||{}
         let  columns=[
           {title: '序号', dataIndex: 'index', width: '40px', key:'id',align: 'center',},
-          {title: '人员名称',dataIndex: 'name', width: '100px',key:'sgnm', align: 'center',filteredValue: [this.filteredInfo.name] || null,onFilter: (value, record) => record.name.includes(value),scopedSlots: {customRender: 'flitered'}},
+          {title: '人员名称',dataIndex: 'name', width: '100px',key:'sgnm', align: 'left',titleAlign:'center',filteredValue: [this.filteredInfo.name] || null,onFilter: (value, record) => record.name.includes(value),scopedSlots: {customRender: 'flitered'}},
           {title: '性别', dataIndex: 'sex', width: '50px',key:'xbNum', align: 'center',},
           {title: '联系电话', dataIndex: 'phone', width: '100px', key:'uptime',align: 'center',},
-          {title: '所属组织', dataIndex: 'departmentName', width: '120px',key:'upuser', align: 'center',},
-          {title: '排班级别', dataIndex: 'level', width: '100px',key:'isend', align: 'center'},
+          {title: '所属组织', dataIndex: 'departmentName', width: '120px',key:'upuser',align: 'left',titleAlign:'center',},
+//          {title: '排班级别', dataIndex: 'level', width: '100px',key:'isend', align: 'center'},
 //          {title: '操作', dataIndex: 'actions', width: '100px', key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
 //          {titleText:'操作', dataIndex: 'actions', width: 150, align:'center', scopedSlots: {customRender: 'actionCell', filterDropdown: 'levelOneDropdown', filterIcon: 'filterIcon',},
         ]
@@ -418,6 +426,7 @@ let timer=null
       tableData(){
           const start=(this.staffTable.pagination.current-1)* this.staffTable.pagination.pageSize
           const end=this.staffTable.pagination.current * this.staffTable.pagination.pageSize
+          this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List'].forEach((item,index)=>item.index=index+1)
           return this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List'].slice(start,end)
       },
       tableSelData(){
@@ -425,13 +434,24 @@ let timer=null
         const start=(this.modalOption.pagination.current-1)* this.modalOption.pagination.pageSize
         const end=this.modalOption.pagination.current * this.modalOption.pagination.pageSize
         const aaa={...this.levelPanes.levelList}
-        const wholeMenber=[...this.levelPanes.levelList.lv7List]
-        const delMember=[...this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List']]
-        delMember.forEach((item)=>{
-              const index=wholeMenber.findIndex(i=> item.userId==i.userId)
-          wholeMenber.splice(index,1)
-        })
+        const wholeMenber=[]
+//        const delMember=[...this.levelPanes.levelList['lv'+this.levelPanes.selectedKey+'List']]
+//        delMember.forEach((item)=>{
+//              const index=wholeMenber.findIndex(i=> item.userId==i.userId)
+//          wholeMenber.splice(index,1)
+//        })
 //        const returnData=[]
+        this.levelPanes.levelList.lv7List.forEach(item=>{
+            const index=wholeMenber.findIndex(i=>i.userId==item.userId)
+          if (index==-1)wholeMenber.push({
+            userId:item.userId,
+            name:item.name,
+            sex:item.sex,
+            phone:item.phone,
+            departmentName:item.departmentName,
+            key:item.userId,
+          })
+        })
         this.modalOption.pagination.total=wholeMenber.length
         wholeMenber.forEach((item,index)=>item.index=index+1)
         return wholeMenber.slice(start,end)
@@ -505,7 +525,7 @@ let timer=null
               timer=setTimeout(()=>{
                 const data={
                   jsonData:JSON.stringify({users:arr}),
-                  param1:departmentId,
+                  param1:sys_relateDepId2,
                   param2:levelArr[this.levelPanes.selectedKey-1]
                 }
                 postChangeLevel(data).then((res)=>{
@@ -536,7 +556,7 @@ let timer=null
           timer=setTimeout(()=>{
             const data={
               jsonData:JSON.stringify({users:arr}),
-              param1:departmentId,
+              param1:sys_relateDepId2,
               param2:levelArr[this.levelPanes.selectedKey-1]
             }
             postChangeLevel(data).then((res)=>{
@@ -570,6 +590,38 @@ let timer=null
       changeEditable(record){
         record.editable=true
       },
+
+      changeSortNum(record){
+//          alert(record.sortNum)
+        const tmp={...record}
+        tmp.sortNum=tmp.toSortNum
+        delete tmp.toSortNum
+        delete record.toSortNum
+        delete tmp.key
+        delete tmp.index
+        delete tmp.editable
+        const data={
+          jsonData:JSON.stringify({users:[tmp]}),
+          param1:sys_relateDepId2,
+          param2:levelArr[this.levelPanes.selectedKey-1]
+        }
+        postChangeLevel(data).then((res)=>{
+          if (res.success){
+            this.reqStaffData()
+            this.$message.success('排序数据保存成功')
+            this.hasToPost=false
+            record.editable=false
+          }else{
+            this.$message.error(res.message+',排序数据未保存成功！')
+            record.editable=false
+          }
+        }).catch((err)=>{
+          this.$message.error('发生系统异常，排序数据未保存成功！')
+          record.editable=false
+          console.log(JSON.stringify(err))
+        })
+      },
+
       showSelTable(){
         this.modalOption.visible=true
       },
@@ -586,12 +638,12 @@ let timer=null
             const changeman={...tmp}
           changeman.id=changeman.userId
           changeman.level=levelArr[Number(this.levelPanes.selectedKey)-1]
-          changeman.sortNum=10000
+          changeman.sortNum=9999
             changeMans.push(changeman)
         })
         const data={
           jsonData:JSON.stringify({users:changeMans}),
-          param1:departmentId,
+          param1:sys_relateDepId2,
           param2:levelArr[this.levelPanes.selectedKey-1]
         }
         postChangeLevel(data)
@@ -624,29 +676,29 @@ let timer=null
         this.modal.confirmLoading=true
         const changeData=this.modal.changeData
         const changeMans=[]
-        if (changeData[3]=='multi'){
-          changeData[0].forEach((man)=>{
-//              debugger
-            const changeMan={...man}
-            changeMan.id=changeMan.userId
-            changeMan.level=levelArr[changeData[2]-1]
-            changeMan.sortNum=10000
-            changeMans.push(changeMan)
-          })
-        }else{
-          const tmpMan=this.nowLevelList[changeData[0]]
-          const changeMan={...tmpMan}
-          changeMan.id=changeMan.userId
-          changeMan.level=levelArr[changeData[2]-1]
-          changeMan.sortNum=10000
-          changeMans.push(changeMan)
-        }
+//        if (changeData[3]=='multi'){
+//          changeData[0].forEach((man)=>{
+//            const changeMan={...man}
+//            changeMan.id=changeMan.userId
+//            changeMan.level=levelArr[changeData[2]-1]
+//            changeMan.sortNum=9999
+//            changeMans.push(changeMan)
+//          })
+//        }else{
+//          const tmpMan=this.nowLevelList[changeData[0]]
+//          const changeMan={...tmpMan}
+//          changeMan.id=changeMan.userId
+//          changeMan.level=levelArr[changeData[2]-1]
+//          changeMan.sortNum=9999
+//          changeMans.push(changeMan)
+//        }
         const data={
-          jsonData:JSON.stringify({users:changeMans}),
-          param1:departmentId,
-          param2:levelArr[changeData[2]-1]
+//          jsonData:JSON.stringify({users:changeMans}),
+          param1:changeData,
+//          param1:sys_relateDepId2,
+//          param2:levelArr[changeData[2]-1]
         }
-        postChangeLevel(data)
+        delPaibanLevelMan(data)
           .then((res)=>{
             if(res.success){
               this.$message.success('修改成功')
@@ -704,19 +756,22 @@ let timer=null
       },
       deleteStaffLevel(record){
 //          debugger
+        this.modal.modalType='delete'
         if (record=='multi'){
           const changeMans=[]
           const manList=this.nowLevelList
           this.staffTable.rowSelection.selectedRowKeys.forEach((key)=>{changeMans.push(manList.find(i=>i.key==key))})
           let nameString=''
-          changeMans.forEach((man)=>{
-            nameString = nameString+','+ man.name
+          let deleteIdString=''
+          changeMans.forEach((man,index)=>{
+            nameString = nameString + (index==0 ? '' : ',')+ man.name
+            deleteIdString=deleteIdString +(index==0 ? '' : ',')+ man.id
           })
           this.modal.ModalText="您确认去除 "+nameString+" 的排班级别吗？"
-          this.modal.changeData=[changeMans,this.levelPanes.selectedKey,6,record]
+          this.modal.changeData=[deleteIdString,this.levelPanes.selectedKey,6,record]
         }else{
           this.modal.ModalText="您确认去除 "+record.name+" 的排班级别吗？"
-          this.modal.changeData=[record.id-1,this.levelPanes.selectedKey,6,record]
+          this.modal.changeData=[record.id,this.levelPanes.selectedKey,6,record]
         }
         this.modal.visible=true;
       },
@@ -729,7 +784,7 @@ let timer=null
         if (this.levelPanes.temNameList.lv5name=='') this.levelPanes.temNameList.lv5name='五级'
         const data={
           jsonData:JSON.stringify(this.levelPanes.temNameList),
-          param1:departmentId
+          param1:sys_relateDepId2
         }
         this.levelPanes.loading=true
         levelName(data)
@@ -801,8 +856,8 @@ let timer=null
         this.levelPanes.loading=true
         const parameter={
           limit:'10000',
-          param1:departmentId
-//        param1:process.env.NODE_ENV === 'production'? departmentId:'9361'
+          param1:sys_relateDepId2
+//        param1:process.env.NODE_ENV === 'production'? sys_relateDepId2:'9361'
         }
         reqStaffList(parameter)
           .then((res)=>{
@@ -825,10 +880,11 @@ let timer=null
       //请求所有员工数据
       reqStaffData(){
         this.levelPanes.loading=true
+        this.staffTable.tableIsLoading=true
         const parameter={
           limit: 10000,
           // menuId: "10002085",
-          param1: departmentId,
+          param1: sys_relateDepId2,
           start: 0
         }
         reqAllStaff(parameter)
@@ -843,27 +899,30 @@ let timer=null
               const lv5List=this.levelPanes.levelList.lv5List=[]
               const lv6List=this.levelPanes.levelList.lv6List=[]
               const lv7List=this.levelPanes.levelList.lv7List=[]
+              res.data.sort((a,b)=>{return a.sortNum-b.sortNum})
               res.data.forEach((user)=>{
                 const userData={}
-                userData.id= user.sortNum ==0 ? 10000:user.sortNum
+//                userData.id= user.sortNum ==0 ? 10000:user.sortNum
+                userData.id=user.id
                 userData.name=user.__uuserid.userName
                 userData.sex=user.__uuserid.sex
                 userData.phone=user.__uuserid.mobilePhone
                 userData.departmentName=user.__uuserid.departmentName
                 userData.level=user.userlevel
                 userData.userId=user.__uuserid.userId
-                userData.key=user.__uuserid.userId
+                userData.key=user.id
                 userData.editable=false
+                userData.sortNum=user.sortNum
                 if (!userData.level){this.levelPanes.levelList.lv6List.push(userData)}else{
                   const levelIndex = levelArr.findIndex(level => level==userData.level) + 1
                   this.levelPanes.levelList['lv'+levelIndex+'List'].push(userData)
                 }
               })
-              lv1List.sort((a,b)=>{return a-b})
-              lv2List.sort((a,b)=>{return a-b})
-              lv3List.sort((a,b)=>{return a-b})
-              lv4List.sort((a,b)=>{return a-b})
-              lv5List.sort((a,b)=>{return a-b})
+//              lv1List.sort((a,b)=>{return a-b})
+//              lv2List.sort((a,b)=>{return a-b})
+//              lv3List.sort((a,b)=>{return a-b})
+//              lv4List.sort((a,b)=>{return a-b})
+//              lv5List.sort((a,b)=>{return a-b})
               levelList.lv1name=this.levelPanes.temNameList.lv1name=res.data[0].lv1name
               levelList.lv2name=this.levelPanes.temNameList.lv2name=res.data[0].lv2name
               levelList.lv3name=this.levelPanes.temNameList.lv3name=res.data[0].lv3name
@@ -873,8 +932,11 @@ let timer=null
               this.initLevelIndex()
               this.initLevelNum()
               this.levelPanes.loading=false
+              this.staffTable.tableIsLoading=false
             }else{
               this.$message.error(res.message)
+              this.levelPanes.loading=false
+              this.staffTable.tableIsLoading=false
             }
           }).catch((err)=>{
           console.log(JSON.stringify(err))
@@ -886,7 +948,7 @@ let timer=null
         if (levelA==levelB)return
         const changeMan= {...this.levelPanes.levelList['lv'+levelA+'List'][manIndex]}
         changeMan.level=levelArr[levelB-1]
-        changeMan.id=10000
+//        changeMan.id=10000
         this.levelPanes.levelList['lv'+levelB+'List'].push(changeMan)
         this.levelPanes.levelList['lv'+levelA+'List'].splice(manIndex,1)
       },
@@ -899,12 +961,12 @@ let timer=null
         const lv5List=this.levelPanes.levelList.lv5List
         const lv6List=this.levelPanes.levelList.lv6List
         const lv7List=this.levelPanes.levelList.lv7List
-        lv1List.forEach((i,index)=>{i.id=i.sortNum=index+1;})
-        lv2List.forEach((i,index)=>{i.id=i.sortNum=index+1})
-        lv3List.forEach((i,index)=>{i.id=i.sortNum=index+1})
-        lv4List.forEach((i,index)=>{i.id=i.sortNum=index+1})
-        lv5List.forEach((i,index)=>{i.id=i.sortNum=index+1})
-        lv6List.forEach((i,index)=>{i.id=index+1})
+//        lv1List.forEach((i,index)=>{i.id=index+1})
+//        lv2List.forEach((i,index)=>{i.id=index+1})
+//        lv3List.forEach((i,index)=>{i.id=index+1})
+//        lv4List.forEach((i,index)=>{i.id=index+1})
+//        lv5List.forEach((i,index)=>{i.id=index+1})
+//        lv6List.forEach((i,index)=>{i.id=index+1})
         levelList.lv7List =lv7List.concat(lv1List,lv2List,lv3List,lv4List,lv5List,lv6List)
       },
       initLevelNum(){

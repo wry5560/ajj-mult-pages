@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="yinhuanpaicha">
     <!--详细内容-->
     <div class="content-list">
       <div class="content-wrapper" id="排查清单">
@@ -292,43 +292,46 @@
 </script>
 
 <style lang="scss" >
-  .content-list{
-    width: 100%;
-    padding:36px;
-    .content-wrapper{
+  .yinhuanpaicha{
+    .content-list{
       width: 100%;
-      margin-bottom: 50px;
-      .header{
-        margin-bottom: 15px;
-        .title{
-          border-left: 4px solid #1478f0;
-          padding-left: 8px;
-          font-size: 16px;
-          color: #575757;
-          font-weight: 600;
+      padding:36px;
+      .content-wrapper{
+        width: 100%;
+        margin-bottom: 50px;
+        .header{
+          margin-bottom: 15px;
+          .title{
+            border-left: 4px solid #1478f0;
+            padding-left: 8px;
+            font-size: 16px;
+            color: #575757;
+            font-weight: 600;
+          };
+          .button-bar{
+
+          }
         };
-        .button-bar{
-
-        }
       };
-    };
+    }
+
+    .wry-col-title{
+      text-align: right;
+      display: inline-block;
+      width: 18%;
+      padding:3px;
+      /*min-height: 32px;*/
+    }
+    .wry-col-content{
+      display: inline-block;
+      width: 32%;
+      padding:3px;
+      /*min-height: 32px;*/
+    }
+    .width-82{
+      width: 82% !important;
+    }
   }
 
-  .wry-col-title{
-    text-align: right;
-    display: inline-block;
-    width: 18%;
-    padding:3px;
-    /*min-height: 32px;*/
-  }
-  .wry-col-content{
-    display: inline-block;
-    width: 32%;
-    padding:3px;
-    /*min-height: 32px;*/
-  }
-  .width-82{
-    width: 82% !important;
-  }
 
 </style>

@@ -179,3 +179,23 @@ export function addSgkbFeedback(parameter){
     }
   })
 }
+
+//撤回
+// jsondate:和之前的一样
+// param1:撤回理由
+// param2:3//做死
+// param3:审核人
+export function chehuiSgkb(parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjsgkb.chehui.json',
+    // url: '/sgCommit',
+    method: 'get',
+    // method: 'post',
+    // data: parameter,
+    params: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}

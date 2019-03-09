@@ -71,7 +71,7 @@ export function reqAllStaff(parameter){
       // : '/base/General.query.json/reqStaffList',
       : '/base/General.query.json',
     method: 'get',
-    params: {"sqlId":'S360003',...parameter},
+    params: {"sqlId":'S360003','limit':'10000',...parameter},
   })
 }
 export function postSchedule(parameter){
@@ -100,6 +100,16 @@ export function levelName(parameter){
 export function postChangeLevel(parameter){
   return axios({
     url: 'other/Ajjsgkb.addPaibanuser.json',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+export function delPaibanLevelMan(parameter){
+  return axios({
+    url: 'other/Ajjsgkb.delPaibanuser.json',
     method: 'post',
     data: parameter,
     headers: {

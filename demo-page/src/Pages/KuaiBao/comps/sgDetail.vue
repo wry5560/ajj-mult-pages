@@ -1,8 +1,8 @@
 <template>
   <div class="sg-detail">
     <div  class="header-buttons-bar">
-      <a-button @click="goBack" :style="{'margin-right':'5px','float':'right'}">返 回</a-button>
-      <a-button @click="reqAll" :style="{'margin-right':'5px','float':'right'}">刷 新</a-button>
+      <a-button @click="goBack" :style="{'margin-left':'16px'}">返 回</a-button>
+      <a-button @click="reqAll" :style="{'margin-left':'8px'}">刷 新</a-button>
       <!--<a-button @click="" type="primary":style="{'margin-right':'5px','float':'right'}">续 报</a-button>-->
       <div style="clear: both"></div>
     </div>
@@ -60,12 +60,16 @@
               <span>事件编号:{{sbData.xbid==0?sbData.id:"续 "+ sbData.id + "-"+sbData.xbid}}</span>
               <span v-if="this.$route.params.isShenhe=='true'" style="display: inline-block;float: right">
                 <span style="display: inline-block;float: right;">
-                <a-popconfirm title="审核通过后将无法修改，您确认此操作吗？" @confirm="postShenhe(1)"  okText="Yes" cancelText="No">
-                  <a-button type="primary" size="small" style="margin-right: 6px">通 过</a-button>
+                  <a-radio-group name="radioGroup" :defaultValue="1" v-model="shjg">
+                    <a-radio :value="1">通过</a-radio>
+                    <a-radio :value="9">不通过</a-radio>
+                </a-radio-group>
+                <a-popconfirm title="审核确认后将无法修改，您确认此操作吗？" @confirm="postShenhe"  okText="Yes" cancelText="No">
+                  <a-button type="primary" size="small" style="margin-right: 6px">审核确认</a-button>
                 </a-popconfirm>
-                <a-popconfirm title="审核不通过后将将无法修改，您确认此操作吗？" @confirm="postShenhe(9)" okText="Yes" cancelText="No">
-                  <a-button size="small">不通过</a-button>
-                </a-popconfirm>
+                <!--<a-popconfirm title="审核不通过后将将无法修改，您确认此操作吗？" @confirm="postShenhe(9)" okText="Yes" cancelText="No">-->
+                  <!--<a-button size="small">不通过</a-button>-->
+                <!--</a-popconfirm>-->
               </span>
                 <!--<a-button size="small"style="margin-right: 8px" @click="onEdit">编 辑</a-button>-->
                 <!--<a-button size="small" type="primary"@click="toggleShenhe">审 核</a-button>-->
@@ -73,10 +77,10 @@
             </div>
             <div class="shenhe" v-if="openShenhe && this.$route.params.isShenhe=='true'">
               <a-form  :form="shenheForm" ref="shenheCommit">
-                  <a-form-item  label="审核人" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+                  <a-form-item  v-if="sbData.lclevel !='一级' &&  shjg!=9 "label="审核人" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
                     <a-select  size="small" placeholder="请选择审核人"
                                v-decorator="['shr',{rules: [{ required: true, message: '请选择审核人', whitespace: true,type:'number'}]}]" >
-                      <a-select-option v-for="(item) in this.shrList" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
+                      <a-select-option v-for="(item) in shrList" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
                     </a-select>
                   </a-form-item>
                 <a-form-item label="审批意见" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
@@ -165,6 +169,7 @@
     data(){
         return {
           feedback:'',
+          shjg:1,
           feedbackId:null,
           modalLoading:false,
           popoverVisible:{},
@@ -248,7 +253,7 @@
     },
     created(){
       this.reqAll()
-      this.reqShrList()
+//      this.reqShrList()
     },
     mounted(){
       //初始化选择项配置
@@ -266,16 +271,19 @@
       goBack(){
         this.$router.go(-1)
       },
-      reqShrList(){
+      reqShrList(params){
         const parameter={
           sqlId:'S360015',
-          param1:sys_relateDepId5,
+          param1:sys_relateDepId2,
           limit:1000,
-          start:0
+          start:0,
+          ...params
         }
+
         GeneralQuery(parameter)
           .then((res)=>{
             if(res.success){
+              this.shrList=[]
               res.data.forEach((item)=>{
                 this.shrList.push({
                   value:item.id,
@@ -287,6 +295,7 @@
             }
           })
           .catch(err=>console.log(JSON.stringify(err)))
+
       },
       reqAll(){
         //请求流程名称的参数
@@ -308,7 +317,11 @@
             this.sbData=this.$store.getters.getKuaibaoById(id)
 //            this.sbData=tmp.find(item=>item.xbid==this.$route.params.id)
           }else{
-            this.$store.getters.getXubaoById(this.$route.params.id,this.$route.params.xbid)
+            const id="续"+this.$route.params.id+"-"+this.$route.params.xbid
+//            this.sbData=this.$store.getters.getXubaoById(this.$route.params.id,this.$route.params.xbid)
+            this.sbData=this.$store.getters.getKuaibaoById(id)
+            if (!this.sbData) this.sbData=this.$store.getters.getXubaoById(this.$route.params.id,this.$route.params.xbid)
+//            debugger
           }
         }
         //请求事故详情
@@ -444,6 +457,19 @@
             }
           })
           .catch(err=>{console.log(JSON.stringify(err))})
+
+
+        //请求流程设置人员
+        const parameter5={}
+        switch(this.sbData.lclevel){
+          case '三级':
+           parameter5.param3=1
+              break
+          case '二级':
+            parameter5.param4=1
+              break
+        }
+        this.reqShrList(parameter5)
       },
       onEdit(){
         this.modalOption.visible=true
@@ -537,7 +563,7 @@
               const paramater={
                 jsonData:encodeURI(JSON.stringify(tmp)),
                 param1:encodeURI(shenheValues.spyj),
-                param2:type,
+                param2:this.shjg,
                 param3:shenheValues.shr
               }
               sgAudit(paramater)

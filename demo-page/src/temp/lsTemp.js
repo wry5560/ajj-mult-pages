@@ -220,12 +220,12 @@ export const asrsajjdic = {
     {"label": "二级避难场所", "value": "二级避难场所"},
     {"label": "三级避难场所", "value": "三级避难场所"}
   ],
-  "wzjb":[
+  "wzjb": [
     {"label": "国家级", "value": "国家级"},
     {"label": "社会力量", "value": "社会力量"},
     {"label": "其他", "value": "其他"}
   ],
-  "wztype":[
+  "wztype": [
     {label: "生命救助", value: "生命救助"},
     {label: "生命支持", value: "生命支持"},
     {label: "救援运载", value: "救援运载"},
@@ -239,13 +239,13 @@ export const asrsajjdic = {
     {label: "交通运输", value: "交通运输"},
     {label: "工程材料", value: "工程材料"},
   ],
-  "dwtype":[
+  "dwtype": [
     {label: "国家级", value: "国家级"},
     {label: "地区级", value: "地区级"},
     {label: "社会级", value: "社会级"},
     {label: "其他", value: "其他"}
   ],
-  "zbtype":[
+  "zbtype": [
     {label: "个体防护装备", value: "个体防护装备"},
     {label: "通信与信息装备", value: "通信与信息装备"},
     {label: "灭火抢险装备", value: "灭火抢险装备"},
@@ -255,31 +255,31 @@ export const asrsajjdic = {
     {label: "应急技术装备", value: "应急技术装备"},
     {label: "其他", value: "其他"}
   ],
-  "zbjb":[
+  "zbjb": [
     {label: "国家级", value: "国家级"},
     {label: "社会力量", value: "社会力量"},
     {label: "其他", value: "其他"}
   ],
-  "zstype":[
+  "zstype": [
     {label: "公共卫生", value: "公共卫生"},
     {label: "社会安全", value: "社会安全"},
     {label: "自然灾害", value: "自然灾害"},
     {label: "突发事件", value: "突发事件"},
     {label: "其他", value: "其他"}
   ],
-  "userlevel":[
+  "userlevel": [
     {label: "一级", value: "一级"},
     {label: "二级", value: "二级"},
     {label: "三级", value: "三级"},
     {label: "四级", value: "四级"},
     {label: "五级", value: "五级"}
   ],
-  "tmlx":[
+  "tmlx": [
     {label: "日常", value: "日常"},
     {label: "专项", value: "专项"},
     {label: "通用", value: "通用"}
   ],
-  "jclx":[
+  "jclx": [
     {label: "作业场所", value: "作业场所"},
     {label: "设备设施", value: "设备设施"},
     {label: "防护、保险、信号等装置装备", value: "防护、保险、信号等装置装备"},
@@ -291,17 +291,17 @@ export const asrsajjdic = {
     {label: "作业许可", value: "作业许可"},
     {label: "其他现场管理", value: "其他现场管理"}
   ],
-  "风险":[
+  "风险": [
     {label: "基础管理", value: "基础管理"},
     {label: "现场管理", value: "现场管理"}
   ],
-  "scheTime":[
+  "scheTime": [
     {label: "每周", value: "01"},
     {label: "每月", value: "02"},
     {label: "每季度", value: "03"},
     {label: "每年", value: "04"}
   ],
-  "国民经济行业分类":[
+  "国民经济行业分类": [
     {label: "农、林、牧、渔业", value: "农、林、牧、渔业"},
     {label: "采矿业", value: "采矿业"},
     {label: "制造业", value: "制造业"},
@@ -323,7 +323,7 @@ export const asrsajjdic = {
     {label: "公共管理、社会保障和社会组织", value: "公共管理、社会保障和社会组织"},
     {label: "国际组织", value: "国际组织"}
   ],
-  "安全监管行业":[
+  "安全监管行业": [
     {label: "冶金", value: "冶金"},
     {label: "有色", value: "有色"},
     {label: "建材", value: "建材"},
@@ -334,24 +334,40 @@ export const asrsajjdic = {
     {label: "商贸", value: "商贸"},
     {label: "其他", value: "其他"}
   ],
+  'ssxq': [
+    {label: "横琴", value: "横琴"},
+    {label: "洪湾", value: "洪湾"}
+  ],
+  'jcjg': [
+    {label: "落实", value: "落实"},
+    {label: "未落实", value: "未落实"},
+    {label: "系统未落实", value: "系统未落实"},
+    {label: "立即整改", value: "立即整改"}
+  ],
+  'fcjg': [
+    {label: "已整改", value: "已整改"},
+    {label: "未整改", value: "未整改"}
+  ]
 }
 
 export const asrsajjfixsearch = {
-  "专项检查表单任务管理":{
-   "0": [{
-     dispNm: "计划名称", procSql: "a.planname"
-   }],
-    "1":[
-     {dispNm: "状态", inputType: "1", procSql: "a.state", fzcs: "计划状态"},
-    {dispNm: "是否一次性任务", inputType: "1", procSql: "a.sfycx", fzcs: "boolean"},
-    {dispNm: "日期", inputType: "4", procSql: "a.planstartDate", fzcs: ""}
-    ],
-  },
   "人员列表": {
-    "0": [{
-      "dispNm": "员工姓名、性别、手机号码、权限",
-      "procSql": "a.name|a.sex|a.mobilephone|c.roles"
-    }]
+    "1": [{
+      "dispNm": "姓名",
+      "inputType": "0",
+      "procSql": "a.name",
+      "fzcs": ""
+    }, {"dispNm": "账号", "inputType": "0", "procSql": "a.loginid", "fzcs": ""}, {
+      "dispNm": "手机号",
+      "inputType": "0",
+      "procSql": "a.mobilephone",
+      "fzcs": ""
+    }, {"dispNm": "角色", "inputType": "0", "procSql": "c.roles", "fzcs": ""}, {
+      "dispNm": "所属部门",
+      "inputType": "1",
+      "procSql": "a.departmentid",
+      "fzcs": ""
+    }], "0": [{"dispNm": "员工姓名、性别、手机号码、权限", "procSql": "a.name|a.sex|a.mobilephone|c.roles"}]
   },
   "未完成隐患工单列表": {
     "3": [{"dispNm": "开始日期", "procSql": "a.planStartTime"}],
@@ -403,7 +419,14 @@ export const asrsajjfixsearch = {
     "1": [{"dispNm": "保养类别", "inputType": "1", "procSql": "a.pmType", "fzcs": "保养类别"}],
     "0": [{"dispNm": "名称、编号", "procSql": "a.pmNm|a.id"}]
   },
-  "安监角色列表": {"0": [{"dispNm": "角色名称、角色人员", "procSql": "a.rolename|authedUsers"}]},
+  "安监角色列表": {
+    "1": [{"dispNm": "角色名称", "inputType": "0", "procSql": "a.rolename", "fzcs": ""}, {
+      "dispNm": "所属部门",
+      "inputType": "1",
+      "procSql": "a.__ddepartmentId",
+      "fzcs": "{params:{sqlId:'S350034'}}"
+    }], "0": [{"dispNm": "角色名称、角色人员", "procSql": "a.rolename|authedUsers"}]
+  },
   "企业迁移未处理列表": {"0": [{"dispNm": "企业名称", "procSql": "b.dwmc"}]},
   "辖区项目列表": {"0": [{"dispNm": "项目名称", "procSql": "a.xmmc"}]},
   "订单列表": {
@@ -598,8 +621,22 @@ export const asrsajjfixsearch = {
     "0": [{"dispNm": "订单号、供应商名称或流转节点", "procSql": "aaa.id|aaa.gysNm|aaa.nodeNm"}]
   },
   "安监网格单位列表": {
-    "1": [{"dispNm": "企业类型", "inputType": "1", "procSql": "d.qylx", "fzcs": "企业类型"}],
-    "0": [{"dispNm": "企业名称", "procSql": "c.departname"}]
+    "1": [{"dispNm": "企业类型2", "inputType": "1", "procSql": "d.qylx2", "fzcs": "企业类型"}, {
+      "dispNm": "国民经济行业分类",
+      "inputType": "1",
+      "procSql": "d.gmjjhyfl",
+      "fzcs": "国民经济行业分类"
+    }, {"dispNm": "国民经济行业分类2", "inputType": "1", "procSql": "d.gmjjhyfl2", "fzcs": "国民经济行业分类"}, {
+      "dispNm": "国民经济行业分类3",
+      "inputType": "1",
+      "procSql": "d.gmjjhyfl3",
+      "fzcs": "国民经济行业分类"
+    }, {"dispNm": "国民经济行业分类4", "inputType": "1", "procSql": "d.gmjjhyfl4", "fzcs": "国民经济行业分类"}, {
+      "dispNm": "企业类型",
+      "inputType": "1",
+      "procSql": "d.qylx",
+      "fzcs": "企业类型"
+    }], "0": [{"dispNm": "企业名称", "procSql": "c.departname"}]
   },
   "事故快报信息列表": {
     "1": [{"dispNm": "事故类型", "inputType": "1", "procSql": "aa.sglx", "fzcs": "事故类型"}],
@@ -629,8 +666,27 @@ export const asrsajjfixsearch = {
   "培训记录列表": {"0": [{"dispNm": "主题、内容", "procSql": "a.zt|a.content"}]},
   "应急物资管理列表": {"0": [{"dispNm": "装备物资名称", "procSql": "a.zbwzname"}]},
   "执法复查列表": {
-    "1": [{"dispNm": "企业类型", "inputType": "1", "procSql": "d.qylx", "fzcs": "企业类型"}],
-    "0": [{"dispNm": "企业名称", "procSql": "d.dwmc"}]
+    "1": [{"dispNm": "企业类型", "inputType": "1", "procSql": "d.qylx", "fzcs": "企业类型"}, {
+      "dispNm": "企业类型2",
+      "inputType": "1",
+      "procSql": "d.qylx2",
+      "fzcs": "企业类型"
+    }, {"dispNm": "国民经济行业分类", "inputType": "1", "procSql": "d.gmjjhyfl", "fzcs": "国民经济行业分类"}, {
+      "dispNm": "国民经济行业分类2",
+      "inputType": "1",
+      "procSql": "d.gmjjhyfl2",
+      "fzcs": "国民经济行业分类"
+    }, {"dispNm": "国民经济行业分类3", "inputType": "1", "procSql": "d.gmjjhyfl3", "fzcs": "国民经济行业分类"}, {
+      "dispNm": "国民经济行业分类4",
+      "inputType": "1",
+      "procSql": "d.gmjjhyfl4",
+      "fzcs": "国民经济行业分类"
+    }, {"dispNm": "工贸行业", "inputType": "1", "procSql": "d.jghy", "fzcs": "安全监管行业"}, {
+      "dispNm": "注册地址",
+      "inputType": "0",
+      "procSql": "d.zcdz",
+      "fzcs": ""
+    }], "0": [{"dispNm": "企业名称", "procSql": "d.dwmc"}]
   },
   "企业证照表": {
     "3": [{"dispNm": "开始日期", "procSql": "a.kssj"}, {"dispNm": "结束日期", "procSql": "a.jssj"}],
@@ -651,6 +707,7 @@ export const asrsajjfixsearch = {
     "1": [{"dispNm": "报修专业", "inputType": "1", "procSql": "tt.bxCat", "fzcs": "报修专业"}],
     "0": [{"dispNm": "报修单号、区域或内容", "procSql": "tt.wxdId|tt.bxArea|tt.bxDesc"}]
   },
+  "检查计划内企业列表": {"0": [{"dispNm": "企业名称", "procSql": "b.dwmc"}]},
   "岗位排查标准模板列表": {"0": [{"dispNm": "排查名称", "procSql": "a.cxjNm"}]},
   "设备列表": {"0": [{"dispNm": "风险编号、名称", "procSql": "a.sbNm|a.sbId|a.weizhi2"}]},
   "未完成抄巡检工单列表": {
@@ -663,6 +720,7 @@ export const asrsajjfixsearch = {
     }],
     "0": [{"dispNm": "编号、名称", "procSql": "a.gdNm|a.id"}]
   },
+  "检查计划企业列表": {"0": [{"dispNm": "企业名称", "procSql": "d.dwmc"}]},
   "企业迁移已审核列表": {"0": [{"dispNm": "企业名称", "procSql": "b.dwmc"}]},
   "app辖区企业列表": {"0": [{"dispNm": "单位名称", "procSql": "a.dwmc"}]},
   "抄巡检排查对象列表": {"0": [{"dispNm": "编号、名称", "procSql": "a.sbNm|a.id"}]},
@@ -889,8 +947,27 @@ export const asrsajjfixsearch = {
   "风险点排查标准列表": {"0": [{"dispNm": "标准名称", "procSql": "b.cxjNm"}]},
   "实施单列表": {"0": [{"dispNm": "名称、说明", "procSql": "a.cxjNm|a.cxjDesc"}]},
   "执法检查企业列表": {
-    "1": [{"dispNm": "企业类型", "inputType": "1", "procSql": "a.qylx", "fzcs": "企业类型"}],
-    "0": [{"dispNm": "企业名称", "procSql": "a.dwmc"}]
+    "1": [{"dispNm": "企业类型", "inputType": "1", "procSql": "a.qylx", "fzcs": "企业类型"}, {
+      "dispNm": "企业类型2",
+      "inputType": "1",
+      "procSql": "a.qylx2",
+      "fzcs": "企业类型"
+    }, {"dispNm": "国民经济行业分类", "inputType": "1", "procSql": "a.gmjjhyfl", "fzcs": "国民经济行业分类"}, {
+      "dispNm": "国民经济行业分类2",
+      "inputType": "1",
+      "procSql": "a.gmjjhyfl2",
+      "fzcs": "国民经济行业分类"
+    }, {"dispNm": "国民经济行业分类3", "inputType": "1", "procSql": "a.gmjjhyfl3", "fzcs": "国民经济行业分类"}, {
+      "dispNm": "国民经济行业分类4",
+      "inputType": "1",
+      "procSql": "a.gmjjhyfl4",
+      "fzcs": "国民经济行业分类"
+    }, {"dispNm": "工贸行业", "inputType": "1", "procSql": "a.jghy", "fzcs": "安全监管行业"}, {
+      "dispNm": "注册地址",
+      "inputType": "0",
+      "procSql": "a.zcdz",
+      "fzcs": ""
+    }], "0": [{"dispNm": "企业名称", "procSql": "a.dwmc"}]
   },
   "岗位员工列表": {"0": [{"dispNm": "员工姓名", "procSql": "a.name"}]},
   "培训管理列表": {"0": [{"dispNm": "主题、内容", "procSql": "a.zt|a.content"}]},
@@ -1202,6 +1279,15 @@ export const asrsajjfixsearch = {
   },
   "单位危险品列表": {"0": [{"dispNm": "危险品品名、危险品别名", "procSql": "b.wxpType|a.wxpName"}]},
   "辖区企业新增列表": {"0": [{"dispNm": "企业名称", "procSql": "dw.dwmc"}]},
+  "专项检查表单任务管理": {
+    "1": [{"dispNm": "状态", "inputType": "1", "procSql": "a.state", "fzcs": "计划状态"}, {
+      "dispNm": "是否一次性任务",
+      "inputType": "1",
+      "procSql": "a.sfycx",
+      "fzcs": "boolean"
+    }, {"dispNm": "日期", "inputType": "4", "procSql": "a.planstartDate", "fzcs": ""}],
+    "0": [{"dispNm": "计划名称", "procSql": "a.planname"}]
+  },
   "专业类型列表": {"0": [{"dispNm": "专业名、上级名", "procSql": "a.zyNm|b.zyNm"}]},
   "排查计划列表": {"3": [{"dispNm": "开始时间", "procSql": "a.planstartDate"}], "0": [{"dispNm": "计划名称", "procSql": "a.gdNm"}]},
   "企业变更申请列表": {"0": [{"dispNm": "企业名称、变更类型", "procSql": "dw.dwmc|a.bgtype"}]},

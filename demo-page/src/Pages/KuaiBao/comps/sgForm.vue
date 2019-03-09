@@ -2,6 +2,22 @@
   <div >
     <a-form @submit="handleSubmit" :form="form" >
       <a-row :gutter="16">
+        <a-col :lg="24" v-if="sbType=='ch'">
+          <a-form-item  label="撤回理由" :labelCol="{ span: 3 }" :wrapperCol="{ span: 21 }">
+            <a-textarea :autosize="{ minRows: 6}" placeholder="请输入撤回理由"
+                        v-decorator="['chly',{rules: [{ required: true, message: '请输入撤回理由', whitespace: true,}]}]" />
+          </a-form-item>
+        </a-col>
+        <a-col v-if="this.sbType=='xb'" :lg="12" :md="12" :sm="24">
+          <a-form-item label="续报标题" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+            <a-input
+              placeholder="请输入续报标题"
+              v-decorator="[
+              'xbtitle',
+              {rules: [{ required: true, message: '请输入续报标题', whitespace: true}],initialValue: initialValues.xbtitle}
+            ]" />
+          </a-form-item>
+        </a-col>
         <a-col :lg="this.sbType=='sh'? 24:12" :md="this.sbType=='sh'? 24:12" :sm="24">
           <a-form-item label="接报时间" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
             <a-date-picker  placeholder="请选择接报时间"
@@ -36,7 +52,7 @@
           <a-form-item v-if="this.sbType!='sh'" label="审核人" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
             <a-select  size="small" placeholder="请选择审核人"
                        v-decorator="['shr',{rules: [{ required: true, message: '请选择审核人', whitespace: true,type:'number'}]}]" >
-              <a-select-option v-for="(item) in this.shrList" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
+              <a-select-option v-for="(item) in shrList" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
@@ -90,7 +106,7 @@
     computed:{
       initialValues(){
         let initialValues={}
-        if(this.sbType=='xb') {
+        if(this.sbType=='xb'||this.sbType=='ch') {
           initialValues = {...this.sbData}
 //          const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
 //          initialValues.sgdj=initialValues.sgdj && initialValues.sgdj!='' ? ls["事故等级"].find(item =>item.value==initialValues.sgdj).label :''
@@ -103,6 +119,8 @@
           initialValues = {...this.sbData}
           initialValues.fstime=moment(initialValues.fstime)
           initialValues.jbtime=moment(initialValues.jbtime,'YYYY-MM-DD HH:mm')
+        }else if(this.sbType=='sb'){
+          initialValues.jbtime=moment()
         }
         return initialValues
       }
@@ -122,7 +140,8 @@
       reqShrList(){
         const parameter={
           sqlId:'S360015',
-          param1:sys_relateDepId5,
+          param1:sys_relateDepId2,
+          param2:1,
           limit:1000,
           start:0
         }

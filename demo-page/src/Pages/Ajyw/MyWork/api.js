@@ -93,6 +93,20 @@ export function delJcb (parameter,type){
   })
 }
 
+//查询专项检查计划详细
+//param1
+export function reqZxjcplan (parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjjx.queryJcplan.json',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
 //新增专项检查计划
 //jsonData
 export function createZxjcplan (parameter){

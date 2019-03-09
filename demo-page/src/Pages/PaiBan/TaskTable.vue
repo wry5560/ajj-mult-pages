@@ -5,7 +5,7 @@
       <a-button type='primary' @click="()=>autoArrange('all')"size="small" :style="{'margin-left':'5px'}">自动排班</a-button>
       <a-button @click="()=>clearArrange('all')"size="small">清除排班</a-button>
       <a-popconfirm title="您确认提交排班信息吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="topostSchedule">
-        <a-button size="small">提交</a-button>
+        <a-button size="small">保存</a-button>
       </a-popconfirm>
       <a-button @click="refresh"size="small">刷新</a-button>
       <a-month-picker :defaultValue="dateRange.defaultMonthValue" :value="dateRange.monthPickedValue" @change="onMonthChange" placeholder="请选择月" :disabledDate="disabledMonth"size="small" />
@@ -82,7 +82,7 @@
   import EditableCell from './EditableCell'
   import EditableTitleCell from './EditableTitleCell'
   import { axios } from '@/utils/request'
-  import {reqSchedule,postSchedule} from "./api"
+  import {reqSchedule,postSchedule,reqAllStaff} from "./api"
   import { mapActions } from 'vuex'
   import moment from 'moment';
   import {format, eachDay} from 'date-fns'
@@ -95,14 +95,7 @@
       EditableTitleCell
     },
     props:{
-      staffListProp:{
-        type:Array,
-        default:[{type:'一级',titleText:' ',nameList:[]},
-          {type:'二级',titleText:' ',nameList:[]},
-          {type:'三级',titleText:' ',nameList:[]},
-          {type:'四级',titleText:' ',nameList:[]},
-          {type:'五级',titleText:' ',nameList:[]}],
-      },
+
       reqStaffListComplete:Boolean,
       selMonth:String
     },
@@ -125,19 +118,28 @@
         },
         dataSource: [],
         count: 2,
-        loopNum:0
-
+        loopNum:0,
+        staffListProp:[{type:'一级',titleText:' ',nameList:[]},
+            {type:'二级',titleText:' ',nameList:[]},
+            {type:'三级',titleText:' ',nameList:[]},
+            {type:'四级',titleText:' ',nameList:[]},
+            {type:'五级',titleText:' ',nameList:[]}],
       }
     },
     mounted(){
       this.reqTableData()
+      this.initStaffList()
       document.getElementsByClassName('ant-table-body')[0].style.height=`${window.innerHeight - 85}px`
     },
     computed:{
       staffList(){
+//          debugger
           const staffList=[]
         if (this.staffListProp.length>0) {this.staffListProp.forEach((levelX)=>{
           const nameList=[]
+          levelX.nameList.sort((a,b)=>{
+              return a.sortNum-b.sortNum
+          })
           levelX.nameList.forEach((item)=>{
             nameList.push(item.name)
           })
@@ -295,6 +297,7 @@
         this.dataSource=dataSource
       },
       clearArrange(clearData,confirm){
+//          debugger
         let dataSource=[]
         if(clearData=='all'){
           dataSource=this.dataSource.map((item,index)=>{
@@ -308,6 +311,7 @@
           })
         }else{
           dataSource=this.dataSource.map((item,index)=>{
+//              debugger
             if (item.disabled) return item
             item[clearData]=' '
             return item
@@ -383,6 +387,7 @@
       },
       refresh(){
         this.reqTableData()
+        this.initStaffList()
         this.$emit('refresh')
       },
       reqTableData(){
@@ -457,6 +462,7 @@
       },
       topostSchedule(){
 //        debugger
+        this.tableIsLoading=true
         const dataSource=[]
         this.dataSource.forEach((item)=>{
           if(!item.disabled){
@@ -482,6 +488,7 @@
             this.refresh()
             }else{
             this.$message.error(res.message)
+            this.tableIsLoading=false
           }
         })
       },
@@ -490,7 +497,43 @@
         if (index%2==1) className += 'even-rows'
         if (record.disabled) className +=' disabled'
         return className
-      }
+      },
+      initStaffList(){
+        const parameter={
+          limit:'10000',
+          param1:sys_relateDepId2,
+//          param1:process.env.NODE_ENV === 'production'? departmentId:'9361'
+        }
+        reqAllStaff(parameter)
+          .then((res)=>{
+//            debugger
+//            console.log(JSON.stringify(res))
+            const staffList =[
+              {type:'一级',titleText:'',nameList:[]},
+              {type:'二级',titleText:'',nameList:[]},
+              {type:'三级',titleText:'',nameList:[]},
+              {type:'四级',titleText:'',nameList:[]},
+              {type:'五级',titleText:'',nameList:[]}
+            ]
+            res.data.sort((a,b)=>{
+              return a.sortNum-b.sortNum
+            })
+            res.data.forEach(item=>{
+              staffList.forEach(level =>{
+                if (level.type===item.userlevel) level.nameList.push({name:item.__uuserid.userName,id:item.__uuserid.userId,sex:item.__uuserid.sex,mobilePhone:item.__uuserid.mobilePhone,sortNum:item.sortNum})
+              })
+            })
+            staffList[0].titleText=res.data[0].lv1name;
+            staffList[1].titleText=res.data[0].lv2name;
+            staffList[2].titleText=res.data[0].lv3name;
+            staffList[3].titleText=res.data[0].lv4name;
+            staffList[4].titleText=res.data[0].lv5name;
+            this.staffListProp=staffList
+//            this.reqStaffListComplete=true
+          })
+          .catch((err)=>{
+          })
+      },
     },
     watch:{
       'selMonth':function(newMonth){

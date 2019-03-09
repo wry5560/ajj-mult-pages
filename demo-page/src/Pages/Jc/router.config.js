@@ -2,8 +2,10 @@ export const constantRouterMap = [
   {
     path: '/',
     name: 'index',
-    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Jc/Jc/index'),
-
+    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Jc/Jc/index'),
+    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Jc/Fc/index'),
+    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Jc/JcQuery/index'),
+    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Jc/Zf/index'),
     meta: {keepAlive:true},
   },
 

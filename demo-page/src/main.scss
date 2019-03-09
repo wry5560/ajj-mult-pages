@@ -17,6 +17,20 @@
     margin-right: 6px;
   }
 }
+//底部按钮条样式
+.bottom-buttons-bar {
+  border-top: solid 1px #d2d2d2;
+  padding:6px 16px;
+  position: absolute;
+  bottom:0;
+  width:100%;
+  background-color: #fff;
+  button{
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-right: 6px;
+  }
+}
 
 
 //通用modal模态框样式，需要在modal的配置wrapClassName中加上以下类名
@@ -92,6 +106,12 @@
   .disabled{
     background-color: #fafafa !important;
     color: #bdbdbd;
+  }
+  .active{
+    color: #52c41a;
+    a{
+      color:#52c41a;
+    }
   }
 }
 

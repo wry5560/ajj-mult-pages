@@ -103,13 +103,23 @@
       @selected="selJcqy"
       :tableHeight="tableHeight"
     />
+
+    <template>
+      <div style="width:400px ;margin-top: 16px;min-height: 100px;margin-left: 36px;">
+        <a-upload :action="uploadUrl+ (modalType=='add'?lsId:recordId)" :multiple="true" :fileList="fileList" @change="handleChange"  :remove="rmFile">
+          <a-button>
+            <a-icon type="upload" /> 上传附件
+                  </a-button>
+        </a-upload>
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
   //如果有使用时间选择器，则打开下面的注释，引入moment
   import moment from 'moment'
-  import {mapGetters} from 'vuex'
+  import {mapGetters,mapActions} from 'vuex'
   import jcxTableForm from './jcxTableForm.vue'
   import qyTableForm from './qyTableForm.vue'
   import AFormItem from "ant-design-vue/es/form/FormItem";
@@ -118,6 +128,7 @@
     moment,
     name:'jcplanForm',
     props:{
+      lsId:String,
       selectOptions:Object,
       recordId:String,
       modalType:String,
@@ -134,12 +145,17 @@
         form: this.$form.createForm(this),
         // showTimeOption:{ defaultValue: moment('00:00:00', 'HH:mm:ss') },
         disabledDate(current) {
-          return  current < moment().startOf('day');
+          return  current < moment().startOf('month');
         },
-        sfqyChecked:this.sfqy
+        sfqyChecked:this.sfqy,
+        uploadUrl:process.env.NODE_ENV === 'production'?'other/FileManager.upfile.json?param2=2&param3=asro_defjcbplan&param1=' :'api/other/FileManager.upfile.json?param2=2&param3=asro_defjcbplan&param1=' ,
+        fileList:[],
       }
     },
     computed:{
+//      lsid(){
+//        return this.modalType=='add'? 'lsundefined-'+moment().valueOf()+Math.ceil(Math.random()*1000):this.recordId
+//      },
       initialValues(){
         let initialValues={}
         if(this.modalType=='edit') {
@@ -164,8 +180,26 @@
           return moment('00:00','HH:mm')
       }
     },
+    created(){
+//      const filelist=[]
+//      if (this.getJcplanById()(this.recordId).filelist.length>0) {
+//        this.getJcplanById()(this.recordId).filelist.forEach(item => {
+////                    debugger
+//          filelist.push({
+//            uid: item.id,
+//            name: item.shortMsg,
+//            status: 'done',
+//            response: 'Server Error 500', // custom error message to show
+//            url: item.fpath,
+//          })
+//        })
+//        this.fileList = filelist
+//      }
+        if(this.modalType!='add')this.reqFlies()
+    },
     methods:{
       ...mapGetters(['getJcplanById']),
+      ...mapActions(['removeFile','reqFilelist']),
       selJcx(selects){
         this.$emit('selJcx',selects)
       },
@@ -202,6 +236,75 @@
              })
              .catch((err)=>console.log(JSON.stringify(err)))
          }
+      },
+
+      handleChange(info){
+         debugger
+        let fileList = info.fileList
+        fileList.forEach((file)=>{
+          if(file.response){
+            if(file.response.success){
+              file.url=file.response.data[0].urlpicpath+file.response.data[0].cpPic_name
+            }else{
+              file.status="error"
+//              this.$message.error(file.response.message)
+            }
+          }
+        })
+        this.fileList=fileList
+      },
+
+      reqFlies(){
+          if (!this.recordId ||this.recordId=='')return
+          const  paramater={
+          param2:this.recordId
+        }
+        this.reqFilelist(paramater)
+          .then((res)=>{
+            debugger
+              if(res.success){
+                const filelist=[]
+                if (res.data.length>0){
+                  res.data.forEach(item=>{
+//                    debugger
+                    filelist.push({
+                      uid: item.id,
+                      name: item.shortMsg,
+                      status: 'done',
+                      message: 'Server Error 500', // custom error message to show
+                      url: item.fpath,
+                    })
+                  })
+                  this.fileList=filelist
+                  this.$message.success('文件上传成功')
+                }
+              }else{
+                  this.$message.error('请求附件列表失败！')
+              }
+          })
+          .catch(err=>console.log(JSON.stringify(err)))
+      },
+
+      rmFile(file){
+        return new Promise((resolve,reject)=>{
+          const paramater={
+            param1: this.modalType=='add' ? file.response.data[0].serverId :file.uid
+          }
+          this.removeFile(paramater)
+            .then((res)=>{
+              if (res.success){
+                this.$message.success('文件已删除！ ')
+                resolve()
+              }else{
+                this.$message.error('删除文件失败！ '+res.message)
+                reject()
+              }
+            })
+            .catch((err)=>{
+              console.log(JSON.stringify(err))
+              reject()
+            })
+        })
       }
     }
   }

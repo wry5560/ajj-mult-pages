@@ -41,6 +41,18 @@
           <a-popconfirm title="您确认删除该条记录吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="deleteRowData(record)">
             <a href="javascript:;">删除</a>
           </a-popconfirm>
+
+        </span>
+
+        <span slot="defaultcustomRender" slot-scope="text,record,index">
+          <template>
+            <a-tooltip :mouseEnterDelay="0.8">
+              <template slot='title'>
+                {{text}}
+              </template>
+              <div style="width: 100%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{text}}</div>
+            </a-tooltip>
+          </template>
         </span>
       </a-table>
       <a-pagination
@@ -107,6 +119,7 @@
   import editForm from './editForm'
   import dataDetail from './dataDetail'
   import AmapModal from  '../../wryComps/AmapModal.vue'
+  import { initColumn } from '@/utils/tableColumnInit'
 
   const pageName='peizhi_kuaibaoShry'
   const modalTitle="审核人员"   //模态框的title标题
@@ -144,10 +157,10 @@
           dataSource:[],
           columns:[
             {title: '序号', dataIndex: 'index', width: '50px', key:'index',align: 'center'},
-            {title: '姓名',dataIndex: 'userName', width: '120px',key:'userName', align: 'center'},
+            {title: '姓名',dataIndex: 'userName', width: '120px',key:'userName', align: 'left',titleAlign:'center'},
             {title: '流程审核级别', dataIndex: 'userlevel', width: '80px', key:'userlevel',align: 'center',},
-            {title: '审核序号', dataIndex: 'sortNum', width: '80px', key:'sortNum',align: 'center',},
-            {title: '所属组织', dataIndex: 'departName', width: '150px', key:'departName',align: 'center'},
+//            {title: '审核序号', dataIndex: 'sortNum', width: '80px', key:'sortNum',align: 'center',},
+            {title: '所属组织', dataIndex: 'departName', width: '150px', key:'departName',align: 'left',titleAlign:'center'},
             {title: '操作', dataIndex: 'actions', width: '150px', key:'actions',align: 'center', scopedSlots: {customRender: 'actionCell'}},
           ],
           size:'small',
@@ -204,6 +217,7 @@
 
     created(){
       this.reqTableData()
+      this.table.columns=initColumn(this.table.columns)
     },
     mounted(){
       this.$nextTick(function () {
@@ -290,9 +304,9 @@
                 console.log(JSON.stringify(values))
                 parameter={
                   jsonData:JSON.stringify(jsonData),
-                  param1: values.departName.key,
+                  param1: sys_relateDepId2,
                   param2: values.userlevel,
-                  param3: values.sortNum
+//                  param3: values.sortNum
                 }
                 this.$store.dispatch(createAction,parameter).then((res)=>{
                   if (res.success==true){
@@ -314,10 +328,10 @@
                 const tmp =this.$store.getters[getDetailById](this.modalOption.recordId)
                 jsonData={
                   "id":tmp.id,
-                  "departmentid":values.departName.key,
+                  "departmentid":sys_relateDepId2,
                   "userlevel": values.userlevel,
                   "userid":values.userNames[0].key,
-                  "sortNum": values.sortNum
+//                  "sortNum": values.sortNum
                 }
                  parameter={
                   jsonData:JSON.stringify(jsonData),
@@ -372,6 +386,9 @@
         this.$store.dispatch(reqList,parameter)
           .then((res)=>{
             this.table.dataSource=this.$store.getters[getList]
+            this.table.dataSource.forEach((item,index)=>{
+              item.index=index+(this.pagination.current -1)*this.pagination.pageSize+1
+            })
             this.pagination.total=res.totalCount
             this.table.tableIsLoading=false
           })

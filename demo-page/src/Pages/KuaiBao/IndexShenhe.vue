@@ -9,7 +9,9 @@
           </a-badge>
         </a-tab-pane>
         <a-tab-pane tab="已审核" key="2"></a-tab-pane>
-        <a-button slot="tabBarExtraContent" style="float: left;" @click="refresh">刷 新</a-button>
+        <div slot="tabBarExtraContent">
+          <a-button size="small" style="float: left;margin-top: 10px" @click="refresh">刷 新</a-button>
+        </div>
       </a-tabs>
     </div>
     <div>
@@ -193,6 +195,7 @@
         this.$router.push('/sgsb')
       },
       gotoSgDetail(record,isshenhe){
+//          debugger
         const id = record.xbid==0? record.id:record.idBf
         this.$router.push({name:'sgDetail',params:{id:id,xbid:record.xbid,isShenhe:isshenhe}})
       },
@@ -235,7 +238,7 @@
         })
         this.$store.commit('ADD_KUAIBAO',tempData)
         this.dataSource = tempData
-        this.activeTab=='1'? this.noEndNum=res.totalCount :0
+        if(this.activeTab=='1') this.noEndNum=res.totalCount
         this.pagination.total=res.totalCount
         this.tableIsLoading=false
       },
@@ -271,7 +274,11 @@
     .ant-tabs-bar{
       margin:0 !important;
     }
-
+    .ant-tabs{
+      .ant-tabs-extra-content{
+        width: calc(100% - 210px);
+      }
+    }
   }
 
 

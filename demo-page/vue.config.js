@@ -9,12 +9,13 @@ const settings={
   // isPathRewrite:false,  //开发时代理服务器是否需要重定向接口地址
   pathRewrite:{'^/api':'/asrsajj'},  //开发时代理服务器接口地址重定向配置
 
-  // pubilcUrl:'/asrsajj/90_asrs/sgkb/paiban_v/',        //排班打包地址
-  pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanuser_v/'     //排班人员设置打包地址
-  // pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanWhole/'     //查询当日所有排班人员设置打包地址
+  pubilcUrl:'/asrsajj/90_asrs/sgkb/paiban_v/',        //排班打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanuser_v/'     //排班人员设置打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/sgkb/paibanWhole/',     //查询当日所有排班人员设置打包地址
 
   // pubilcUrl:'/asrsajj/90_asrs/sgkb/sgkb/'     //事故快报打包地址
-  // pubilcUrl:'/asrsajj/90_asrs/sgkb/sglc/'     //事故快报审核打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/sgkb/sgkb_sh/'     //事故快报审核打包地址
+  // pubilcUrl:'/asrsajj/90_asrs/sgkb/sglc_ng/'     //事故快报审核人员设置
 
   // pubilcUrl:'/asrsajj/90_asrs/yjgl/yjwz/'     //应急物资打包地址
   // pubilcUrl:'/asrsajj/90_asrs/yjgl/yjzb/'     //应急装备打包地址
@@ -31,6 +32,16 @@ const settings={
 
   // pubilcUrl:'/asrsajj/90_asrs/xqqda/'     //企业档案
 
+
+  // pubilcUrl:'/asrsajj/90_asrs/jxgl/zfjc_ng/',     //检查
+  // pubilcUrl:'/asrsajj/90_asrs/jxgl/jcxx_ng/'     //检查查询
+  // pubilcUrl:'/asrsajj/90_asrs/jxgl/zffc_ng/'     //复查
+  // pubilcUrl:'/asrsajj/90_asrs/jxgl/zfxx_ng/'     //执法i
+
+
+  // pubilcUrl:'/asrsajj/90_asrs/system/ajzz_ng/'     //组织管理
+  // pubilcUrl:'/asrsajj/90_asrs/system/ajrole_ng/'   //角色管理
+  // pubilcUrl:'/asrsajj/90_asrs/system/user_ng/'     //用户管理
 
 }
 
@@ -50,12 +61,12 @@ module.exports = {
 
    */
   /*
-  pages: {
-    index: {
-      entry: 'src/main.js',
-      chunks: ['chunk-vendors', 'chunk-common', 'index']
-    }
-  },
+   pages: {
+   index: {
+   entry: 'src/main.js',
+   chunks: ['chunk-vendors', 'chunk-common', 'index']
+   }
+   },
   */
   configureWebpack: {
     plugins: [

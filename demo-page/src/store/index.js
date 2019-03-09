@@ -12,6 +12,7 @@ import jxgl from '../Pages/Jxgl/store'
 import Qiye from '../Pages/Qiye/store'
 import QiyeDetial from '../Pages/wryComps/QiyeDetail/store'
 import JianchaZhifa from '../Pages/Jc/store'
+import System from '../Pages/System/store'
 
 
 Vue.use(Vuex)
@@ -27,7 +28,8 @@ export default new Vuex.Store({
     jxgl,
     Qiye,
     QiyeDetial,
-    JianchaZhifa
+    JianchaZhifa,
+    System
   },
   state: {
 

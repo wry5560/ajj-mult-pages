@@ -2,9 +2,11 @@ export const constantRouterMap = [
   {
     path: '/',
     name: 'index',
-    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/PaiBan/Index'),
-    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/PaiBan/IndexRole'),
+    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/PaiBan/Index'),
+    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/PaiBan/IndexRole'),
+    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/PaiBan/IndexPaibanQuery'),
     meta: {keepAlive:true},
+
   },
   {
     path: '/role',

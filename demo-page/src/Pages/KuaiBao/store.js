@@ -25,7 +25,9 @@ const kuaibao = {
       return state.kuaibaoList.find( todo=> todo.id==id)
     },
     getXubaoById:(state)=>(id,xbid)=> {
+      // debugger
       return state.xbList[id].find( todo=> todo.xbid==xbid)
+
     },
   }
 }

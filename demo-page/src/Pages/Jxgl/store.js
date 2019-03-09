@@ -491,6 +491,29 @@ const jixiao = {
           })
       })
     },
+
+    //查询检查计划中的附件
+    reqFilelist:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId:'S350043',
+          param1:'asro_defjcbplan',
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            if(res.success){
+              res.data.forEach((item)=>{
+                item.key=item.id
+              })
+              commit('INIT_ZXJC_SEL_LIST',res.data)
+              resolve(res)
+            }else{
+              message.error(res.message)
+            }
+          })
+      })
+    },
   },
 
   getters:{
@@ -559,7 +582,7 @@ const jixiao = {
     },
 
     jxgl_zxjcsel_list:(state) => {
-      state.zxjcplan.selList.forEach(item=>item.departName=item.__ddepartmentid.departName)
+      // state.zxjcplan.selList.forEach(item=>item.departName=item.__ddepartmentid.departName)
       return state.zxjcplan.selList
     },
 

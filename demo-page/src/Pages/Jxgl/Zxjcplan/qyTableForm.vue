@@ -69,20 +69,85 @@
           <!--下面是弹出框-->
           <div>
           <a-modal
-        :title="modalOption.title"
-        @cancel="modalCancel"
-        :visible="modalOption.visible"
-        :destroyOnClose="true"
-        :maskClosable="false"
-        :wrapClassName="modalOption.modalClass"
-        :width="modalOption.width"
-        :bodyStyle="modalOption.bodyStyle"
-      >
+            :style="modalOption.style"
+
+            @cancel="modalCancel"
+            :visible="modalOption.visible"
+            :destroyOnClose="true"
+            :maskClosable="false"
+            :wrapClassName="modalOption.modalClass"
+            :width="modalOption.width"
+            :bodyStyle="modalOption.bodyStyle"
+          >
+            <template slot="title">
+              <div  class="header-buttons-bar" style="padding-left: 5px">
+                <span style="display: inline-block;margin-right: 8px">请选择检查企业</span>
+                <!--<a-button type='primary' @click="showModal('add')"size="small">新增{{this.pageTitle}}</a-button>-->
+                <!--<a-popconfirm title="您确认删除这些记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">-->
+                <!--<a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>-->
+                <!--</a-popconfirm>-->
+                <!--搜索条-->
+                <a-input-search
+                  :placeholder="search.placeholder"
+                  style="width: 250px"
+                  v-model="search.searchValue"
+                  size="small"
+                  @search="onSearch"
+                  :disabled="search.showAdvanced"
+                />
+                <a-button size="small"  style="margin-left: 5px"  @click="toggleShowAdvancedSearch">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>
+                <a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.gmjjhyfl && !search.advancedForm.qylx && !search.advancedForm.jghy" @click="clearSearch">清除</a-button>
+                <a-button @click="refresh"size="small">刷新</a-button>
+              </div>
+            </template>
         <div id="innerTable">
+          <div v-if="search.showAdvanced">
+            <a-row >
+              <a-col :lg="7" :md="12" :sm="24">
+                <a-form-item label="企业名称" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
+                  <a-input style="width:100%" size="small" placeholder="请输入企业名称" v-model="search.advancedForm.inputs[0]" @pressEnter="onAdvancedSearch">
+                  </a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :lg="7" :md="12" :sm="24">
+                <a-form-item label="注册地址" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
+                  <a-input style="width:100%" size="small" placeholder="请输入检查依据" v-model="search.advancedForm.inputs[1]" @pressEnter="onAdvancedSearch">
+                  </a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :lg="7" :md="12" :sm="24">
+                <a-form-item label="企业类型" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
+                  <a-cascader :options="modalOption.selectOptions['企业类型']"  style="width:100%" size="small" :loadData="selLoadData" placeholder="请选择企业类型" v-model="search.advancedForm.qylx" changeOnSelect>
+                  </a-cascader>
+                </a-form-item>
+              </a-col>
+              <a-col  :lg="2" :md="12" :sm="24">
+                <a-form-item>
+                  <a-button type='primary'size="small" style="margin-left: 8px" @click="onAdvancedSearch" >搜索</a-button>
+                </a-form-item>
+              </a-col>
+              <a-col :lg="7" :md="12" :sm="24">
+                <a-form-item label="国名经济类型" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
+                  <a-cascader :options="modalOption.selectOptions['国民经济行业分类']"  style="width:100%" size="small" :loadData="selGmjjLoadData" placeholder="请选择国名经济类型" v-model="search.advancedForm.gmjjhyfl" changeOnSelect>
+                  </a-cascader>
+                  <!--<a-select style="width:100%" size="small" placeholder="请选择条目类型" v-model="search.advancedForm.tmlx" allowClear>-->
+                  <!--<a-select-option v-for="(item) in modalOption.selectOptions.tmlx" :key="item.value" :value="item.value">{{item.label}}</a-select-option>-->
+                  <!--</a-select>-->
+                </a-form-item>
+              </a-col>
+              <a-col :lg="7" :md="12" :sm="24">
+                <a-form-item label="工贸行业类型" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
+                  <a-select style="width:100%" size="small" placeholder="请选择工贸行业类型" v-model="search.advancedForm.jghy" allowClear>
+                    <a-select-option v-for="(item) in modalOption.selectOptions['安全监管行业']" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </div>
           <a-table
             bordered
             :rowClassName="rowClass"
-            :dataSource="modalOption.table.dataSource"
+            :dataSource="modalTableData"
             :columns="modalOption.table.columns"
             :pagination= "false"
             :size="modalOption.table.size"
@@ -148,16 +213,17 @@
   import dataDetail from './dataDetail'
   import AmapModal from  '../../wryComps/AmapModal.vue'
   import { initColumn } from '@/utils/tableColumnInit'
+  import {GeneralQuerySelChildren} from '../api'
 
   const pageName='jxgl_zxjc_qysel'
   const modalTitle="检查企业"   //模态框的title标题
 
-  const selOptions=[]          //选择项所需要的配置，localstorage中的配置名称
-  const selOptionMutation=''   //将选择项配置保存到store的mutation方法名
+  const selOptions=['企业类型','国民经济行业分类','安全监管行业']          //选择项所需要的配置，localstorage中的配置名称
+  const selOptionMutation='INIT_JCZF_JCSELECTED_OPTIONS'   //将选择项配置保存到store的mutation方法名
   //修改以下获取store数据的getters 配置
   const getList='jxgl_zxjcplan_qylist'                //获取table的list
   const getSelList='jxgl_zxjcsel_qylist'                //获取table的list
-  const getSelOpitons=''   //获取选择项的配置内容
+  const getSelOpitons='jczf_jc_selOptions'   //获取选择项的配置内容
   const getDetailById=''              //获取某一具体记录的详情
 
   //修改以下增删改查的Actions 方法名
@@ -187,7 +253,15 @@
         modalType:String,
         search:{
           placeholder:'',
-          searchValue:''
+          searchValue:'',
+          searchOption:{},
+          showAdvanced:false,
+          advancedForm:{
+            inputs:['',''],
+            qylx:undefined,
+            gmjjhyfl:undefined,
+            jghy:undefined,
+          },
         },
         table:{
           dataSource:[],
@@ -216,11 +290,12 @@
           pageSizeOptions:['10','20','50','100','500']
         },
         modalOption:{
+          style:{top:'20px'},
           title:'',
           width:'85%',
           visible:false,
           bodyStyle:{
-            "max-height":window.innerHeight-250 + 'px',
+            "max-height":window.innerHeight-140 + 'px',
             "min-height":400
           },
           commitLoading:false,
@@ -266,6 +341,7 @@
       }
     },
     computed:{
+
       recordData(){
         return this.$store.getters[getDetailById](this.modalOption.recordId)
       },
@@ -275,8 +351,8 @@
         return this.table.dataSource.slice(start,end)
       },
       modalTableData(){
-        const start=(this.pagination.current-1)*this.pagination.pageSize
-        const end=(this.pagination.current)*this.pagination.pageSize
+        const start=(this.modalOption.pagination.current-1)*this.modalOption.pagination.pageSize
+        const end=(this.modalOption.pagination.current)*this.modalOption.pagination.pageSize
         return this.modalOption.table.dataSource.slice(start,end)
       }
     },
@@ -298,16 +374,27 @@
       this.$nextTick(function () {
         let _this=this
         window.onresize = function(){
-        _this.modalOption.bodyStyle['max-height']= window.innerHeight -250+'px'
+        _this.modalOption.bodyStyle['max-height']= window.innerHeight -140+'px'
       }
 //        let modalHtml=document.getElementById('tableModal')
 //        modalHtml.getElementsByClassName('ant-table-body')[0].style.height=`${this.tableHeight-12}px`
         //初始化选择项,存入vuex相应store的state中
+        //初始化选择项,存入vuex相应store的state中
         const ls = JSON.parse(localStorage.getItem('/asrsajjdic'))
+
         const tmp=[]
-        selOptions.forEach(item=>{tmp.push({name:item,value:ls[item]})})
+        selOptions.forEach(item=>{tmp.push({name:item,value:ls[item],lable:item})})
         this.$store.commit(selOptionMutation,tmp)
         this.modalOption.selectOptions=this.$store.getters[getSelOpitons]
+        this.modalOption.selectOptions['企业类型'].forEach((item)=>{
+          item.isLeaf=false
+          item.loading=false
+        })
+        this.modalOption.selectOptions['国民经济行业分类'].forEach(item=>item.isLeaf=false)
+
+        const lsSearch=JSON.parse(localStorage.getItem('/asrsajjfixsearch'))['检查计划企业列表']
+        this.search.placeholder="请输入"+lsSearch["0"][0].dispNm+"..."
+        this.search.searchOption=lsSearch
 
         if (this.propModalType=='query'){
             this.table.rowSelection=null
@@ -318,6 +405,170 @@
     methods:{
       // ...mapGetters(['yingji_wz_list','yingji_wz_selOptions','getWzById']),
       // ...mapActions(['reqWzList','createYjwz','editYjwz','delYjwz','editYjwzGps']),
+
+      //------------------------------------------------------搜索----------------------------------
+
+      //切换高级搜索栏显示，隐藏，修改高度参数，让表格y轴滚动区域适应
+      toggleShowAdvancedSearch(){
+        this.search.showAdvanced=!this.search.showAdvanced
+        this.search.advancedForm.qylx=undefined
+        this.search.advancedForm.gmjjhyfl=undefined
+        this.search.advancedForm.jghy=undefined
+        if (this.search.showAdvanced){
+          this.modalOption.table.scrollSize.y= window.innerHeight - 190
+          document.getElementsByClassName('ant-table-body')[0].style['']=`${window.innerHeight}px`
+          let modalHtml=document.getElementById('innerTable')
+          let table=modalHtml.getElementsByClassName('ant-table-body')[0].style.height=this.tableHeight-148+'px'
+        }else{
+          this.modalOption.table.scrollSize.y= window.innerHeight - 112
+          let modalHtml=document.getElementById('innerTable')
+          let table=modalHtml.getElementsByClassName('ant-table-body')[0].style.height=this.tableHeight-68+'px'
+        }
+      },
+
+      //普通搜索
+      onSearch(){
+        this.modalOption.table.tableIsLoading=true
+        const searchItems=this.search.searchOption["0"][0].procSql.split('|')
+        const filterOption=[]
+        const normalVlaue={
+          "operate":"more",
+        }
+        const valueA=[]
+        const valueB={
+          "relation":"0",
+          "value":valueA
+        }
+        searchItems.forEach(item=>valueA.push({
+          "operate":"like",
+          "sqlIndex":item,
+          "value":this.search.searchValue
+        }))
+        normalVlaue.value=JSON.stringify(valueB)
+        filterOption.push(normalVlaue)
+        this.modalOption.expandedRowKeys=[]
+        this.reqModalTableData(filterOption)
+      },
+
+      //高级搜索
+      onAdvancedSearch(){
+        this.modalOption.table.tableIsLoading=true
+        const searchItems=this.search.searchOption["0"][0].procSql.split('|')
+        const searchInputs=this.search.advancedForm.inputs
+        const filterOption=[{}]
+        const normalVlaue={
+          "operate":"more",
+        }
+        const advancedVlaue={
+          "fix":"",
+        }
+//        debugger
+        const SelValues=[]
+
+        searchItems.push('d.zcdz')
+        searchItems.forEach((item,index)=>{
+          if (searchInputs[index] && searchInputs[index] !=''){
+            SelValues.push(`(${item} like  '%${searchInputs[index]}%')`)
+          }
+        })
+//        this.search.advancedForm.tmlx &&this.search.advancedForm.tmlx!='' ? SelValues.push(`(a.tmlx = '${this.search.advancedForm.tmlx}') `): null
+        if(this.search.advancedForm.qylx){
+          this.search.advancedForm.qylx[0] &&this.search.advancedForm.qylx[0]!='' ? SelValues.push(`(d.qylx = '${this.search.advancedForm.qylx[0]}') `): null
+          this.search.advancedForm.qylx[1] &&this.search.advancedForm.qylx[1]!='' ? SelValues.push(`(d.qylx2 = '${this.search.advancedForm.qylx[1]}') `): null
+        }
+        if(this.search.advancedForm.gmjjhyfl){
+          this.search.advancedForm.gmjjhyfl[0] &&this.search.advancedForm.gmjjhyfl[0]!='' ? SelValues.push(`(d.gmjjhyfl = '${this.search.advancedForm.gmjjhyfl[0]}') `): null
+          this.search.advancedForm.gmjjhyfl[1] &&this.search.advancedForm.gmjjhyfl[1]!='' ? SelValues.push(`(d.gmjjhyfl2 = '${this.search.advancedForm.gmjjhyfl[1]}') `): null
+          this.search.advancedForm.gmjjhyfl[2] &&this.search.advancedForm.gmjjhyfl[2]!='' ? SelValues.push(`(d.gmjjhyfl3= '${this.search.advancedForm.gmjjhyfl[2]}') `): null
+          this.search.advancedForm.gmjjhyfl[3] &&this.search.advancedForm.gmjjhyfl[3]!='' ? SelValues.push(`(d.gmjjhyfl4 = '${this.search.advancedForm.gmjjhyfl[3]}') `): null
+        }
+        SelValues.forEach((value,index)=>{
+          index>0 ? advancedVlaue.fix=advancedVlaue.fix+' and '+value
+            :advancedVlaue.fix=value
+        })
+        if (advancedVlaue.fix!='') {filterOption.push(advancedVlaue)}
+//        if (tmlxSelValue){
+//          advancedVlaue.fix=advancedVlaue.fix+ jclxSelValue ? tmlxSelValue +' and '+jclxSelValue:tmlxSelValue
+//          filterOption.push(advancedVlaue)
+//        }else if(jclxSelValue){
+//          advancedVlaue.fix=advancedVlaue.fix+ jclxSelValue
+//          filterOption.push(advancedVlaue)
+//        }else{
+//          filterOption.push(advancedVlaue)
+//        }
+        this.expandedRowKeys=[]
+        this.reqModalTableData(filterOption)
+      },
+
+      //清除搜索内容
+      clearSearch(){
+        this.search.searchValue=''
+        this.search.advancedForm.inputs=['',''],
+          this.search.advancedForm.qylx=undefined,
+          this.search.advancedForm.gmjjhyfl=undefined,
+          this.search.advancedForm.jghy=undefined,
+          this.reqModalTableData()
+      },
+
+      //请求联级选择子选项
+      selLoadData(selectedOptions){
+        const targetOption = selectedOptions[selectedOptions.length - 1];
+//          alert(JSON.stringify(selectedOptions))
+//        debugger
+        targetOption.loading=true
+
+
+        const parameter ={
+          param1 : targetOption.value
+        }
+        GeneralQuerySelChildren(parameter,0)
+          .then((res)=>{
+            if(res.success){
+//              alert(JSON.stringify(res.data))
+              targetOption.loading=false
+              this.search.advancedForm.selectLoading1=false
+              targetOption.children=res.data
+              targetOption.children.forEach((item)=>{
+                item.value=item.VALUE
+                delete item.VALUE
+              })
+              this.modalOption.selectOptions["企业类型"]=[...this.modalOption.selectOptions["企业类型"]]
+            }else{
+              this.$message.error(res.message)
+            }
+          })
+          .catch((err)=>{JSON.stringify(err)})
+      },
+      selGmjjLoadData(selectedOptions){
+        const targetOption = selectedOptions[selectedOptions.length - 1];
+//          console.log(JSON.stringify(selectedOptions))
+
+        this.search.advancedForm.selectLoading1=true
+        targetOption.loading=true
+        const parameter ={
+          param1 : targetOption.value
+        }
+        const type=selectedOptions.length
+        GeneralQuerySelChildren(parameter,type)
+          .then((res)=>{
+            if(res.success){
+//              alert(JSON.stringify(res.data))
+              targetOption.loading=false
+              this.search.advancedForm.selectLoading1=false
+              targetOption.children=res.data
+              targetOption.children.forEach((item)=>{
+                item.value=item.VALUE
+                if (type != 3)item.isLeaf=false
+                delete item.VALUE
+              })
+              this.modalOption.selectOptions["国民经济行业分类"]=[...this.modalOption.selectOptions["国民经济行业分类"]]
+            }else{
+              this.$message.error(res.message)
+            }
+          })
+          .catch((err)=>{JSON.stringify(err)})
+      },
+
       rowClass(record,index){
         if (index%2==1) return 'even-rows'
       },
@@ -360,9 +611,7 @@
       refresh(){
         this.reqTableData()
       },
-      onSearch(){
-        alert('onSearch')
-      },
+
       showModal(type,record){
         switch (type) {
           case 'add':
@@ -402,7 +651,7 @@
         setTimeout(function () {
 //            debugger
           let modalHtml=document.getElementById('innerTable')
-          let table=modalHtml.getElementsByClassName('ant-table-body')[0].style.height=height-12+'px'
+          let table=modalHtml.getElementsByClassName('ant-table-body')[0].style.height=height-68+'px'
         },100)
 
       },
@@ -498,13 +747,15 @@
 //            this.table.tableIsLoading=false
 //          })
       },
-      reqTableData(){
+      reqTableData(filterOption){
         this.table.tableIsLoading=true
         const parameter={
           limit:10000,
           start:0,
           param1:this.recordId
         }
+
+
         this.$store.dispatch(reqList,parameter)
           .then((res)=>{
             this.table.dataSource=this.$store.getters[getList]
@@ -518,13 +769,14 @@
           .catch(err=>console.log(JSON.stringify(err)))
       },
 
-      reqModalTableData(){
+      reqModalTableData(filterOption){
         this.modalOption.table.tableIsLoading=true
         const parameter={
           limit:10000,
           start:0,
 //          param2:this.recordId
         }
+        if (filterOption) parameter.filter = JSON.stringify(filterOption)       //增加搜索条件
         this.$store.dispatch(reqSelList,parameter)
           .then((res)=>{
             this.modalOption.table.dataSource=this.$store.getters[getSelList]
@@ -578,6 +830,10 @@
 </script>
 
 <style lang="scss" scoped>
+  /*高级搜索内条目margin-bottom*/
+  .ant-form-item{
+    margin-bottom: 0px;
+  }
   .content-list{
     padding-left:36px;
     .content-wrapper{
@@ -597,6 +853,8 @@
         }
       };
     };
+
+
   }
 
 </style>

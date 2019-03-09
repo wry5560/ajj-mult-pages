@@ -1,5 +1,5 @@
 <template>
-  <div :class="pageNmae" style="height: 100%">
+  <div :class="pageName" style="height: 100%">
     <!--下面是顶部的按钮栏-->
     <div  class="header-buttons-bar" style="padding-left: 5px">
       <a-button type='primary' @click="showModal('add')"size="small">新增{{this.pageTitle}}</a-button>
@@ -130,6 +130,7 @@
     <!--下面是弹出框-->
     <div>
       <a-modal
+        :style="modalOption.style"
         :title="modalOption.title"
         @cancel="modalCancel"
         :visible="modalOption.visible"
@@ -147,6 +148,7 @@
           :modalType="modalOption.modalType"
           :sfycx="sfycx"
           :sfqy="sfqy"
+          :lsId="lsId"
           @selJcx="selJcx"
           @selJcqy="selJcqy"
           @sfqyChanged="changeQy"
@@ -163,6 +165,7 @@
 
         <amap-modal
           v-if="modalOption.modalType=='map'"
+
           :recordId="modalOption.recordId"
           :recordGps="{lng:recordData.lng,lat:recordData.lat}"
           :height="modalOption.bodyStyle['max-height']"
@@ -196,7 +199,7 @@
   const pageName='jxgl_zxjcplan'
 
   // sfycx 为1 表示一次性计划页面  为0表示周期性计划页面
-  const sfycx='1'
+  const sfycx='0'
 
   const modalTitle="专项检查计划"   //模态框的title标题
 
@@ -228,7 +231,7 @@
     data(){
       return {
         pageTitle: modalTitle,
-        pageNmae: pageName,
+        pageName: pageName,
         search:{
           placeholder:'',
           searchValue:'',
@@ -286,12 +289,18 @@
           pageSize: 20,
           pageSizeOptions: ['10', '20', '50', '100', '500']
         },
+        lsId:'',
         modalOption: {
+          style:{
+            top:'30px',
+          },
           title: '',
           width: '85%',
           visible: false,
           bodyStyle: {
-            "max-height": window.innerHeight - 250 + 'px',
+
+            "max-height": window.innerHeight - 150 + 'px',
+            "height": window.innerHeight - 150 + 'px',
             "min-height": 100
           },
           commitLoading: false,
@@ -309,11 +318,12 @@
       }
     },
     computed: {
+
       recordData(){
         return this.$store.getters[getDetailById](this.modalOption.recordId)
       },
       modalTableHeight(){
-        return window.innerHeight - 322
+        return window.innerHeight - 112
       },
       computedColumns(){
           if (this.sfycx=='1')this.table.columns.splice(4,1)
@@ -338,7 +348,8 @@
         this.$nextTick(function () {
           let _this = this
           window.onresize = function () {
-            _this.modalOption.bodyStyle['max-height'] = window.innerHeight - 250 + 'px'
+            _this.modalOption.bodyStyle['max-height'] = window.innerHeight - 150 + 'px'
+            _this.modalOption.bodyStyle['height'] = window.innerHeight - 150 + 'px'
           }
           document.getElementsByClassName('ant-table-body')[0].style.height = `${window.innerHeight}px`
 
@@ -511,6 +522,7 @@
               this.modalOption.title = '新增' + modalTitle
               this.modalOption.modalType = 'add'
               this.modalOption.modalClass = 'nomal-modal '
+              this.lsId= 'lsundefined-'+moment().valueOf()+Math.ceil(Math.random()*1000)
 //              this.modalOption.width = '60%'
               break;
             case 'query':
@@ -588,12 +600,14 @@
               values.planendDate = values.planendDate.format('YYYY-MM-DD')
               values.planendTime = values.planendTime.format('HH:mm')
               values.departmentid = sys_relateDepId2
+              values.gdlx= sfycx== '1' ?  '01' : '02'
               if (this.modalOption.modalType == 'edit') {
                 values.id = this.modalOption.recordId
                 // values.wzbzbm=this.$store.getters[getDetailById](this.modalOption.recordId).wzbzbm
               }
               if(this.modalOption.modalType == 'add'){
                 values.sfqy = values.sfqy == true ? 1 : 0
+                values.lsId=this.lsId
               }
               this.jcxSelects.forEach((item,index)=>{
                   item.sortNum=index
