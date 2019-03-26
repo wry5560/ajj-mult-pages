@@ -401,11 +401,13 @@
                 const tmpKey=item.key
                 jsonData.zfusers.push(this.jcryList.find(i=>i.id==tmpKey))
               })
-              values.zhuanjia.forEach((item)=>{
+              if(values.zhuanjia && values.zhuanjia.length>0){
+                values.zhuanjia.forEach((item)=>{
 //                const tmpKey=item.key.split('?')[1]
-                const tmpKey=item.key
-                jsonData.zjusers.push(this.zhuanjiaList.find(i=>i.id==tmpKey))
-              })
+                  const tmpKey=item.key
+                  jsonData.zjusers.push(this.zhuanjiaList.find(i=>i.id==tmpKey))
+                })
+              }
               jsonData.zfjc.lsId=this.lsid
             }
             const paramater={
@@ -487,7 +489,8 @@
       },
       reqJcNameList(){
 //        this.contentLoading=true
-        this.reqJcryList()
+        const paramater=this.gdlx=='03'? {param1:'2'}:null
+        this.reqJcryList(paramater)
           .then((res)=>{
             if(res.success){
                 const _this=this

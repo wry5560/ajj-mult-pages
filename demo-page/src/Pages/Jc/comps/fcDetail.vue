@@ -118,6 +118,9 @@
                           {{item.sysnr}}
                          </div>
                       </a-col>
+                        <a-col :lg="4" :md="24">
+                          <span><strong>复查结果：{{item.fcjg}}</strong></span>
+                        </a-col>
                     </a-row>
                     </div>
                   </a-list-item>

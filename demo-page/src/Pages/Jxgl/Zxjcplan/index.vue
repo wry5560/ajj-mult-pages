@@ -199,9 +199,22 @@
   const pageName='jxgl_zxjcplan'
 
   // sfycx 为1 表示一次性计划页面  为0表示周期性计划页面
-  const sfycx='0'
+  const sfycx='1'
+  // gdlx 为01是周期性计划即日常检查计划，为02是专项检查计划，为03是执法检查计划
+  const gdlx='03'
 
-  const modalTitle="专项检查计划"   //模态框的title标题
+  let modalTitle=""   //模态框的title标题
+  switch (gdlx){
+    case '01':
+      modalTitle='日常检查计划'
+          break
+    case '02':
+      modalTitle='专项检查计划'
+      break
+    case '03':
+      modalTitle='执法检查计划'
+      break
+  }
 
   const selOptions=['scheTime']          //选择项所需要的配置，localstorage中的配置名称
   const selOptionMutation='INIT_ZXJCPLAN_SELECTED_OPTIONS'   //将选择项配置保存到store的mutation方法名
@@ -248,6 +261,7 @@
         jcxSelects:[],
         qySelects:[],
         sfycx:sfycx,
+        gdlx:gdlx,
         sfqy:null,
         table: {
           dataSource: [],
@@ -326,7 +340,8 @@
         return window.innerHeight - 112
       },
       computedColumns(){
-          if (this.sfycx=='1')this.table.columns.splice(4,1)
+          //类型不是日常检查计时
+          if (this.gdlx !='01')this.table.columns.splice(4,1)
         return this.table.columns
       }
     },
@@ -404,14 +419,15 @@
             filter:JSON.stringify(filterOption),
             limit:this.pagination.pageSize,
             start:(this.pagination.current -1)*this.pagination.pageSize,
-            param3:this.sfycx=='1'? 1:0
+            param3:this.gdlx!='01'? 1:0,
+            param4:this.gdlx
           }
           this.$store.dispatch(reqList,parameter)
             .then((res) => {
               this.table.dataSource = this.$store.getters[getList]
               this.table.dataSource.forEach((item) => {
                 item.index=(this.pagination.current - 1) * this.pagination.pageSize+ item.index
-                if (item.sfycx != '1'){
+                if (item.gdlx == '01'){
                   const tmp=this.modalOption.selectOptions.scheTime.find(i=>i.value==item.scheTime)
                   item.jhzq = tmp ? tmp.label:''
                 }else{
@@ -464,14 +480,15 @@
             filter:JSON.stringify(filterOption),
             limit:this.pagination.pageSize,
             start:(this.pagination.current -1)*this.pagination.pageSize,
-            param3:this.sfycx=='1'? 1:0
+            param3:this.gdlx!='01'? 1:0,
+            param4:this.gdlx
           }
           this.$store.dispatch(reqList,parameter)
             .then((res) => {
               this.table.dataSource = this.$store.getters[getList]
               this.table.dataSource.forEach((item) => {
                 item.index=(this.pagination.current - 1) * this.pagination.pageSize+ item.index
-                if (item.sfycx != '1'){
+                if (item.gdlx == '01'){
                   const tmp=this.modalOption.selectOptions.scheTime.find(i=>i.value==item.scheTime)
                   item.jhzq = tmp ? tmp.label:''
                 }else{
@@ -600,7 +617,7 @@
               values.planendDate = values.planendDate.format('YYYY-MM-DD')
               values.planendTime = values.planendTime.format('HH:mm')
               values.departmentid = sys_relateDepId2
-              values.gdlx= sfycx== '1' ?  '01' : '02'
+              values.gdlx= this.gdlx
               if (this.modalOption.modalType == 'edit') {
                 values.id = this.modalOption.recordId
                 // values.wzbzbm=this.$store.getters[getDetailById](this.modalOption.recordId).wzbzbm
@@ -632,13 +649,13 @@
                     if (res.success == true) {
                       this.$message.success('提交成功！')
                       this.reqTableData()
-                      setTimeout(() => {
+//                      setTimeout(() => {
 //                          this.modalOption.commitLoading = false
                           this.modalLoading=false
                           this.modalOption.visible = false
-                        }
-                        , 300
-                      )
+//                        }
+//                        , 300
+//                      )
                     } else {
                       this.$message.error(res.message + '请稍后再试！')
                       this.modalLoading=false
@@ -695,14 +712,15 @@
           const parameter = {
             limit: this.pagination.pageSize,
             start: (this.pagination.current - 1) * this.pagination.pageSize,
-            param3:this.sfycx=='1'? 1:0
+            param3:this.gdlx!='01'? 1:0,
+            param4:this.gdlx
           }
           this.$store.dispatch(reqList, parameter)
             .then((res) => {
               this.table.dataSource = this.$store.getters[getList]
               this.table.dataSource.forEach((item) => {
                   item.index=(this.pagination.current - 1) * this.pagination.pageSize+ item.index
-                if (item.sfycx != '1'){
+                if (item.gdlx == '01'){
                   const tmp=this.modalOption.selectOptions.scheTime.find(i=>i.value==item.scheTime)
                   item.jhzq = tmp ? tmp.label:''
                 }else{

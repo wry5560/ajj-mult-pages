@@ -111,6 +111,7 @@
                       </a-col>
                       <a-col :lg="4" :md="24">
                         <span><strong>{{item.jcjg}}</strong></span>
+                          <div v-if="item.jcjg!='已落实'&&item.jcjg!='落实'"><strong>复查结果：{{item.fcjg}}</strong></div>
                       </a-col>
                     </a-row>
                     </div>

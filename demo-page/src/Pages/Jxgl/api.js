@@ -273,3 +273,33 @@ export function queryZxtjzq (parameter) {
     }
   })
 }
+
+//------------------------------------------------------------------------------四个百分率----------------------------------------------------------------------------
+
+//查询四个百分率 （顶级组织）
+export function reqSgbfl (parameter) {
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajj.sgbflByDept2.json',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+
+//查询指定组织下的各子组织四个百分率
+
+export function reqDepartSgbfl (parameter) {
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajj.sgbflByDept.json',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}

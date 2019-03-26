@@ -173,9 +173,9 @@
         <template slot="footer" >
           <a-button v-show="modalOption.modelType !='jc'" key="back" @click="modalCancel" size="small">返 回</a-button>
           <!--<a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">-->
-          <a-popconfirm title="您确认导出当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="exportJcdDetail">
+          <a-popconfirm title="您确认导出当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="exportFcdDetail">
             <!--<a-button v-show="modalOption.modelType !='jc'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>-->
-            <a-button v-show="modalOption.modelType !='jc'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">导出复查检查单</a-button>
+            <a-button v-show="modalOption.modelType !='jc'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">导出复查单</a-button>
           </a-popconfirm>
         </template>
       </a-modal>
@@ -358,8 +358,8 @@
     },
 
     methods:{
-      // ...mapGetters(['yingji_wz_list','yingji_wz_selOptions','getWzById']),
-      // ...mapActions(['reqWzList','createYjwz','editYjwz','delYjwz','editYjwzGps']),
+       ...mapGetters(['jczf_jcjl_info','getFcjlById']),
+       ...mapActions(['exportFcDetail','downloadJcDetailFile']),
 
 
 //------------------------------------------------------------------通用方法区域-----------------------------------------------------------------------
@@ -757,9 +757,56 @@
           .catch((err)=>{JSON.stringify(err)})
       },
 
-      //导出现场检查单
-      exportJcdDetail(){
+      //导出现场复查单
+      exportFcdDetail(){
+        this.modalLoading=true
+        const data={
+          zfjc: this.jczf_jcjl_info()[0].jcd,
+          zfjcdetail:this.jczf_jcjl_info()[0].jcddetail,
+        }
+        data.zfjc.jctimestart=moment( data.zfjc.jctimestart).format('YYYY-MM-DD HH:ss')
+        data.zfjc.jctimeend=moment( data.zfjc.jctimeend).format('YYYY-MM-DD HH:ss')
+        data.zfjc.fctimestart=moment( data.zfjc.fctimestart).format('YYYY-MM-DD HH:ss')
+        data.zfjc.fctimeend=moment( data.zfjc.fctimeend).format('YYYY-MM-DD HH:ss')
+        data.zfjc.yqzgsj=data.zfjc.yqzgsj && data.zfjc.yqzgsj!='' ? moment(data.zfjc.yqzgsj).format('YYYY-MM-DD HH:ss'):''
+        const parameter={
+          jsonData:JSON.stringify(data),
+          param2: "10002074"
+        }
+        this.exportFcDetail(parameter)
+          .then((res)=>{
+            if(res.success){
+              const param={
+                param1:encodeURI(res.data[0].filePath)
+              }
+              this.downloadJcDetailFile(param)
+                .then((data)=>{
+                  let blob = new Blob([data], {
+                    type : "application/msword"
+                  });
+                  let fileName = '现场复查记录';
+                  /*
+                   * var a = document.createElement("a"); document.body.appendChild(a); a.download = fileName; a.href = URL.createObjectURL(blob); window.location =
+                   * URL.createObjectURL(blob);
+                   */
+                  if (window.navigator.msSaveOrOpenBlob) {
+                    navigator.msSaveBlob(blob, fileName);
+                  } else {
+                    let link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = fileName;
+                    link.click();
+                    window.URL.revokeObjectURL(link.href);
+                  }
+                  this.modalLoading=false
 
+                })
+            }else{
+              this.$message.error(res.message)
+              this.modalLoading=false
+            }
+          })
+          .catch((err)=>{JSON.stringify(err)})
       }
     }
   }

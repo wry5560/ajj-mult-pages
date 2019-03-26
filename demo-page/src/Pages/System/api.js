@@ -342,3 +342,56 @@ export function deleteUserRole(parameter) {
     }
   })
 }
+
+//----------------------------------------------------------------------------网格管理----------------------------------------------------------------------------------
+
+
+
+
+//----------------------------------------------------------------------------网格分配----------------------------------------------------------------------------------
+
+//网格分配
+
+export function saveDeptWg(parameter) {
+  return axios({
+    url: '/other/AjjDepartment.saveDeptWg.jsonp',
+    method: 'post',
+    data:{
+      ...parameter
+    },
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+//---------------------------------------------------------------------------功能分配----------------------------------------------------------------------------------
+
+//功能分配
+
+export function saveZzMenu(parameter) {
+  return axios({
+    url: '/other/AjjSystem.doDeptMenu.jsonp',
+    method: 'post',
+    data:{
+      ...parameter
+    },
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+//查询功能分配菜单列表
+
+export function reqZzMenu(parameter) {
+  return axios({
+    url: '/other/AjjSystem.queryDeptMenu.json',
+    method: 'post',
+    data:{
+      ...parameter
+    },
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}

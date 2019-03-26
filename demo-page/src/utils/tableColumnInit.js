@@ -3,10 +3,12 @@ export function initColumn(columns=[]) {
   const tmpColumns=[...columns]
 
   tmpColumns.forEach((column)=>{
+    if(column.children && column.children.length>0) column.children=initColumn(column.children)
     column.key=column.dataIndex
     const align=column.align ||''
     const titleAlign=column.titleAlign ? column.titleAlign : align
     if (column.align) delete column.align
+    // debugger
     column.customCell=(record,recordIndex)=>{
       return{
         style:{
@@ -16,7 +18,8 @@ export function initColumn(columns=[]) {
           'text-align':align,
           'text-overflow':'ellipsis',
           'overflow':'hidden',
-          'white-space':'nowrap'
+          'white-space':'nowrap',
+          ...column.style
         },
       }
     }

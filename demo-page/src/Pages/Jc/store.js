@@ -1,4 +1,4 @@
-import {GeneralQuery,GeneralPostQuery,reqZfjcbDetail,rmFile,createJcDetail,createFcDetail,reqJcjlDetail,reqJcxx,exportWord,downloadExportFile} from './api'
+import {GeneralQuery,GeneralPostQuery,reqZfjcbDetail,rmFile,createJcDetail,createFcDetail,reqJcjlDetail,reqJcxx,exportWord,exportFcWord,downloadExportFile} from './api'
 import message from 'ant-design-vue/es/message'
 const jiancazhifa = {
   state:{
@@ -310,6 +310,7 @@ const jiancazhifa = {
     },
 
     //导出检查单
+
     exportJcDetail:(store,params)=>{
   return new Promise((resolve, reject) => {
     //这里可以增加通用参数，如部门id等
@@ -323,6 +324,22 @@ const jiancazhifa = {
       })
   })
 },
+
+    //导出复查单
+
+    exportFcDetail:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          param1:'zfzgfctemplate',
+          ...params
+        }
+        exportFcWord(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
 
     //下载导出的检查单
     downloadJcDetailFile:(store,params)=>{
@@ -355,6 +372,10 @@ const jiancazhifa = {
     jczf_fcjl_list:(state) => {
       // state.jcx.list.forEach(item=>item.departName=item.__ddepartmentid.departName)
       return state.fcList.list
+    },
+    jczf_fcjl_info:(state) => {
+      // state.jcx.list.forEach(item=>item.departName=item.__ddepartmentid.departName)
+      return state.fcList.info
     },
     jczf_zf_list:(state) => {
       // state.jcx.list.forEach(item=>item.departName=item.__ddepartmentid.departName)

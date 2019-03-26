@@ -199,3 +199,19 @@ export function chehuiSgkb(parameter){
     }
   })
 }
+
+//事件关闭
+//jsonData 事故详细信息
+//param1: "res" 审核意见
+export function sgEnd (parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajjsgkb.sgend.json',
+    // url: '/sgCommit',
+    method: 'get',
+    params: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}

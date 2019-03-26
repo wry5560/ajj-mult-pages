@@ -755,6 +755,7 @@
         data.zfjc.jctimeend=moment( data.zfjc.jctimeend).format('YYYY-MM-DD HH:ss')
         data.zfjc.fctimestart=moment( data.zfjc.fctimestart).format('YYYY-MM-DD HH:ss')
         data.zfjc.fctimeend=moment( data.zfjc.fctimeend).format('YYYY-MM-DD HH:ss')
+        data.zfjc.yqzgsj=data.zfjc.yqzgsj && data.zfjc.yqzgsj!='' ? moment(data.zfjc.yqzgsj).format('YYYY-MM-DD HH:ss'):''
         const parameter={
           jsonData:JSON.stringify(data),
           param2: "10002074"

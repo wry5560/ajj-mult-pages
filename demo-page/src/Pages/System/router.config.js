@@ -4,7 +4,10 @@ export const constantRouterMap = [
     name: 'index',
     // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/System/Zuzhi/index'),
     // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/System/Role/index'),
-    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/System/Account/index'),
+    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/System/Account/index'),
+    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/System/WgFenpei/index'),
+    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/System/GnFenpei/index'),
+    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/System/Wangge/index'),
     meta: {keepAlive:true},
   },
 

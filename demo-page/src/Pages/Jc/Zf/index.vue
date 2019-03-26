@@ -165,7 +165,7 @@
           <!--<a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">-->
           <a-popconfirm title="您确认导出当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="exportJcdDetail">
             <!--<a-button v-show="modalOption.modelType !='jc'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">提 交</a-button>-->
-            <a-button v-show="modalOption.modelType!='jc'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">导出现场检查单</a-button>
+            <a-button v-show="modalOption.modelType=='jc'" key="submit" type="primary" :loading="modalOption.commitLoading"  size="small">导出现场检查单</a-button>
           </a-popconfirm>
         </template>
       </a-modal>

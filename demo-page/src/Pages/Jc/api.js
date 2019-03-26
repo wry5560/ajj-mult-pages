@@ -24,7 +24,7 @@ export function GeneralPostQuery(parameter) {
   })
 }
 
-//通用导出word接口
+//检查单导出word接口
 //导出请求
 //jsonData: 导出数据
 //param1: 模版
@@ -33,6 +33,23 @@ export function GeneralPostQuery(parameter) {
 export function exportWord(parameter) {
   return axios({
     url: '/Export.exportWord.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+//复查单导出word接口
+//导出请求
+//jsonData: 导出数据
+//param1: 模版
+//param2： menuID
+
+export function exportFcWord(parameter) {
+  return axios({
+    url: '/Export.exportfcWord.jsonp',
     method: 'post',
     data: parameter,
     headers: {

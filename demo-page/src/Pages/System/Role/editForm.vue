@@ -128,11 +128,10 @@
         this.form.validateFields((err, values) => {
           if (!err) {
             this.contentLoading = true
-
             //若存在选择项value和显示内容不相同，需转换内容后再提交,，如时间等
 //            values.jclx2=values.jclx.length>1 ? values.jclx[1]:null
 //            values.jclx=values.jclx[0]
-//            values.departmentid=sys_relateDepId2
+            values.departmentId=sys_relateDepId2
             let parameter = {
               jsonData: JSON.stringify(values),
             }

@@ -60,12 +60,15 @@
               <span>事件编号:{{sbData.xbid==0?sbData.id:"续 "+ sbData.id + "-"+sbData.xbid}}</span>
               <span v-if="this.$route.params.isShenhe=='true'" style="display: inline-block;float: right">
                 <span style="display: inline-block;float: right;">
-                  <a-radio-group name="radioGroup" :defaultValue="1" v-model="shjg">
-                    <a-radio :value="1">通过</a-radio>
-                    <a-radio :value="9">不通过</a-radio>
-                </a-radio-group>
+                  <!--<a-radio-group name="radioGroup" :defaultValue="1" v-model="shjg">-->
+                    <!--<a-radio :value="1">通过</a-radio>-->
+                    <!--<a-radio :value="9">不通过</a-radio>-->
+                <!--</a-radio-group>-->
                 <a-popconfirm title="审核确认后将无法修改，您确认此操作吗？" @confirm="postShenhe"  okText="Yes" cancelText="No">
                   <a-button type="primary" size="small" style="margin-right: 6px">审核确认</a-button>
+                </a-popconfirm>
+                  <a-popconfirm title="该事件流程即将关闭，关闭后无法修改，您确认此操作吗？" @confirm="endSg"  okText="Yes" cancelText="No">
+                  <a-button type="danger" size="small" style="margin-right: 6px" v-if="sbData.xbid && sbData.xbid !=0">关闭事件</a-button>
                 </a-popconfirm>
                 <!--<a-popconfirm title="审核不通过后将将无法修改，您确认此操作吗？" @confirm="postShenhe(9)" okText="Yes" cancelText="No">-->
                   <!--<a-button size="small">不通过</a-button>-->
@@ -156,7 +159,7 @@
   import DetailList from './DetailList.vue'
   import  DetailListItem from './DetailListItem.vue'
   import SgForm from './sgForm.vue'
-  import {reqKuaiBaoDetail,reqKuaiBaoList,reqAllSbLc,reqSbLcTotal,reqSbLc,sgAudit,GeneralQuery,addSgkbFeedback} from '../api'
+  import {reqKuaiBaoDetail,reqKuaiBaoList,reqAllSbLc,reqSbLcTotal,reqSbLc,sgAudit,GeneralQuery,addSgkbFeedback,sgEnd} from '../api'
   import moment from 'moment'
 
   export default {
@@ -529,7 +532,10 @@
               this.modalLoading=false
             }
           })
-          .catch(err=>console.log(JSON.stringify(err)))
+          .catch(err=>{
+            console.log(JSON.stringify(err))
+            this.modalLoading=false
+          })
 
       },
       postShenhe(type){
@@ -577,11 +583,67 @@
                     this.reqAll()
                   }
                 })
-                .catch((err)=>console.log(JSON.stringify(err)))
+                .catch((err)=>{
+                  console.log(JSON.stringify(err))
+                  this.modalLoading=false
+                })
             }
           })
 
         }})
+      },
+      endSg(){
+        this.shenheForm.validateFields((err, shenheValues) => {
+          if (!err){
+//          if (this.sgDetail.sgdj) this.sgDetail.sgdj=this.selectOptions.sgdj.find(item=>item[0]==this.sgDetail.sgdj)[1]
+//          if (this.sgDetail.sglx) this.sgDetail.sglx=this.selectOptions.sglx.find(item=>item[0]==this.sgDetail.sglx)[1]
+//          if (this.sgDetail.shlb) this.sgDetail.shlb=this.selectOptions.shlb.find(item=>item[0]==this.sgDetail.shlb)[1]
+//          if (this.sgDetail.sgxz) this.sgDetail.sgxz=this.selectOptions.sgxz.find(item=>item[0]==this.sgDetail.sgxz)[1]
+//          this.sgDetail.uptime=this.sgDetail.uptimeBF
+//          delete this.sgDetail.uptimeBF
+//          delete this.sgDetail.upuser
+
+            this.$refs.sgCommit.form.validateFields((err, values) => {
+              if (!err) {
+//              debugger
+                this.modalLoading=true
+                values.jbtime=values.jbtime.format('YYYY-MM-DD HH:mm')
+                values.fstime=values.fstime.format('YYYY-MM-DD HH:mm')
+                values.id=this.$route.params.xbid !=0? this.sbData.idBf:this.sbData.id
+                values.xbid=this.$route.params.xbid
+                const tmp={...this.sbData}
+                tmp.jbtime=values.jbtime
+                tmp.fstime=values.fstime
+                tmp.jbly=values.jbly
+                tmp.jbms=values.jbms
+                tmp.id=values.id
+                delete tmp.key
+                delete tmp.idBf
+
+                const paramater={
+                  jsonData:encodeURI(JSON.stringify(tmp)),
+                  param1:encodeURI(shenheValues.spyj),
+                  param3:shenheValues.shr
+                }
+                sgEnd(paramater)
+                  .then((res)=>{
+                    if(res.success){
+                      this.$message.success("关闭成功！")
+                      this.$router.go(-1)
+                    }else{
+                      this.$message.error(res.message)
+                      this.modalLoading=false
+                      this.reqAll()
+                    }
+                  })
+                  .catch((err)=>{
+                    console.log(JSON.stringify(err))
+                    this.modalLoading=false
+                  })
+              }
+            })
+
+          }})
       }
     }
   }

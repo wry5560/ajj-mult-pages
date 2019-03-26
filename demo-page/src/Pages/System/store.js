@@ -1,4 +1,4 @@
-import {GeneralQuery,GeneralPostQuery,createZuzhi,editZuzhi,delZuzhi,delPlZuzhi,createRole,editRole,delRole,reqRoleMenu,editRoleMenu,createAccount,editAccount,delAccount,resetPassword,forbidAccount,unForbiddenAccount,addUserRole,deleteUserRole} from './api'
+import {GeneralQuery,GeneralPostQuery,createZuzhi,editZuzhi,delZuzhi,delPlZuzhi,createRole,editRole,delRole,reqRoleMenu,editRoleMenu,createAccount,editAccount,delAccount,resetPassword,forbidAccount,unForbiddenAccount,addUserRole,deleteUserRole,saveDeptWg,saveZzMenu,reqZzMenu} from './api'
 import message from 'ant-design-vue/es/message'
 const system = {
   state:{
@@ -243,10 +243,11 @@ const system = {
     reqZuzhiData:(store,params)=>{
       return new Promise((resolve, reject) => {
         //这里可以增加通用参数，如部门id等
+        console.log('sys_relateDepId2:'+ sys_relateDepId2 )
         const parameter={
           sqlId: 'S350006',
           param2: sys_relateDepId2,
-          limit: 1000,
+          limit: 10000,
           ...params
         }
         GeneralPostQuery(parameter)
@@ -432,12 +433,92 @@ const system = {
             resolve(res)
           })
       })
-    }
-
-
-
     },
 
+
+
+
+    //----------------------------------------------------------------------------网格管理----------------------------------------------------------------------------------
+
+    //查询辖区网格列表
+    reqWanggeList:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId: "S350001.wg",
+          param2: sys_relateDepId5,
+          limit: 10000,
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+
+
+    //----------------------------------------------------------------------------网格分配----------------------------------------------------------------------------------
+
+    // //查询网格列表
+    // "sqlId": "S350001.wgfp",
+    // "param2": sys_relateDepId5,
+    // "param3": $scope.service.seldeptid,
+    reqWgfpList:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          "sqlId": "S350001.wgfp",
+          "param2": sys_relateDepId5,
+          limit: 10000,
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+              resolve(res)
+          })
+      })
+    },
+
+    editWgfp:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          ...params
+        }
+        saveDeptWg(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+
+    //----------------------------------------------------------------------------功能分配----------------------------------------------------------------------------------
+    // //查询组织功能列表
+    // "param1": 组织id
+    reqZzMenuList:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          limit: 100000,
+          ...params
+        }
+        reqZzMenu(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+
+    editZzMenu:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          ...params
+        }
+        saveZzMenu(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+
+    },
 
 
 

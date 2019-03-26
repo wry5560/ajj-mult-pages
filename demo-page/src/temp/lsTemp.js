@@ -347,7 +347,23 @@ export const asrsajjdic = {
   'fcjg': [
     {label: "已整改", value: "已整改"},
     {label: "未整改", value: "未整改"}
-  ]
+  ],
+  'hzly':[
+    {label: "OA", value: "OA"},
+    {label: "会议", value: "会议"}
+  ],
+  'nycd':[
+    {label: "1", value: "1"},
+    {label: "2", value: "2"},
+    {label: "3", value: "3"},
+    {label: "4", value: "4"},
+    {label: "5", value: "5"},
+    {label: "6", value: "6"},
+    {label: "7", value: "7"},
+    {label: "8", value: "8"},
+    {label: "9", value: "9"},
+    {label: "10", value: "10"}
+  ],
 }
 
 export const asrsajjfixsearch = {

@@ -2,7 +2,6 @@
   //background-color: #f0f2f5;
 }
 
-
 //全局布局样式
 .ant-layout{
   height: 100%;
@@ -101,7 +100,10 @@
     //background-color: blue
   }
   .even-rows{
-    background-color: #f6f6f6
+    background-color: #f6f6f6;
+    .ant-progress-inner {
+      background: #ececec;
+    }
   }
   .disabled{
     background-color: #fafafa !important;

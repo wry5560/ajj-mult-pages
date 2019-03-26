@@ -59,7 +59,7 @@
                 </a-row>
                 <a-row :gutter="8" align="top">
                   <a-col :lg="12">
-                    <span class="item-title"><strong>执法人员：</strong></span>
+                    <span class="item-title"><strong>复查人员：</strong></span>
                     <span class="item-content">{{jcd.jcusersname}}</span>
                   </a-col>
                   <a-col :lg="12">

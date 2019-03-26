@@ -573,8 +573,8 @@
       reqTableData(filterOption){
         this.table.tableIsLoading=true
         const parameter={
-          limit:this.pagination.reqData ? this.pagination.pageSize:10000,
-          start:this.pagination.reqData ? (this.pagination.current -1)*this.pagination.pageSize:0
+          limit:10000,
+//          start:this.pagination.reqData ? (this.pagination.current -1)*this.pagination.pageSize:0,
         }
 
         if (filterOption) parameter.filter = JSON.stringify(filterOption)       //增加搜索条件

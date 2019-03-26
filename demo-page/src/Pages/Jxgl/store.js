@@ -1,4 +1,4 @@
-import {GeneralQuery,GeneralPostQuery,createJcx,editJcx,delJcx,addJcb,addJcbOpt,delJcb,createZxjcplan,startZxjcplan,stopZxjcplan,editZxjcplan,delZxjcplan,addZxjcJcx,delZxjcplanJcx,addZxjcQy,delZxjcplanQy,queryZxtj,queryZxtjzq} from './api'
+import {GeneralQuery,GeneralPostQuery,createJcx,editJcx,delJcx,addJcb,addJcbOpt,delJcb,createZxjcplan,startZxjcplan,stopZxjcplan,editZxjcplan,delZxjcplan,addZxjcJcx,delZxjcplanJcx,addZxjcQy,delZxjcplanQy,queryZxtj,queryZxtjzq,reqDepartSgbfl,reqSgbfl} from './api'
 import message from 'ant-design-vue/es/message'
 const jixiao = {
   state:{
@@ -14,6 +14,7 @@ const jixiao = {
       zxtj:[],
       zxtjzq:[]
     },
+    sgbfl:{list:[]}
 
   },
   mutations: {
@@ -58,6 +59,9 @@ const jixiao = {
     INIT_ZXJCSEL_ZXTJZQ:(state, payload) => {
       state.zxjcplan.zxtzq=payload
     },
+    INIT_SGBFL_LIST: (state, payload) => {
+      state.sgbfl.list=payload
+    },
   },
   actions: {
     //查询检查项列表
@@ -82,6 +86,7 @@ const jixiao = {
           })
       })
     },
+
     //新增检查项
     createJcx:(store,params)=>{
       return new Promise((resolve, reject) => {
@@ -514,6 +519,54 @@ const jixiao = {
           })
       })
     },
+
+    //查询总的四个百分率
+    reqSgbfl:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          ...params
+        }
+        reqSgbfl(parameter)
+          .then((res)=>{
+            if(res.success){
+              res.data.forEach((item)=>{
+                item.key=item.id
+              })
+              commit('INIT_SGBFL_LIST',res.data)
+              resolve(res)
+            }else{
+              message.error(res.message)
+            }
+          })
+      })
+    },
+
+    //查询某组织下的四个百分率
+    reqDepartSgbfl:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          ...params
+        }
+        reqDepartSgbfl(parameter)
+          .then((res)=>{
+            if(res.success){
+              if(res.data.length>0){
+                res.data.forEach((item)=>{
+                  item.key=item.id
+                })
+                commit('INIT_SGBFL_LIST',res.data)
+                resolve(res)
+              }else{
+                res.success=false
+                res.message='所选组织没有下级数据！'
+                resolve(res)
+              }
+            }else{
+              reject(res)
+            }
+          })
+      })
+    },
   },
 
   getters:{
@@ -597,6 +650,10 @@ const jixiao = {
     jxgl_zxjcsel_qylist:(state) => {
       // state.zxjcplan.qySelList.forEach(item=>item.departName=item.__ddepartmentid.departName)
       return state.zxjcplan.qySelList
+    },
+
+    jxgl_sgbfl_list:(state) => {
+      return state.sgbfl.list
     },
 
   }
