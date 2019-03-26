@@ -1,4 +1,4 @@
-import {GeneralQuery,GeneralPostQuery,createZuzhi,editZuzhi,delZuzhi,delPlZuzhi,createRole,editRole,delRole,reqRoleMenu,editRoleMenu,createAccount,editAccount,delAccount,resetPassword,forbidAccount,unForbiddenAccount,addUserRole,deleteUserRole,saveDeptWg,saveZzMenu,reqZzMenu} from './api'
+import {GeneralQuery,GeneralPostQuery,createZuzhi,editZuzhi,delZuzhi,delPlZuzhi,createRole,editRole,delRole,reqRoleMenu,editRoleMenu,createAccount,editAccount,delAccount,resetPassword,forbidAccount,unForbiddenAccount,addUserRole,deleteUserRole,saveDeptWg,saveZzMenu,reqZzMenu,saveWgdw,pldelWgdw} from './api'
 import message from 'ant-design-vue/es/message'
 const system = {
   state:{
@@ -455,7 +455,61 @@ const system = {
           })
       })
     },
-
+    //查询当前网格待选入企业列表
+    reqWanggeSelQyList:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId: "S350002.lv2",
+          limit: 10000,
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+    //查询当前网格已选入企业列表
+    reqWanggeQyList:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId: "S620106.wg",
+          limit: 10000,
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+    //选入网格
+    //jsonData: "{"wgdw":[{"departname":"珠海通宇物流有限公司","shortNm":null,"qystate":"","__dparentid":{"areaid":"YS","companyId":"555555","companyNm":"客户","departId":"2","departName":"横琴安监动态监管平台","firstItemId":"2","firstItemName":"演示企业","fullPath":"2|","isRH":null,"ltype":"0","relateDep1Id":"2","relateDep2Id":"2","relateDep3Id":"2","relateDep4Id":"2","relateDep5Id":"2","shortNm":"横琴安监动态监管平台","topManageDepId":"2","topManageDepName":null},"__ddepartmentId":{"areaid":"","companyId":null,"companyNm":null,"departId":"7629","departName":"珠海通宇物流有限公司","firstItemId":"7176","firstItemName":"保税区","fullPath":"2|7629|","isRH":null,"ltype":"0","relateDep1Id":"7629","relateDep2Id":"7629","relateDep3Id":"7629","relateDep4Id":"7629","relateDep5Id":"7629","shortNm":null,"topManageDepId":"7176","topManageDepName":"保税区"},"click":"false","isParent":false,"id":"A-4637","pId":null,"open":false,"__drelateDep5Id":{"areaid":"","companyId":null,"companyNm":null,"departId":"7629","departName":"珠海通宇物流有限公司","firstItemId":"7176","firstItemName":"保税区","fullPath":"2|7629|","isRH":null,"ltype":"0","relateDep1Id":"7629","relateDep2Id":"7629","relateDep3Id":"7629","relateDep4Id":"7629","relateDep5Id":"7629","shortNm":null,"topManageDepId":"7176","topManageDepName":"保税区"},"sfzd":"1","name":"珠海通宇物流有限公司","departmentId":"7629","isFirstNode":true,"level":0,"tId":"qytree_1590","parentTId":null,"zAsync":true,"isLastNode":false,"isAjaxing":false,"isHidden":false,"checked":true,"checkedOld":false,"nocheck":false,"chkDisabled":false,"halfCheck":false,"check_Child_State":-1,"check_Focus":false,"isHover":false,"editNameFlag":false},{"departname":"柏赛塑胶科技（珠海保税区）有限公司","shortNm":null,"qystate":null,"__dparentid":{"areaid":"YS","companyId":"555555","companyNm":"客户","departId":"2","departName":"横琴安监动态监管平台","firstItemId":"2","firstItemName":"演示企业","fullPath":"2|","isRH":null,"ltype":"0","relateDep1Id":"2","relateDep2Id":"2","relateDep3Id":"2","relateDep4Id":"2","relateDep5Id":"2","shortNm":"横琴安监动态监管平台","topManageDepId":"2","topManageDepName":null},"__ddepartmentId":{"areaid":"","companyId":null,"companyNm":null,"departId":"7579","departName":"柏赛塑胶科技（珠海保税区）有限公司","firstItemId":"7176","firstItemName":"保税区","fullPath":"2|7579|","isRH":null,"ltype":"0","relateDep1Id":"7579","relateDep2Id":"7579","relateDep3Id":"7579","relateDep4Id":"7579","relateDep5Id":"7579","shortNm":null,"topManageDepId":"7176","topManageDepName":"保税区"},"click":"false","isParent":false,"id":"A-4587","pId":null,"open":false,"__drelateDep5Id":{"areaid":"","companyId":null,"companyNm":null,"departId":"7579","departName":"柏赛塑胶科技（珠海保税区）有限公司","firstItemId":"7176","firstItemName":"保税区","fullPath":"2|7579|","isRH":null,"ltype":"0","relateDep1Id":"7579","relateDep2Id":"7579","relateDep3Id":"7579","relateDep4Id":"7579","relateDep5Id":"7579","shortNm":null,"topManageDepId":"7176","topManageDepName":"保税区"},"sfzd":"","name":"柏赛塑胶科技（珠海保税区）有限公司","departmentId":"7579","level":0,"tId":"qytree_1591","parentTId":null,"zAsync":true,"isFirstNode":false,"isLastNode":false,"isAjaxing":false,"isHidden":false,"checked":true,"checkedOld":false,"nocheck":false,"chkDisabled":false,"halfCheck":false,"check_Child_State":-1,"check_Focus":false,"isHover":false,"editNameFlag":false}]}"
+    // param1:  网格的id
+    saveWgdw:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          ...params
+        }
+        saveWgdw(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+    //选出网格
+    //param1: "A-3053,A-3054"  IDS
+    pldelWgdw:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          ...params
+        }
+        pldelWgdw(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
 
     //----------------------------------------------------------------------------网格分配----------------------------------------------------------------------------------
 

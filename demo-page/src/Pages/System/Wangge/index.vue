@@ -10,8 +10,9 @@
         <a-spin :spinning="siderTreeOption.treeLoading" size="small">
           <a-tree
             :treeData="siderTreeOption.treeData"
-            showLine @select="handleTreeSelect"
-            :selectedKeys="siderTreeOption.treeSelectedKey"
+            showLine
+            @select="handleTreeSelect"
+
             :expandedKeys.sync="siderTreeOption.expandedKeys"
           />
         </a-spin>
@@ -23,12 +24,15 @@
           <a-card style="height: 100%">
             <div slot="title">
               待选入企业
+              <a-badge :numberStyle="{top:'-2px', 'margin-left':'5px','background-color':'#1478f0'}" :count="leftTreeOption.treeData.length" :showZero="true":overflowCount="99999"/>
               <!--<a-icon style="float: right;font-size:12px;margin-top:5px;color:gray" v-if="!leftTreeOption.treeLoading" type="reload"  @click="reqLeftTreeData"/>-->
               <!--<a-icon style="float: right;font-size:12px;margin-top:5px;color:gray" v-else type="loading" />-->
             </div>
             <a-spin :spinning="leftTreeOption.treeLoading" size="small">
               <a-tree
                 :treeData="leftTreeOption.treeData"
+                checkable
+                v-model="leftTreeOption.checkedKeys"
                 showLine
                 :expandedKeys.sync="leftTreeOption.expandedKeys"
               />
@@ -37,25 +41,24 @@
         </div>
         <div class="middle-button">
           <div style="position: relative;top:35%">
-            <div style="margin-bottom: 16px"><a-button type="primary">选入 ></a-button></div>
-            <div><a-button >< 选出 </a-button></div>
+            <div style="margin-bottom: 16px"><a-button type="primary" @click="selQy">选入 ></a-button></div>
+            <div><a-button @click="delQy">< 选出 </a-button></div>
           </div>
         </div>
         <div class="right-tree">
           <a-card style="height: 100%">
             <div slot="title">
              已选入企业
+              <a-badge :numberStyle="{ top:'-2px','margin-left':'5px','background-color':'#1478f0'}" :count="rightTreeOption.treeData.length" :showZero="true":overflowCount="99999"/>
               <!--<a-icon style="float: right;font-size:12px;margin-top:5px;color:gray" v-if="!rightTreeOption.treeLoading" type="reload"  @click="reqTreeData"/>-->
               <!--<a-icon style="float: right;font-size:12px;margin-top:5px;color:gray" v-else type="loading" />-->
               <!--<a-button type="primary" size="small"style="float: right;" @click="saveWgfp">保存</a-button>-->
             </div>
             <a-spin :spinning="rightTreeOption.treeLoading" size="small">
               <a-tree
-                checkStrictly
                 checkable
                 :treeData="rightTreeOption.treeData"
                 showLine
-                @check="onCheck"
                 v-model="rightTreeOption.checkedKeys"
                 :expandedKeys.sync="rightTreeOption.expandedKeys"
               />
@@ -98,13 +101,18 @@
         contentLoading:false,               //如果没有用表格，可以套一个spin，绑定该参数进行load动画的控制
         pageLoading: false,
 
+        leftQyList:[],
+        rightQyList:[],
+
         //侧边栏树的配置
         siderTreeOption:{
           treeData:[],
           treeSelectedKey:[],
+          treeSelectedPid:'',
           treeSelectedTitle:'',
           treeLoading:false,
-          expandedKeys:[]
+          expandedKeys:[],
+          checkedKeys:[]
         },
         leftTreeOption:{
           treeData:[],
@@ -120,10 +128,7 @@
           treeSelectedTitle:'',
           treeLoading:false,
           expandedKeys:[],
-          checkedKeys:{
-            checked:[],
-            halfChecked:[]
-          },
+          checkedKeys:[],
         },
       }
     },
@@ -138,6 +143,7 @@
       }
     },
     created(){
+      console.log('debugger')
       if(this.showTree) this.reqTreeData()
 //      this.reqTableData()
 //      this.table.columns = initColumn(this.table.columns)
@@ -179,7 +185,7 @@
     methods:{
       moment,
       ...mapGetters(['']),
-      ...mapActions(['reqWanggeList',]),
+      ...mapActions(['reqWanggeList','reqWanggeSelQyList','reqWanggeQyList','saveWgdw','pldelWgdw']),
 
       //请求左侧树的数据，如果页面是第一次加载，则会自动选中第一条数据并发送数据请求，若不需要自动请求数据，则将data中isFirstLoading设为false
       reqTreeData(){
@@ -200,11 +206,13 @@
               this.siderTreeOption.treeData=this.initTreeData(treeData)
               this.siderTreeOption.treeLoading=false
               if(this.isFirstLoading) {
+                // debugger
                 this.siderTreeOption.treeSelectedKey=[this.siderTreeOption.treeData[0].key]
+                this.siderTreeOption.treeSelectedPid=this.siderTreeOption.treeData[0].parentId
                 this.siderTreeOption.treeSelectedTitle=this.siderTreeOption.treeData[0].title
                 this.siderTreeOption.expandedKeys.push(this.siderTreeOption.treeData[0].key)
                 this.isFirstLoading=false
-//                this.handleTreeSelect(this.siderTreeOption.treeData[0].key,{})
+               this.handleTreeSelect([this.siderTreeOption.treeData[0].key],{})
               }
             }else{
               this.$message.error(res.message)
@@ -216,10 +224,20 @@
 
       reqLeftTreeData(){
         this.leftTreeOption.treeLoading=true
-//        const paramater={
-////          param1:
-//        }
-        this.reqZuzhiData()
+       const paramater={
+         param1: this.siderTreeOption.treeSelectedPid,
+         param2: this.siderTreeOption.treeSelectedKey[0],
+         param3:'',
+         param4:'',
+         param5:'',
+         param6:'',
+         param7:'',
+         param8:'',
+         param9:'',
+         param10:'',
+         param11:''
+       }
+        this.reqWanggeSelQyList(paramater)
           .then((res)=>{
             if(res.success){
               this.leftTreeOption.treeData=[]
@@ -232,7 +250,9 @@
                   ...item
                 })
               })
-              this.leftTreeOption.treeData=this.initTreeData(treeData)
+              // this.leftTreeOption.treeData=this.initTreeData(treeData)
+              this.leftTreeOption.treeData=treeData
+              this.leftQyList=res.data
               this.leftTreeOption.treeLoading=false
             }else{
               this.$message.error(res.message)
@@ -247,48 +267,33 @@
       reqRightTreeData(){
         this.rightTreeOption.treeLoading=true
         const paramater={
-          param3:this.leftTreeOption.treeSelectedKey[0]
+          param1: this.siderTreeOption.treeSelectedKey[0],
+          param3:'',
+          param4:'',
+          param5:'',
+          param6:'',
+          param7:'',
+          param8:'',
+          param9:'',
+          param10:'',
+          param11:''
         }
-        this.reqWgfpList(paramater)
+        this.reqWanggeQyList(paramater)
           .then((res)=>{
             if(res.success){
-              this.wgData=[]
-              this.authedWg=[]
-              const tmpData=[]
-              this.resData=res.data
-              this.rightTreeOption.checkedKeys={
-                checked:[],
-                halfChecked:[]
-              }
-              res.data.forEach(item=>{
-                if(item.authed=='true') {
-                  const tmpKeyIndex=  this.rightTreeOption.checkedKeys.checked.findIndex(i=>i==item.id)
-                  if(tmpKeyIndex==-1)this.rightTreeOption.checkedKeys.checked.push(item.id)
-                  this.authedWg.push({
-                    id: item.id,
-                    authed:  item.authed,
-                    pId:item.pId
-                  })
-                  tmpData.push(item)
-                }
-                this.wgData.push({
-                  id: item.id,
-                  authed:  item.authed,
-                  pId:item.pId
+              this.rightTreeOption.treeData=[]
+              const treeData=[]
+              res.data.forEach((item)=>{
+                treeData.push({
+                  title:item.name,
+                  key:item.id,
+                  value:item.id,
+                  ...item
                 })
               })
-              this.rightTreeOption.treeData= this.initTree(this.initTableChildren(res.data))
-//                debugger
-              this.parentNodes.forEach(item=>this.initChecked(item))
-              this.parentNodes.forEach(item=>this.initChecked(item))
-              this.parentNodes.forEach(item=>this.initChecked(item))
-              this.parentNodes.forEach(item=>this.initChecked(item))
-              this.parentNodes.forEach(item=>this.initChecked(item))
-              this.parentNodes.forEach(item=>this.initChecked(item))
-              if(this.isFirstLoading) {
-                this.rightTreeOption.expandedKeys.push(this.rightTreeOption.treeData[0].key)
-                this.isFirstLoading=false
-              }
+              // this.leftTreeOption.treeData=this.initTreeData(treeData)
+              this.rightTreeOption.treeData=treeData
+              this.rightQyList=res.data
               this.rightTreeOption.treeLoading=false
             }else{
               this.$message.error(res.message)
@@ -301,10 +306,13 @@
           })
       },
       //左侧树选择后，请求相应数据
-      handleTreeSelect(selectedKeys,{node=null}){
+      handleTreeSelect(selectedKeys,{selected, selectedNodes, node=null, event}){
+        // debugger
         if(selectedKeys.length>0)this.siderTreeOption.treeSelectedKey=selectedKeys
 
-        if(node) this.siderTreeOption.treeSelectedTitle=node.title
+        if(selectedNodes) this.siderTreeOption.treeSelectedPid=selectedNodes[0].data.props.parentId
+        this.reqLeftTreeData()
+        this.reqRightTreeData()
 //        this.contentLoading=true
 //        const paramater={
 //            param1:selectedKeys
@@ -359,8 +367,12 @@
         }
       },
 
-      onCheck(){
+      selQy(){
 
+      },
+
+      delQy(){
+        const
       }
     }
   }
@@ -369,6 +381,10 @@
 <style lang="scss">
   .system-wangge{
     min-width: 1170px;
+    .ant-badge-count{
+      height: 18px;
+      line-height:18px
+    }
     .ant-form-item {
       margin-bottom: 0px;
     }

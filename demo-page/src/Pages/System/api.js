@@ -344,8 +344,35 @@ export function deleteUserRole(parameter) {
 }
 
 //----------------------------------------------------------------------------网格管理----------------------------------------------------------------------------------
+//选入企业
 
+export function saveWgdw(parameter) {
+  return axios({
+    url: '/other/AjjDepartment.saveWgdw.jsonp',
+    method: 'post',
+    data:{
+      ...parameter
+    },
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
 
+//选出企业
+
+export function pldelWgdw(parameter) {
+  return axios({
+    url: '/other/AjjDepartment.pldelWgdw.jsonp',
+    method: 'post',
+    data:{
+      ...parameter
+    },
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
 
 
 //----------------------------------------------------------------------------网格分配----------------------------------------------------------------------------------
