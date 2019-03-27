@@ -24,6 +24,8 @@ const meeting = {
     // menuId: sys_menuId
     // param1: sys_relateDepId2
     // sqlId: "S420001"
+    // param3:未结束
+    // param4 已结束
     reqMeethinList:({commit},params)=>{
       return new Promise((resolve, reject) => {
         const parameter={

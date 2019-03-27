@@ -2,7 +2,31 @@
   <div :class="pageName" style="height: 100%">
     <!--下面是顶部的按钮栏-->
     <div  class="header-buttons-bar" style="padding-left: 5px">
-      <a-button type='primary' @click="showModal('add')"size="small">新增{{this.pageTitle}}</a-button>
+      <span style="display: inline-block;width: 340px">
+        <a-tabs @change="tabChange" >
+        <a-tab-pane key="1">
+          <a-badge slot="tab" >
+            <div>未结束</div>
+          </a-badge>
+        </a-tab-pane>
+        <a-tab-pane tab="已结束" key="2"></a-tab-pane>
+        <div slot="tabBarExtraContent">
+        <!--<a-input-search-->
+          <!--:placeholder="search.placeholder"-->
+          <!--style="width: 250px"-->
+          <!--v-model="search.searchValue"-->
+          <!--size="small"-->
+          <!--@search="onSearch"-->
+          <!--:disabled="search.showAdvanced"-->
+          <!--/>-->
+          <!--<a-button size="small"  style="margin-left: 5px"  @click="toggleShowAdvancedSearch">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>-->
+          <!--<a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.gmjjhyfl && !search.advancedForm.qylx && !search.advancedForm.jghy" @click="clearSearch">清除</a-button>-->
+          <a-button type='primary' @click="showModal('add')"size="small" style="float: left;margin-top: 10px;margin-right: 12px">新增{{this.pageTitle}}</a-button>
+          <a-button @click="refresh" size="small" style="float: left;margin-top: 10px">刷新</a-button>
+        </div>
+        </a-tabs>
+      </span>
+
       <!--<a-popconfirm title="您确认删除这些记录吗？" placement="bottomLeft" okText="Yes" cancelText="No" @confirm="deleteRowData('multi')">-->
       <!--<a-button  size="small" :disabled="table.rowSelection.selectedRowKeys.length<2">批量删除</a-button>-->
       <!--</a-popconfirm>-->
@@ -17,7 +41,7 @@
       <!--/>-->
       <!--<a-button size="small"  style="margin-left: 5px"  @click="toggleShowAdvancedSearch">{{search.showAdvanced?'收起高级搜索':'高级搜索'}}</a-button>-->
       <!--<a-button size="small"  style="margin-left: 5px" :disabled="search.searchValue==''&& !search.advancedForm.gmjjhyfl && !search.advancedForm.qylx && !search.advancedForm.jghy" @click="clearSearch">清除</a-button>-->
-      <a-button @click="refresh"size="small">刷新</a-button>
+      <!--<a-button @click="refresh"size="small">刷新</a-button>-->
     </div>
     <!--高级搜索区域-->
     <!--<transition name="fade">-->
@@ -81,21 +105,18 @@
         :rowSelection="table.rowSelection"
       >
         <span slot="actionCell" slot-scope="text,record,index" >
-          <!--<a href="javascript:;" @click="showModal('query',record)">详情</a>-->
-          <!--<a-divider v-if="" type="vertical" />-->
+          <a href="javascript:;" @click="showModal('query',record)">会议详情</a>
+          <a-divider v-if="activeTab=='1'" type="vertical" />
           <!--<a href="javascript:;" @click="showModal('map',record)">位置</a>-->
           <!--<a-divider v-if="" type="vertical" />-->
-          <a href="javascript:;" @click="showModal('edit',record)">修改</a>
-          <a-divider v-if="" type="vertical" />
+          <a v-if="activeTab=='1'" href="javascript:;" @click="showModal('edit',record)">编辑</a>
+          <a-divider v-if="activeTab=='1'" type="vertical" />
           <a-popconfirm title="您确认删除该条记录吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="deleteRowData(record)">
-          <a href="javascript:;">删除</a>
+          <a v-if="activeTab=='1'" href="javascript:;">删除</a>
           </a-popconfirm>
-          <a-divider v-if="" type="vertical" />
-          <a-popconfirm title="您确认发布该条工作吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="fbWork(record)">
-          <a v-if="record.sffb=='0'" href="javascript:;" >发布</a>
-            </a-popconfirm>
-          <a-popconfirm title="您确认取消发布该条工作吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="qxWork(record)">
-          <a  v-if="record.sffb=='1'" href="javascript:;" >取消发布</a>
+          <a-divider v-if="activeTab=='1'" type="vertical" />
+          <a-popconfirm title="您确认结束该会议吗？结束后将无法修改！" placement="bottomRight" okText="Yes" cancelText="No" @confirm="endHy(record)">
+          <a v-if="activeTab=='1'" href="javascript:;" >结束</a>
             </a-popconfirm>
         </span>
         <template slot="sf" slot-scope="text,record,index" >
@@ -228,6 +249,7 @@
         modalLoading:false,                //弹框的loading动画开关
         pageTitle:modalTitle,
         pageName:pageName,
+        activeTab:'1',
 
         qyid:'',
         //搜索配置
@@ -310,6 +332,7 @@
 //      recordData(){
 //        return this.$store.getters[getDetailById](this.modalOption.recordId)
 //      },
+
     },
 
     beforeCreate(){
@@ -356,13 +379,19 @@
 
     methods:{
       ...mapGetters(['']),
-      ...mapActions(['','']),
+      ...mapActions(['endhy','']),
 
 
 //------------------------------------------------------------------通用方法区域-----------------------------------------------------------------------
       //页面刷新
       refresh(){
         this.pagination.current=1
+        this.reqTableData()
+      },
+
+      //带tab选项页面的方法
+      tabChange(activeKey){
+        activeKey == '1' ? this.activeTab = '1' : this.activeTab = '2'
         this.reqTableData()
       },
 
@@ -553,14 +582,15 @@
         this.table.tableIsLoading=true
         const parameter={
           limit:this.pagination.reqData ? this.pagination.pageSize:10000,
-          start:this.pagination.reqData ? (this.pagination.current -1)*this.pagination.pageSize:0
+          start:this.pagination.reqData ? (this.pagination.current -1)*this.pagination.pageSize:0,
+          param3:this.activeTab=='1'?'1':'',
+          param4:this.activeTab=='2'?'1':'',
         }
 
         if (filterOption) parameter.filter = JSON.stringify(filterOption)       //增加搜索条件
 
         this.$store.dispatch(reqList,parameter)
           .then((res)=>{
-
             //请求成功后，在下面进行数据处理，赋值给table
             this.table.dataSource=this.$store.getters[getList]
             this.table.dataSource.forEach((item,index)=>{
@@ -720,6 +750,26 @@
           .then((res)=>{
             if (res.success==true){
               this.$message.success('取消发布成功！')
+              this.reqTableData()
+              this.table.tableIsLoading=false
+            }else{
+              this.$message.error(res.message+'请稍后再试！')
+              this.table.tableIsLoading=false
+            }
+          })
+          .catch((err)=>{
+            console.log(JSON.stringify(err))
+            this.table.tableIsLoading=false
+          })
+      },
+      endHy(record){
+        let parameter={
+          jsonData:JSON.stringify(this.$store.getters[getDetailById](record.id)),
+        }
+        this.endhy(parameter)
+          .then((res)=>{
+            if (res.success==true){
+              this.$message.success('会议已结束！')
               this.reqTableData()
               this.table.tableIsLoading=false
             }else{

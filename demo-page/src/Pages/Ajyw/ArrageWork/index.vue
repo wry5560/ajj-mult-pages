@@ -262,6 +262,7 @@
         pageName: pageName,
         noEndNum: 0,
         activeTab:'1',
+        uploadUrl:process.env.NODE_ENV === 'production'?'other/FileManager.upfile.json?param2=2&param3=asro_hygl&param1=' :'api/other/FileManager.upfile.json?param2=2&param3=asro_jcd&param1=' ,
 
         qyid: '',
         //搜索配置

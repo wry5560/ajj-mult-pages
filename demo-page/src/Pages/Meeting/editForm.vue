@@ -53,11 +53,25 @@
               </a-col>
               <a-col :lg="24">
                 <a-form-item label="会议内容" :labelCol="{ span: 3 }" :wrapperCol="{ span: 21 }">
-                  <a-textarea size="small" placeholder="请输入会议内容" :autosize="{ minRows: 4, maxRows: 8 }"v-decorator="['hynr',{rules: [{ required: true, message: '请输入会议内容', whitespace: true}],initialValue: initialValues.hynr}]" />
+                  <a-textarea size="small" placeholder="请输入会议内容" :autosize="{ minRows: 2, maxRows: 4 }"v-decorator="['hynr',{rules: [{ required: true, message: '请输入会议内容', whitespace: true}],initialValue: initialValues.hynr}]" />
                 </a-form-item>
               </a-col>
-
+              <a-col :lg="24" v-if="modelType=='edit'">
+                <a-form-item label="会议总结" :labelCol="{ span: 3 }" :wrapperCol="{ span: 21 }">
+                  <a-textarea size="small" placeholder="请输入会议总结" :autosize="{ minRows: 4, maxRows: 8 }"v-decorator="['hyzj',{rules: [{ required: true, message: '请输入会议总结', whitespace: true}],initialValue: initialValues.hyzj}]" />
+                </a-form-item>
+              </a-col>
             </a-row>
+
+          <template>
+            <div style="width:400px ;margin-top: 16px;min-height: 100px">
+              <a-upload :action="uploadUrl+lsid" :multiple="true" :fileList="fileList" @change="handleChange"  :remove="rmFile">
+                <a-button>
+                  <a-icon type="upload" /> 上传附件
+                  </a-button>
+              </a-upload>
+            </div>
+          </template>
           </a-form>
       </a-spin>
     </div>
@@ -123,9 +137,12 @@
         }
         return initialValues
       },
-//      treeData(){
-//        return this.initTree(initTableChildren(this.data))
-//      }
+      treeData(){
+        return this.initTree(initTableChildren(this.data))
+      },
+      lsid(){
+        return this.modelType=='add'? 'lsundefined-'+moment().valueOf()+Math.ceil(Math.random()*1000):this.recordId
+      }
     },
     methods:{
       moment,
