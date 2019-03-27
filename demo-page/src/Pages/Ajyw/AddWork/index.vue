@@ -90,13 +90,13 @@
           <a-popconfirm title="您确认删除该条记录吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="deleteRowData(record)">
           <a href="javascript:;">删除</a>
           </a-popconfirm>
-          <a-divider v-if="" type="vertical" />
-          <a-popconfirm title="您确认发布该条工作吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="fbWork(record)">
-          <a v-if="record.sffb=='0'" href="javascript:;" >发布</a>
-            </a-popconfirm>
-          <a-popconfirm title="您确认取消发布该条工作吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="qxWork(record)">
-          <a  v-if="record.sffb=='1'" href="javascript:;" >取消发布</a>
-            </a-popconfirm>
+          <!--<a-divider v-if="" type="vertical" />-->
+          <!--<a-popconfirm title="您确认发布该条工作吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="fbWork(record)">-->
+          <!--<a v-if="record.sffb=='0'" href="javascript:;" >发布</a>-->
+            <!--</a-popconfirm>-->
+          <!--<a-popconfirm title="您确认取消发布该条工作吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="qxWork(record)">-->
+          <!--<a  v-if="record.sffb=='1'" href="javascript:;" >取消发布</a>-->
+            <!--</a-popconfirm>-->
         </span>
         <template slot="sf" slot-scope="text,record,index" >
           <span v-if="text=='1'">是</span>
@@ -257,7 +257,7 @@
             {title: '开始时间', dataIndex: 'starttime', width: '80px', align: 'center',titleAlign:'center'},
             {title: '完成时间', dataIndex: 'endtime', width: '80px', align: 'center',titleAlign:'center'},
             {title: '难易程度', dataIndex: 'nycd', width: '60px', align: 'center',titleAlign:'center', },
-            {title: '是否发布', dataIndex: 'sffb', width: '60px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'sf'}},
+            // {title: '是否发布', dataIndex: 'sffb', width: '60px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'sf'}},
             {title: '完成进度', dataIndex: 'wcjd', width: '80px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'jindu'}},
             {title: '操作', dataIndex: 'actions', width: '120px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
           ],
@@ -557,7 +557,8 @@
         this.table.tableIsLoading=true
         const parameter={
           limit:this.pagination.reqData ? this.pagination.pageSize:10000,
-          start:this.pagination.reqData ? (this.pagination.current -1)*this.pagination.pageSize:0
+          start:this.pagination.reqData ? (this.pagination.current -1)*this.pagination.pageSize:0,
+
         }
 
         if (filterOption) parameter.filter = JSON.stringify(filterOption)       //增加搜索条件

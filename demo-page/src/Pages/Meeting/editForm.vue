@@ -33,7 +33,7 @@
                 <a-form-item label="会议时间" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
                   <a-date-picker  placeholder="请选择会议时间"
                                   style="width: 100%"
-                                  v-decorator="['hytime',{rules: [{ required: true, message: '请选择会议时间',type:'object'}],initialValue: initialValues.hytime ? this.moment(initialValues.hytime):null}]"
+                                  v-decorator="['hytime',{rules: [{ required: true, message: '请选择会议时间',type:'object'}],initialValue: initialValues.hytime ? moment(initialValues.hytime):null}]"
                                   format="YYYY-MM-DD HH:mm"
                                   showTime
                   />
@@ -64,7 +64,7 @@
             </a-row>
 
           <template>
-            <div style="width:400px ;margin-top: 16px;min-height: 100px">
+            <div style="width:400px ;margin-top: 16px;min-height: 100px;margin-left: 50px">
               <a-upload :action="uploadUrl+lsid" :multiple="true" :fileList="fileList" @change="handleChange"  :remove="rmFile">
                 <a-button>
                   <a-icon type="upload" /> 上传附件
@@ -112,16 +112,17 @@
         sys_relateDepId2,
         form: this.$form.createForm(this),
         contentLoading:false,
+        fileList:[],
         data:[{
 //          departname:this.recordId && this.recordId!='' ?this.getMeetingById()(this.recordId).__dssbm.departName :'',
 //          id: this.recordId && this.recordId!='' ? this.getMeetingById()(this.recordId).__dssbm.departId : '' ,
         }],
-
+        uploadUrl:process.env.NODE_ENV === 'production'?'other/FileManager.upfile.json?param2=2&param3=asro_jcd&param1=' :'api/other/FileManager.upfile.json?param2=2&param3=asro_jcd&param1=' ,
 
       }
     },
     created(){
-
+      this.$store.commit('INIT_MEETING_LSID')
       this.reqZuzhiList()
         .then((res)=>{
               if(res.success){
@@ -141,7 +142,7 @@
         return this.initTree(initTableChildren(this.data))
       },
       lsid(){
-        return this.modelType=='add'? 'lsundefined-'+moment().valueOf()+Math.ceil(Math.random()*1000):this.recordId
+        return this.modelType=='add'? this.$store.state.Meeting.meeting.lsid : this.recordId
       }
     },
     methods:{
@@ -171,7 +172,41 @@
         console.log(value)
         this.departId=value
       },
-
+      handleChange(info){
+        let fileList = info.fileList
+        fileList.forEach((file)=>{
+          if(file.response){
+            if(file.response.success){
+              file.url=file.response.data[0].urlpicpath+file.response.data[0].cpPic_name
+            }else{
+              file.status="error"
+              this.$message.error(file.response.message)
+            }
+          }
+        })
+        this.fileList=fileList
+      },
+      rmFile(file){
+        return new Promise((resolve,reject)=>{
+          const paramater={
+            param1: this.modelType=='add'? file.response.data[0].serverId :file.uid
+          }
+          this.removeFile(paramater)
+            .then((res)=>{
+              if (res.success){
+                this.$message.success('文件已删除！ ')
+                resolve()
+              }else{
+                this.$message.error('删除文件失败！ '+res.message)
+                reject()
+              }
+            })
+            .catch((err)=>{
+              console.log(JSON.stringify(err))
+              reject()
+            })
+        })
+      }
       //----------------------------------------------------------------修改角色的菜单----------------------------------------------------------------------
 
     }

@@ -1,8 +1,9 @@
 import {GeneralQuery,GeneralPostQuery,createHy,editHy,delHy,endhy,} from './api'
 import message from 'ant-design-vue/es/message'
+import moment from 'moment'
 const meeting = {
   state:{
-    meeting:{list:[],selectedOptions:[]},
+    meeting:{list:[],selectedOptions:[],lsid:''},
 
   },
   mutations: {
@@ -14,7 +15,9 @@ const meeting = {
     INIT_MEETING_SELECTED_OPTIONS:(state,payload)=>{
       state.meeting.selectedOptions=payload
     },
-
+    INIT_MEETING_LSID:(state,payload)=>{
+      state.meeting.lsid='lsundefined-'+moment().valueOf()+Math.ceil(Math.random()*1000)
+    },
   },
   actions: {
 

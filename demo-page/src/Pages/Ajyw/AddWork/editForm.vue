@@ -38,50 +38,52 @@
                 </a-form-item>
               </a-col>
             </a-row>
-          <a-row :gutter="16" >
+          <span v-if="modelType=='add'">
+            <a-row :gutter="16" >
               <a-col  :lg="12" :md="12" :sm="24">
                 <a-form-item label="子任务" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }"></a-form-item>
               </a-col>
             <a-divider/>
           </a-row>
-          <a-row  :gutter="16">
-            <a-col :lg="18" :md="24" :offset="1" style="margin-bottom: 12px">
-              <span style="padding-left: 0px;" class="gzjl-title"><strong>子任务内容：</strong></span>
-            </a-col>
-            <a-col :lg="5" :md="24">
-              <span class="gzjl-title"><strong>所属部门：</strong></span>
-            </a-col>
-          </a-row>
-          <a-row  :gutter="12" v-for="(item,index) in zrw" :key="item.id">
-            <a-col :lg="1">
-              <div style="text-align: center;line-height: 36px">{{index + 1}}</div>
-            </a-col>
-            <a-col :lg="18" :md="24">
-              <a-form-item label="" :wrapperCol="{ span: 24 }">
-                <a-textarea placeholder="请输入任务内容" :autosize="{ minRows: 1, maxRows: 2 }" @change="gznrChange([...arguments,index,item])"
-                            v-decorator="[`gznr-${item.id}`,{rules: [{ required: true, message: '请输入任务内容', whitespace: true}],initialValue: item ? item.gznr:''}]"/>
-              </a-form-item>
-            </a-col>
-            <a-col :lg="4" :md="22">
-              <a-form-item  :wrapperCol="{ span: 24 }">
-                <a-tree-select
-                  showSearch
-                  searchPlaceholder="请选择所属部门"
-                  treeNodeFilterProp="title"
-                  :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-                  :treeData="treeData"
-                  treeDefaultExpandAll
-                  @change="ssbmChange([...arguments,index,item])"
-                  placeholder="请选择所属部门"
-                  @select="handleTreeSelect"
-                  v-decorator="[`ssbm-${item.id}`,{rules: [{ required: true, message: '请选择所属部门', whitespace: true,type:'number'}],initialValue: item ? item.ssbm:null}]" />
-              </a-form-item>
-            </a-col>
-            <a-col :lg="1":md="2">
-              <a href="javascript:;"@click="removeZrw(index)"><a-icon type="close-circle" style="color:gray;margin-top:12px;"/></a>
-            </a-col>
-          </a-row>
-          <a-button type="dashed" style="width: 100%" icon="plus"@click="addZrw">添加子任务</a-button>
+            <a-row  :gutter="16">
+              <a-col :lg="18" :md="24" :offset="1" style="margin-bottom: 12px">
+                <span style="padding-left: 0px;" class="gzjl-title"><strong>子任务内容：</strong></span>
+              </a-col>
+              <a-col :lg="5" :md="24">
+                <span class="gzjl-title"><strong>所属部门：</strong></span>
+              </a-col>
+            </a-row>
+            <a-row  :gutter="12" v-for="(item,index) in zrw" :key="item.id">
+              <a-col :lg="1">
+                <div style="text-align: center;line-height: 36px">{{index + 1}}</div>
+              </a-col>
+              <a-col :lg="18" :md="24">
+                <a-form-item label="" :wrapperCol="{ span: 24 }">
+                  <a-textarea placeholder="请输入任务内容" :autosize="{ minRows: 1, maxRows: 2 }" @change="gznrChange([...arguments,index,item])"
+                              v-decorator="[`gznr-${item.id}`,{rules: [{ required: true, message: '请输入任务内容', whitespace: true}],initialValue: item ? item.gznr:''}]"/>
+                </a-form-item>
+              </a-col>
+              <a-col :lg="4" :md="22">
+                <a-form-item  :wrapperCol="{ span: 24 }">
+                  <a-tree-select
+                    showSearch
+                    searchPlaceholder="请选择所属部门"
+                    treeNodeFilterProp="title"
+                    :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
+                    :treeData="treeData"
+                    treeDefaultExpandAll
+                    @change="ssbmChange([...arguments,index,item])"
+                    placeholder="请选择所属部门"
+                    @select="handleTreeSelect"
+                    v-decorator="[`ssbm-${item.id}`,{rules: [{ required: true, message: '请选择所属部门', whitespace: true,type:'number'}],initialValue: item ? item.ssbm:null}]" />
+                </a-form-item>
+              </a-col>
+              <a-col :lg="1":md="2">
+                <a href="javascript:;"@click="removeZrw(index)"><a-icon type="close-circle" style="color:gray;margin-top:12px;"/></a>
+              </a-col>
+            </a-row>
+            <a-button type="dashed" style="width: 100%" icon="plus"@click="addZrw">添加子任务</a-button>
+          </span>
           </a-form>
       </a-spin>
     </div>
@@ -181,7 +183,7 @@
       },
       handleTreeSelect(value,node, extra){
         console.log(value)
-        this.departId=value
+        // this.departId=value
       },
       addZrw(){
         this.zrw.push({
@@ -208,6 +210,14 @@
             data.ssbm=values.ssbm
             data.gznr=values.gznr
             data.remark=values.remark
+            const zrw=[]
+            this.zrw.forEach(i=>{
+              const tmp={
+                gznr:i.gznr,
+                ssbm:i.ssbm,
+              }
+              zrw.push(tmp)
+            })
             if (this.modelType=='edit'){
               data.id=this.recordId
 //              values.wzbzbm=this.$store.getters[getDetailById](this.modalOption.recordId).wzbzbm
@@ -216,7 +226,7 @@
             let parameter={
               jsonData:JSON.stringify({
                 gzhz:data,
-                zrw:this.zrw
+                zrw:zrw
               }),
             }
             switch (this.modelType) {

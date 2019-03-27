@@ -620,6 +620,8 @@
             if (this.modalOption.modelType=='edit'){
               values.id=this.modalOption.recordId
 //              values.wzbzbm=this.$store.getters[getDetailById](this.modalOption.recordId).wzbzbm
+            }else if(this.modalOption.modelType=='add'){
+              values.lsid=this.$store.state.Meeting.meeting.lsid
             }
 //            values.departmentid=sys_relateDepId2
             let parameter={
