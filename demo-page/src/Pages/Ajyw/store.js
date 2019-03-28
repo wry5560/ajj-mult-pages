@@ -1,4 +1,4 @@
-import {GeneralQuery,GeneralPostQuery,createWork,editWork,delWork,fabuWork,qxfbWork,reqWorkDetail,editWorkNycd,fenpeiWork,editMyWork} from './api'
+import {GeneralQuery,GeneralPostQuery,createWork,editWork,delWork,fabuWork,qxfbWork,reqWorkDetail,editWorkNycd,fenpeiWork,editMyWork,addZrw,finishWork} from './api'
 import message from 'ant-design-vue/es/message'
 const jixiao = {
   state:{
@@ -104,6 +104,21 @@ const jixiao = {
           })
       })
     },
+    //新增子任务
+    // jsonData: "{zrw:[]}"
+    addZrw:(store,params)=>{
+      return new Promise((resolve, reject) => {
+        //这里可以增加通用参数，如部门id等
+        const parameter={
+          ...params
+        }
+        addZrw(parameter)
+          .then((res)=>{
+            resolve(res)
+          })
+      })
+    },
+
     //修改工作信息
     editWork:(store,params)=>{
       return new Promise((resolve, reject) => {
@@ -298,6 +313,17 @@ const jixiao = {
           ...params
         }
         editMyWork(parameter)
+          .then((res)=> {
+            resolve(res)
+          })
+      })
+    },
+    finishWork:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          ...params
+        }
+        finishWork(parameter)
           .then((res)=> {
             resolve(res)
           })

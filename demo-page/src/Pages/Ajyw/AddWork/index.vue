@@ -174,6 +174,15 @@
             :modelType="modalOption.modelType"
             @cancel="modalCancel"
             ref="commitForm"/>
+
+          <add-zrw-form
+            v-if="modalOption.modelType =='addZrw'"
+            :selectOptions="modalOption.selectOptions"
+            :recordId="modalOption.recordId"
+            :parentid="modalOption.parentid"
+            :modelType="modalOption.modelType"
+            @cancel="modalCancel"
+            ref="commitForm"/>
           <data-detail
             v-if="modalOption.modelType=='query'"
             :recordId="modalOption.recordId" />
@@ -200,6 +209,7 @@
   //组件
   import editForm from './editForm.vue'
   import dataDetail from './dataDetail.vue'
+  import addZrwForm from './addZrwForm.vue'
 
   //页面全局变量
 
@@ -225,7 +235,8 @@
     name:pageName,
     components:{
       editForm,
-      dataDetail
+      dataDetail,
+      addZrwForm
     },
 
     data(){
@@ -258,6 +269,7 @@
           dataSource:[],
           columns:[
             {title: '序号', dataIndex: 'index', width: '100px',align: 'center',titleAlign:'center',scopedSlots: {customRender: 'index'}},
+            {title: '子任务数',dataIndex: 'zwrnum', width: '60px', align: 'center',titleAlign:'center'},
             {title: '汇总来源',dataIndex: 'hzly', width: '50px', align: 'center',titleAlign:'center'},
             {title: '工作内容', dataIndex: 'gznr', width: '120px', align: 'left',titleAlign:'center'},
             {title: '所属部门', dataIndex: 'ssbm', width: '80px', align: 'center',titleAlign:'center'},
@@ -640,7 +652,9 @@
                   item.index=index + 1
                   item.starttime=item.starttime && item.starttime!='' ? moment(item.starttime).format('YYYY-MM-DD'):''
                   item.endtime=item.endtime && item.endtime!='' ? moment(item.endtime).format('YYYY-MM-DD'):''
-                  if(item.hasChlid && item.hasChlid=='1')item.children=[]
+                  item.departName=item.__ddepartmentId.departName
+                  item.ssbm=item.__dssbm.departName
+                  if(item.zwrnum >0 )item.children=[]
                 })
                 this.table.tableIsLoading=false
               }else{

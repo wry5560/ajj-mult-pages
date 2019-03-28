@@ -53,7 +53,7 @@
                 <span class="gzjl-title"><strong>所属局办：</strong></span>
               </a-col>
               <a-col :lg="5" :md="24">
-                <span class="gzjl-title"><strong>所属部门：</strong></span>
+                <span class=""><strong>所属部门：</strong></span>
               </a-col>
             </a-row>
             <a-row  :gutter="12" v-for="(item,index) in zrw" :key="item.id">
@@ -73,12 +73,12 @@
                     searchPlaceholder="请选择所属局办"
                     treeNodeFilterProp="title"
                     :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-                    :treeData="treeData"
+                    :treeData="departs"
                     treeDefaultExpandAll
-                    @change="dipartmentIdChange([...arguments,index,item])"
+                    @change="departmentIdChange([...arguments,index,item])"
                     placeholder="请选择所属局办"
                     @select="handleTreeSelect"
-                    v-decorator="[`dipartmentId-${item.id}`,{rules: [{ required: true, message: '请选择所属局办', whitespace: true,type:'number'}],initialValue: item ? item.dipartmentId:null}]" />
+                    v-decorator="[`departmentId-${item.id}`,{rules: [{ required: true, message: '请选择所属局办', whitespace: true,type:'number'}],initialValue: item ? item.departmentId:null}]" />
                 </a-form-item>
               </a-col>
               <a-col :lg="4" :md="22">
@@ -88,7 +88,7 @@
                     searchPlaceholder="请选择所属部门"
                     treeNodeFilterProp="title"
                     :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-                    :treeData="treeData"
+                    :treeData="ssbmTree[index]"
                     treeDefaultExpandAll
                     @change="ssbmChange([...arguments,index,item])"
                     placeholder="请选择所属部门"
@@ -151,8 +151,8 @@
           departname:this.recordId && this.recordId !='' ? (this.parentid=='0'? this.getWorkById()(this.recordId).__dssbm.departName : this.getZrwById()(this.parentid,this.recordId).__dssbm.departName ):'',
           id: this.recordId && this.recordId!='' ? (this.parentid=='0'?this.getWorkById()(this.recordId).__dssbm.departId :  this.getZrwById()(this.parentid,this.recordId).__dssbm.departId) : '' ,
         }],
-        zrw:[]
-
+        zrw:[],
+        ssbmTree:[]
 
       }
     },
@@ -175,8 +175,23 @@
         }
         return initialValues
       },
-      treeData(){
+      departmentsTree(){
         return this.initTree(initTableChildren(this.data))
+      },
+      departs(){
+        const tmp=[]
+        this.data.forEach(i=>{
+          if(i.parentid=='2')tmp.push({
+            key:i.id,
+            title:i.departname,
+            value:i.id,
+          })})
+        return tmp
+      },
+      treeData(){
+        const tmp= this.departmentsTree
+        const aaa=tmp[0].children
+        return aaa && aaa.length > 0 ? [aaa.find(i=>i.value==sys_relateDepId2)]:[]
       }
     },
     methods:{
@@ -210,11 +225,13 @@
         this.zrw.push({
           gznr:'',
           ssbm:null,
+          departmentId:'',
           id:'lsid-'+moment().valueOf()+Math.ceil(Math.random()*1000)
         })
       },
       removeZrw(index){
         this.zrw.splice(index,1)
+        this.ssbmTree.splice(index,1)
       },
 
       handleCommit(){
@@ -307,13 +324,15 @@
         this.zrw[index].ssbm=value
 
       },
-      dipartmentIdChange(){
+      departmentIdChange(){
         const value=arguments[0][0]
         const index=arguments[0][3]
         const item=arguments[0][2]
-//        debugger
+       // debugger
         this.zrw[index].departmentId=value
-
+        const tmp=this.departmentsTree && this.departmentsTree.length>0  ? this.departmentsTree:[]
+        const tmpChildren=tmp.length>0 ? tmp[0]:[]
+        this.ssbmTree[index]=tmpChildren.children.find(i=>i.value==this.zrw[index].departmentId).children
       },
     }
   }

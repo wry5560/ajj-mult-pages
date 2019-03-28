@@ -285,6 +285,7 @@
           columns: [
             {title: '序号', dataIndex: 'index', width: '50px', align: 'center'},
             {title: '汇总来源', dataIndex: 'hzly', width: '50px', align: 'center', titleAlign: 'center'},
+            {title: '子任务数',dataIndex: 'zwrnum', width: '60px', align: 'center',titleAlign:'center'},
             {title: '工作内容', dataIndex: 'gznr', width: '120px', align: 'left', titleAlign: 'center'},
             // {title: '状态', dataIndex: 'state', width: '60px', align: 'center', titleAlign: 'center'},
             {title: '所属部门', dataIndex: 'ssbm', width: '80px', align: 'left', titleAlign: 'center'},

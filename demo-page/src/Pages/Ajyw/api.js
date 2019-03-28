@@ -40,6 +40,21 @@ export function createWork (parameter){
   })
 }
 
+//新增子任务
+// 类似检查单：zrw（子任务）
+//jsonData zrw内需要有parentid
+export function addZrw (parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajyw.createZrw.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
 //编辑工作
 //jsonData
 export function editWork (parameter){
@@ -60,6 +75,20 @@ export function delWork (parameter){
   // this.tableIsLoading=true
   return axios({
     url: '/other/Ajyw.delGzhz.jsonp',
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+//完成工作
+//jsonData
+export function finishWork (parameter){
+  // this.tableIsLoading=true
+  return axios({
+    url: '/other/Ajyw.finishWdgz.json',
     method: 'post',
     data: parameter,
     headers: {

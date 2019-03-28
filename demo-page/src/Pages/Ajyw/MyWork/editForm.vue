@@ -12,12 +12,12 @@
             </a-col>
             <a-col :lg="12" :md="12" :sm="24">
               <a-form-item label="开始时间" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
-                {{moment(wdgz.starttime).format('YYYY-MM-DD HH:ss')}}
+                {{wdgz.starttime ? moment(wdgz.starttime).format('YYYY-MM-DD HH:ss'):''}}
               </a-form-item>
             </a-col>
             <a-col :lg="12" :md="12" :sm="24">
               <a-form-item label="要求完成时间" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
-                {{moment(wdgz.jhwctime).format('YYYY-MM-DD')}}
+                {{wdgz.jhwctime ? moment(wdgz.jhwctime).format('YYYY-MM-DD'):'' }}
               </a-form-item>
             </a-col>
             <a-col :lg="12" :md="12" :sm="24">
@@ -37,12 +37,12 @@
           </a-row>
           <div style="margin-bottom: 12px">
             <a-row v-if="wdgzdetail.length>0" :gutter="16">
-              <a-col :lg="18" :md="24" :offset="1">
+              <a-col :lg="23" :md="24" :offset="1">
                 <span style="padding-left: 0px;" class="gzjl-title"><strong>工作内容描述：</strong></span>
               </a-col>
-              <a-col :lg="5" :md="24">
-                <span class="gzjl-title"><strong>工作进度：</strong></span>
-              </a-col>
+              <!--<a-col :lg="5" :md="24">-->
+                <!--<span class="gzjl-title"><strong>工作进度：</strong></span>-->
+              <!--</a-col>-->
             </a-row>
             <div v-else style="text-align: center">暂无工作详情</div>
           </div>
@@ -50,24 +50,24 @@
             <a-col :lg="1">
               <div style="text-align: center;line-height: 36px">{{index + 1}}</div>
             </a-col>
-            <a-col :lg="18" :md="24">
+            <a-col :lg="22" :md="24">
               <a-form-item label="" :wrapperCol="{ span: 24 }">
                 <a-textarea placeholder="请输入工作内容" :autosize="{ minRows: 1, maxRows: 2 }" @change="gznrChange([...arguments,index,item])"
                             v-decorator="[`gznr-${item.id}`,{rules: [{ required: true, message: '请输入工作内容', whitespace: true}],initialValue: item ? item.gznr:''}]"/>
               </a-form-item>
             </a-col>
-            <a-col :lg="4" :md="22">
-              <a-form-item  :wrapperCol="{ span: 24 }">
-                <a-input-number
-                  style="width: 100%"
-                  placeholder="请输入工作进度"
-                  :min="0"
-                  :formatter="value => `${value}%`"
-                  :parser="value => value.replace('%', '')"
-                  @change="jdChange([...arguments,index,item])"
-                  v-decorator="[`gzjd-${item.id}`,{rules: [{ required: true, message: '请输入工作进度', type:'number',whitespace: true}],initialValue: x}]"/>
-              </a-form-item>
-            </a-col>
+            <!--<a-col :lg="4" :md="22">-->
+              <!--<a-form-item  :wrapperCol="{ span: 24 }">-->
+                <!--<a-input-number-->
+                  <!--style="width: 100%"-->
+                  <!--placeholder="请输入工作进度"-->
+                  <!--:min="0"-->
+                  <!--:formatter="value => `${value}%`"-->
+                  <!--:parser="value => value.replace('%', '')"-->
+                  <!--@change="jdChange([...arguments,index,item])"-->
+                  <!--v-decorator="[`gzjd-${item.id}`,{rules: [{ required: true, message: '请输入工作进度', type:'number',whitespace: true}],initialValue: x}]"/>-->
+              <!--</a-form-item>-->
+            <!--</a-col>-->
             <a-col :lg="1":md="2">
               <a href="javascript:;"@click="removeGz(index)"><a-icon type="close-circle" style="color:gray;margin-top:12px;"/></a>
             </a-col>
@@ -79,7 +79,10 @@
     <div class="bottom-buttons-bar">
     <div>
       <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
-      <a-button size="small" type="primary"  style="float:right">提交</a-button>
+      <a-button size="small" type="primary"  style="float:right">保存</a-button>
+      </a-popconfirm>
+      <a-popconfirm title="您确认完成当前的工作吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="finishMyWork">
+        <a-button size="small" type="primary"  style="float:right">完成工作</a-button>
       </a-popconfirm>
       <a-button size="small" @click="emitCancel" style="float:right">取消</a-button>
       </div>
@@ -149,7 +152,7 @@
     methods:{
       moment,
       ...mapGetters(['getMyWorkById','']),
-      ...mapActions(['reqWorkDetail','editMyWork']),
+      ...mapActions(['reqWorkDetail','editMyWork','finishWork']),
 
       modalCancel(){
         this.$emit('cancel')
@@ -240,8 +243,28 @@
           }
         })
       },
+      finishMyWork(){
+        this.contentLoading=true
+        const paramater={
+          param1:this.recordId
+        }
+        this.finishWork(paramater)
+          .then((res)=>{
+            if(res.success){
+              this.$message.success('提交成功！')
+              this.$emit('cancel','success')
+              this.contentLoading=false
+            }else{
+              this.$message.error(res.message)
+              this.contentLoading=false
+            }
+          })
+          .catch((err)=>{
+            console.log(JSON.stringify(err))
+            this.contentLoading=false
+          })
+      },
       jdChange(){
-
         const value=arguments[0][0]
         const index=arguments[0][1]
         const item=arguments[0][2]

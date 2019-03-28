@@ -1,5 +1,5 @@
 <template>
-  <div class="work-form" :style="{height:height}">
+  <div class="work-form" :style="{height:height,'min-height':'300px'}">
     <div class="work-content">
       <a-spin :spinning="contentLoading" wrapperClassName="spinning">
         <a-form :form="form" >
@@ -31,7 +31,7 @@
                     searchPlaceholder="请选择所属局办"
                     treeNodeFilterProp="title"
                     :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-                    :treeData="treeData"
+                    :treeData="departs"
                     treeDefaultExpandAll
                     @change="dipartmentIdChange([...arguments,index,item])"
                     placeholder="请选择所属局办"
@@ -46,7 +46,7 @@
                     searchPlaceholder="请选择所属部门"
                     treeNodeFilterProp="title"
                     :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-                    :treeData="treeData"
+                    :treeData="ssbmTree[index]"
                     treeDefaultExpandAll
                     @change="ssbmChange([...arguments,index,item])"
                     placeholder="请选择所属部门"
@@ -82,8 +82,8 @@
   import moment from 'moment'
 
 
-  const createAction='createAddWork'             //新增记录
-  const editAction ='editWork'             //新增记录
+  const createAction='addZrw'             //新增子任务
+  // const editAction ='editWork'             //新增记录
 
   export default{
     name:'addZrwForm',
@@ -109,9 +109,10 @@
           departname:this.recordId && this.recordId !='' ? (this.parentid=='0'? this.getWorkById()(this.recordId).__dssbm.departName : this.getZrwById()(this.parentid,this.recordId).__dssbm.departName ):'',
           id: this.recordId && this.recordId!='' ? (this.parentid=='0'?this.getWorkById()(this.recordId).__dssbm.departId :  this.getZrwById()(this.parentid,this.recordId).__dssbm.departId) : '' ,
         }],
-        zrw:[]
-
-
+        zrw:[
+          {gznr:'',ssbm:null,departmentId:sys_relateDepId2,id:'lsid-'+moment().valueOf()+Math.ceil(Math.random()*1000)}
+          ],
+        ssbmTree:[]
       }
     },
     created(){
@@ -133,14 +134,29 @@
         }
         return initialValues
       },
-      treeData(){
+      departmentsTree(){
         return this.initTree(initTableChildren(this.data))
+      },
+      departs(){
+        const tmp=[]
+        this.data.forEach(i=>{
+          if(i.parentid=='2')tmp.push({
+            key:i.id,
+            title:i.departname,
+            value:i.id,
+          })})
+        return tmp
+      },
+      treeData(){
+        const tmp= this.departmentsTree
+        const aaa=tmp[0].children
+        return aaa && aaa.length > 0 ? [aaa.find(i=>i.value==sys_relateDepId2)]:[]
       }
     },
     methods:{
       moment,
       ...mapGetters(['getWorkById','system_zuzhi_list','getZrwById']),
-      ...mapActions(['reqZuzhiList','editRoleMenu']),
+      ...mapActions(['reqZuzhiList','editRoleMenu','addZrw']),
 
       modalCancel(){
         this.$emit('cancel')
@@ -168,6 +184,7 @@
         this.zrw.push({
           gznr:'',
           ssbm:null,
+          departmentId:sys_relateDepId2,
           id:'lsid-'+moment().valueOf()+Math.ceil(Math.random()*1000)
         })
       },
@@ -179,46 +196,37 @@
         this.form.validateFields((err, values) => {
           if (!err) {
             this.contentLoading=true
-
-            //若存在选择项value和显示内容不相同，需转换内容后再提交,，如时间等
-//            values.jclx2=values.jclx.length>1 ? values.jclx[1]:null
-//            values.jclx=values.jclx[0]
-//            values.fzr=''
-            const data={}
-            data.hzly=values.hzly
-            data.ssbm=values.ssbm
-            data.gznr=values.gznr
-            data.remark=values.remark
-            data.departmentId=sys_relateDepId2
             const zrw=[]
             this.zrw.forEach(i=>{
               const tmp={
                 gznr:i.gznr,
                 ssbm:i.ssbm,
-                departmentId:i.departmentId
+                departmentId:i.departmentId,
+                parentid:this.recordId
               }
               zrw.push(tmp)
             })
-            if (this.modelType=='edit'){
-              data.id=this.recordId
+            // if (this.modelType=='edit'){
+            //   data.id=this.recordId
 //              values.wzbzbm=this.$store.getters[getDetailById](this.modalOption.recordId).wzbzbm
-            }
+//             }
 //            values.departmentid=sys_relateDepId2
             let parameter={
               jsonData:JSON.stringify({
-                gzhz:data,
-                zrw:zrw
+                // gzhz:data,
+                zrw:zrw,
+
               }),
             }
             switch (this.modelType) {
-              case 'add':
+              case 'addZrw':
                 this.$store.dispatch(createAction,parameter).then((res)=>{
                   if (res.success==true){
 //                      debugger
                     this.$message.success('提交成功！')
 //                    setTimeout(()=>{
 //                    this.contentLoading=false
-                    this.$emit('cancel','success')
+                    this.$emit('cancel','successZrw')
                     this.contentLoading=false
 //                      }
 //                      ,300)
@@ -271,7 +279,9 @@
         const item=arguments[0][2]
 //        debugger
         this.zrw[index].departmentId=value
-
+        const tmp=this.departmentsTree && this.departmentsTree.length>0  ? this.departmentsTree:[]
+        const tmpChildren=tmp.length>0 ? tmp[0]:[]
+        this.ssbmTree[index]=tmpChildren.children.find(i=>i.value==this.zrw[index].departmentId).children
       },
     }
   }
