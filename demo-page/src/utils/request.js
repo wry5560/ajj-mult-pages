@@ -9,6 +9,7 @@ import {settings} from '../../dev-settings'
 console.log(JSON.stringify(settings))
 const {apiBaseUrl,testApiBaseUrl}= settings
 
+
 // 创建 axios 实例
 const service = axios.create({
   baseURL:process.env.NODE_ENV === 'production'
@@ -17,6 +18,7 @@ const service = axios.create({
   timeout: 60000 // 请求超时时间
 })
 
+service.defaults.withCredentials = true
 const err = (error) => {
   if (error.response) {
     const data = error.response.data

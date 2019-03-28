@@ -78,6 +78,8 @@
         :size="table.size"
         :loading="table.tableIsLoading"
         :scroll="table.scrollSize"
+        :expandedRowKeys="table.expandedRowKeys"
+        @expand="reqZrwData"
         :rowSelection="table.rowSelection"
       >
         <span slot="actionCell" slot-scope="text,record,index" >
@@ -86,6 +88,8 @@
           <!--<a href="javascript:;" @click="showModal('map',record)">位置</a>-->
           <a-divider v-if="" type="vertical" />
           <a href="javascript:;" @click="showModal('edit',record)">修改</a>
+          <a-divider v-if="" type="vertical" />
+          <a href="javascript:;" @click="showModal('addZrw',record)">新增子任务</a>
           <a-divider v-if="" type="vertical" />
           <a-popconfirm title="您确认删除该条记录吗？" placement="bottomRight" okText="Yes" cancelText="No" @confirm="deleteRowData(record)">
           <a href="javascript:;">删除</a>
@@ -166,6 +170,7 @@
             v-if="modalOption.modelType =='add'||modalOption.modelType =='edit'"
             :selectOptions="modalOption.selectOptions"
             :recordId="modalOption.recordId"
+            :parentid="modalOption.parentid"
             :modelType="modalOption.modelType"
             @cancel="modalCancel"
             ref="commitForm"/>
@@ -229,6 +234,9 @@
         modalLoading:false,                //弹框的loading动画开关
         pageTitle:modalTitle,
         pageName:pageName,
+        isZrw:false,
+        thisRecord:{},
+        allRecords:{},
 
         qyid:'',
         //搜索配置
@@ -249,7 +257,7 @@
         table:{
           dataSource:[],
           columns:[
-            {title: '序号', dataIndex: 'index', width: '50px',align: 'center'},
+            {title: '序号', dataIndex: 'index', width: '100px',align: 'center',titleAlign:'center',scopedSlots: {customRender: 'index'}},
             {title: '汇总来源',dataIndex: 'hzly', width: '50px', align: 'center',titleAlign:'center'},
             {title: '工作内容', dataIndex: 'gznr', width: '120px', align: 'left',titleAlign:'center'},
             {title: '所属部门', dataIndex: 'ssbm', width: '80px', align: 'center',titleAlign:'center'},
@@ -269,7 +277,8 @@
 //             onChange: this.onSelectChange,
 //             columnWidth:'20px',
 //           }
-          rowSelection:null
+          rowSelection:null,
+          expandedRowKeys:[],
         },
 
         //分页器配置
@@ -303,6 +312,7 @@
           },
           selectOptions:{},
           recordId:'',
+          parentid:'',
           modelType:'',
           jcType:'',
           modalClass:'nomal-modal'
@@ -406,7 +416,7 @@
         }))
         normalVlaue.value=JSON.stringify(valueB)
         filterOption.push(normalVlaue)
-        this.expandedRowKeys=[]
+        this.table.expandedRowKeys=[]
         this.reqTableData(filterOption)
       },
 
@@ -456,7 +466,7 @@
 //        }else{
 //          filterOption.push(advancedVlaue)
 //        }
-        this.expandedRowKeys=[]
+        this.table.expandedRowKeys=[]
         this.reqTableData(filterOption)
       },
 
@@ -492,18 +502,34 @@
             this.modalOption.modelType='add'
 //            this.modalOption.width=''                             //修改弹出框的宽度
             this.modalOption.modalClass ='nomal-modal no-footer'
+            this.isZrw=false
             break;
           case 'query':
             this.modalOption.title=modalTitle+'详情'
             this.modalOption.modelType='query'
             this.modalOption.recordId=record.id
+            this.modalOption.parentid=record.parentid
+            this.thisRecord=record
             this.modalOption.modalClass ='nomal-modal '
+            this.isZrw=false
             break;
           case 'edit':
             this.modalOption.title='修改'+ modalTitle+'信息'
             this.modalOption.modelType='edit'
             this.modalOption.recordId=record.id
+            this.modalOption.parentid=record.parentid
+            this.thisRecord=record
             this.modalOption.modalClass ='nomal-modal no-footer'
+            this.isZrw= record.parentid != '0'
+            break;
+          case 'addZrw':
+            this.modalOption.title='新增子任务'
+            this.modalOption.modelType='addZrw'
+            this.modalOption.recordId=record.id
+            this.modalOption.parentid=record.parentid
+            this.thisRecord=record
+            this.modalOption.modalClass ='nomal-modal no-footer'
+            this.isZrw= record.parentid != '0'
             break;
           case 'map':
             this.modalOption.title=modalTitle+'位置信息'
@@ -519,12 +545,18 @@
         this.modalOption.visible=true
       },
       modalCancel(type){
+//          debugger
         if(type=='success') {
-          this.refresh()
-          setTimeout(()=>{
+            if(this.isZrw){
+              const expanded=this.table.expandedRowKeys.includes(this.thisRecord.parentid)
+              this.reqZrwData(expanded,this.allRecords[this.thisRecord.parentid])
+            }else{
+              this.refresh()
+            }
+//          setTimeout(()=>{
             this.modalLoading=false
             this.modalOption.visible=false
-          },300)
+//          },300)
         }else{
           this.modalLoading=false
           this.modalOption.visible=false
@@ -558,26 +590,74 @@
         const parameter={
           limit:this.pagination.reqData ? this.pagination.pageSize:10000,
           start:this.pagination.reqData ? (this.pagination.current -1)*this.pagination.pageSize:0,
-
+          param3:'1'
         }
 
         if (filterOption) parameter.filter = JSON.stringify(filterOption)       //增加搜索条件
 
         this.$store.dispatch(reqList,parameter)
           .then((res)=>{
-
+            this.table.expandedRowKeys=[]
             //请求成功后，在下面进行数据处理，赋值给table
             this.table.dataSource=this.$store.getters[getList]
+//            this.table.dataSource=res.data
             this.table.dataSource.forEach((item,index)=>{
+              this.allRecords[item.id]=item
+              item.key=item.id
               item.index=index+(this.pagination.current -1)*this.pagination.pageSize+1
               item.starttime=item.starttime && item.starttime!='' ? moment(item.starttime).format('YYYY-MM-DD'):''
               item.endtime=item.endtime && item.endtime!='' ? moment(item.endtime).format('YYYY-MM-DD'):''
-
+              if(item.zwrnum >0 )item.children=[]
             })
             this.pagination.total=res.totalCount
             this.table.tableIsLoading=false
           })
           .catch(err=>console.log(JSON.stringify(err)))
+      },
+
+      reqZrwData(expanded, record){
+//          debugger
+        if (expanded){
+//          debugger
+          this.table.expandedRowKeys.push(record.id)
+          this.table.tableIsLoading=true
+          const parameter={
+            limit:10000,
+            start:0,
+            param4:record.id
+          }
+          const tmpChildren= [...record.children]
+          record.children=[]
+          this.$store.dispatch('reqZrwList',parameter)
+            .then((res)=>{
+              if(res.success){
+                record.children=res.data
+                if(record.children.length==0) delete record.children
+                this.$store.commit('INIT_AJYW_ADD_ZRW',{pid:record.id,zrwList:res.data})
+                record.children.forEach((item,index)=>{
+                  this.allRecords[item.id]=item
+                  item.key=item.id + item.parentid
+                  item.index=index + 1
+                  item.starttime=item.starttime && item.starttime!='' ? moment(item.starttime).format('YYYY-MM-DD'):''
+                  item.endtime=item.endtime && item.endtime!='' ? moment(item.endtime).format('YYYY-MM-DD'):''
+                  if(item.hasChlid && item.hasChlid=='1')item.children=[]
+                })
+                this.table.tableIsLoading=false
+              }else{
+                this.table.tableIsLoading=false
+                record.children= tmpChildren
+                this.$message.error(res.message)
+              }
+            })
+            .catch(err=>{
+              this.tableIsLoading=false
+              record.children= tmpChildren
+            })
+        }else{
+//            debugger
+          const index=this.table.expandedRowKeys.findIndex(value=>value==record.id)
+          this.table.expandedRowKeys.splice(index,1)
+        }
       },
 
       //提交表单（弹出框内）
@@ -640,15 +720,23 @@
 
       //删除行
       deleteRowData(record){
+//        const tmp={id:record.id}
+        const tmp={...record}
+        delete tmp.key
+        delete tmp.index
         let parameter={
-          jsonData:JSON.stringify(this.$store.getters[getDetailById](record.id)),
+          jsonData:JSON.stringify(record),
         }
         this.table.tableIsLoading=true
         this.$store.dispatch(delAction,parameter)
           .then((res)=>{
             if (res.success==true){
               this.$message.success('删除成功！')
-              this.reqTableData()
+              if(record.parentid=='0'){
+                this.reqTableData()
+              }else{
+                this.reqZrwData(true,this.allRecords[record.parentid])
+              }
               this.table.tableIsLoading=false
             }else{
               this.$message.error(res.message+'请稍后再试！')
@@ -690,6 +778,8 @@
           })
           .catch((err)=>{JSON.stringify(err)})
       },
+
+
 
       //发布工作
       fbWork(record){

@@ -3,48 +3,6 @@
     <div class="work-content">
       <a-spin :spinning="contentLoading" wrapperClassName="spinning">
         <a-form :form="form" >
-            <a-row :gutter="16">
-              <a-col :lg="12" :md="12" :sm="24">
-                <a-form-item label="汇总来源" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-                  <a-select   placeholder="请选择汇总来源"
-                             v-decorator="['hzly',{rules: [{ required: true, message: '请选择汇总来源', whitespace: true}],initialValue: initialValues.hzly}]" >
-                    <a-select-option v-for="(item) in selectOptions.hzly" :key="item.value" :value="item.value">{{item.label}}</a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :lg="12" :md="12" :sm="24">
-                <a-form-item label="所属部门" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
-                  <a-tree-select
-                    showSearch
-                    searchPlaceholder="请选择所属部门"
-                    treeNodeFilterProp="title"
-                    :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-                    :treeData="treeData"
-                    treeDefaultExpandAll
-
-                    placeholder="请选择所属部门"
-                    @select="handleTreeSelect"
-                    v-decorator="['ssbm',{rules: [{ required: true, message: '请选择所属部门', whitespace: true,type:'number'}],initialValue: modelType=='edit'? Number(initialValues.__dssbm.departId)  :null}]" />
-                </a-form-item>
-              </a-col>
-              <a-col :lg="24">
-                <a-form-item label="工作内容" :labelCol="{ span: 3 }" :wrapperCol="{ span: 21 }">
-                  <a-textarea size="small" placeholder="请输入工作内容" :autosize="{ minRows: 4, maxRows: 8 }"v-decorator="['gznr',{rules: [{ required: true, message: '请输入工作内容', whitespace: true}],initialValue: initialValues.gznr}]" />
-                </a-form-item>
-              </a-col>
-              <a-col :lg="24">
-                <a-form-item label="备注" :labelCol="{ span: 3 }" :wrapperCol="{ span: 21 }">
-                  <a-textarea size="small" placeholder="请输入备注" :autosize="{ minRows: 4, maxRows: 8 }"v-decorator="['remark',{initialValue: initialValues.remark}]" />
-                </a-form-item>
-              </a-col>
-            </a-row>
-          <span v-if="modelType=='add'">
-            <a-row :gutter="16" >
-              <a-col  :lg="12" :md="12" :sm="24">
-                <a-form-item label="子任务" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }"></a-form-item>
-              </a-col>
-            <a-divider/>
-          </a-row>
             <a-row  :gutter="16">
               <a-col :lg="14" :md="24" :offset="1" style="margin-bottom: 12px">
                 <span style="padding-left: 0px;" class="gzjl-title"><strong>子任务内容：</strong></span>
@@ -128,7 +86,7 @@
   const editAction ='editWork'             //新增记录
 
   export default{
-    name:'workForm',
+    name:'addZrwForm',
     components: {
 
     },

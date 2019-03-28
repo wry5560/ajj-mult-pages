@@ -12,12 +12,12 @@
             </a-col>
             <a-col :lg="12" :md="12" :sm="24">
               <a-form-item label="开始时间" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
-                {{moment(wdgz.starttime).format('YYYY-MM-DD HH:ss')}}
+                {{wdgz.starttime ? moment(wdgz.starttime).format('YYYY-MM-DD HH:ss') :'' }}
               </a-form-item>
             </a-col>
             <a-col :lg="12" :md="12" :sm="24">
               <a-form-item label="要求完成时间" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
-                {{moment(wdgz.jhwctime).format('YYYY-MM-DD HH:ss')}}
+                {{wdgz.jhwctime ? moment(wdgz.jhwctime).format('YYYY-MM-DD HH:ss'):''}}
               </a-form-item>
             </a-col>
             <a-col :lg="12" :md="12" :sm="24">

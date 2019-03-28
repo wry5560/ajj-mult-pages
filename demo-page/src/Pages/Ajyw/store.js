@@ -3,6 +3,7 @@ import message from 'ant-design-vue/es/message'
 const jixiao = {
   state:{
     addWork:{list:[],selectedOptions:[]},
+    zrwList:{},
     arrageWork:{list:[],selectedOptions:[],selList:[]},
     difficultyWork:{list:[],selectedOptions:[],selList:[],},
     myWork:{list:[],selectedOptions:[],selList:[],},
@@ -12,7 +13,9 @@ const jixiao = {
     INIT_AJYW_ADD_LIST: (state, payload) => {
       state.addWork.list=payload
     },
-
+    INIT_AJYW_ADD_ZRW:(state, payload) => {
+      state.zrwList[payload.pid]=payload.zrwList
+    },
     INIT_AJYW_ADD_SELECTED_OPTIONS:(state,payload)=>{
       state.addWork.selectedOptions=payload
     },
@@ -63,7 +66,30 @@ const jixiao = {
           })
       })
     },
-
+    //查询工作子任务列表
+    // menuId: sys_menuId
+    // param1: sys_relateDepId2
+    // sqlId: "S380001"
+    reqZrwList:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId:'S380001',
+          menuId:sys_menuId,
+          param1:sys_relateDepId2,
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            if(res.success){
+              res.data.forEach((item)=>{
+              })
+              resolve(res)
+            }else{
+              message.error(res.message)
+            }
+          })
+      })
+    },
     //新增工作
     // jsonData: "{"hzly":"会议","gznr":"这个就是测试","ssbm":9361,"fzr":"","remark":"这个就是测试这个就是测试"}"
     createAddWork:(store,params)=>{
@@ -346,6 +372,10 @@ const jixiao = {
 
     getMyWorkById:(state)=>(id)=> {
       return state.myWork.list.find( todo=> todo.id==id)
+    },
+
+    getZrwById:(state)=>(pid,id)=> {
+      return state.zrwList[pid].find( todo=> todo.id==id)
     },
   }
 }

@@ -16,9 +16,9 @@
 
 // import { constantRouterMap } from './src/Pages/Guidang/router.config'  //归档模块路由
 
-// import { constantRouterMap } from './src/Pages/Ajyw/router.config'  //安监业务模块路由
-
-import { constantRouterMap } from './src/Pages/Meeting/router.config'  //会议管理模块路由
+import { constantRouterMap } from './src/Pages/Ajyw/router.config'  //安监业务模块路由
+//
+// import { constantRouterMap } from './src/Pages/Meeting/router.config'  //会议管理模块路由
 
 // import { constantRouterMap } from './src/Pages/Login/router.config'  //系统登录页模块路由
 
