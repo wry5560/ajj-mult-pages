@@ -261,7 +261,7 @@
         }
         this.reqFilelist(paramater)
           .then((res)=>{
-            debugger
+//            debugger
               if(res.success){
                 const filelist=[]
                 if (res.data.length>0){
@@ -276,7 +276,7 @@
                     })
                   })
                   this.fileList=filelist
-                  this.$message.success('文件上传成功')
+//                  this.$message.success('文件上传成功')
                 }
               }else{
                   this.$message.error('请求附件列表失败！')

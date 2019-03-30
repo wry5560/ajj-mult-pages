@@ -106,7 +106,26 @@ const meeting = {
           })
       })
     },
-
+    //查询会议的附件
+    reqHyFilelist:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId:'S350043',
+          param1:'asro_hygl',
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            if(res.success){
+              res.data.forEach((item)=>{
+              })
+              resolve(res)
+            }else{
+              message.error(res.message)
+            }
+          })
+      })
+    },
   },
 
   getters:{

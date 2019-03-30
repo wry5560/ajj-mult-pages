@@ -53,7 +53,7 @@
                 <span class="gzjl-title"><strong>所属局办：</strong></span>
               </a-col>
               <a-col :lg="5" :md="24">
-                <span class=""><strong>所属部门：</strong></span>
+                <span class="gzjl-title"><strong>所属部门：</strong></span>
               </a-col>
             </a-row>
             <a-row  :gutter="12" v-for="(item,index) in zrw" :key="item.id">
@@ -93,7 +93,7 @@
                     @change="ssbmChange([...arguments,index,item])"
                     placeholder="请选择所属部门"
                     @select="handleTreeSelect"
-                    v-decorator="[`ssbm-${item.id}`,{initialValue: item ? item.ssbm:null}]" />
+                    v-decorator="[`ssbm-${item.id}`,{rules: [{ required: true, message: '请选择所属部门', whitespace: true,type:'number'}],initialValue: item ? item.ssbm:null}]" />
                 </a-form-item>
               </a-col>
               <a-col :lg="1":md="2">
@@ -332,7 +332,8 @@
         this.zrw[index].departmentId=value
         const tmp=this.departmentsTree && this.departmentsTree.length>0  ? this.departmentsTree:[]
         const tmpChildren=tmp.length>0 ? tmp[0]:[]
-        this.ssbmTree[index]=tmpChildren.children.find(i=>i.value==this.zrw[index].departmentId).children
+        this.ssbmTree[index]=[tmpChildren.children.find(i=>i.value==this.zrw[index].departmentId)]
+        this.zrw[index].ssbm=this.ssbmTree[index][0].value
       },
     }
   }

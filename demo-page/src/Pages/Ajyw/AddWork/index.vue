@@ -274,8 +274,8 @@
             {title: '工作内容', dataIndex: 'gznr', width: '120px', align: 'left',titleAlign:'center'},
             {title: '所属部门', dataIndex: 'ssbm', width: '80px', align: 'center',titleAlign:'center'},
             {title: '负责人', dataIndex: 'fzr', width: '80px', align: 'center',titleAlign:'center'},
-            {title: '开始时间', dataIndex: 'starttime', width: '80px', align: 'center',titleAlign:'center'},
-            {title: '完成时间', dataIndex: 'endtime', width: '80px', align: 'center',titleAlign:'center'},
+//            {title: '开始时间', dataIndex: 'starttime', width: '80px', align: 'center',titleAlign:'center'},
+//            {title: '完成时间', dataIndex: 'endtime', width: '80px', align: 'center',titleAlign:'center'},
             {title: '难易程度', dataIndex: 'nycd', width: '60px', align: 'center',titleAlign:'center', },
             // {title: '是否发布', dataIndex: 'sffb', width: '60px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'sf'}},
             {title: '完成进度', dataIndex: 'wcjd', width: '80px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'jindu'}},
@@ -652,6 +652,7 @@
                   item.index=index + 1
                   item.starttime=item.starttime && item.starttime!='' ? moment(item.starttime).format('YYYY-MM-DD'):''
                   item.endtime=item.endtime && item.endtime!='' ? moment(item.endtime).format('YYYY-MM-DD'):''
+                  item.fzr=item.__ufzr.userName
                   item.departName=item.__ddepartmentId.departName
                   item.ssbm=item.__dssbm.departName
                   if(item.zwrnum >0 )item.children=[]

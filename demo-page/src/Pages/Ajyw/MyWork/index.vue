@@ -143,6 +143,15 @@
           </div>
 
         </template>
+        <template slot="jjcd" slot-scope="text,record,index" >
+          <div v-if="record.endtime" style="text-align: center">-</div>
+          <div v-else style="text-align: center">
+            <div v-if="text==1" style="width: 10px;height:10px;border-radius: 10px;background: #0096ff;display: inline-block"></div>
+            <div v-if="text==2" style="width: 10px;height:10px;border-radius: 10px;background: #ffa800;display: inline-block"></div>
+            <div v-if="text==3" style="width: 10px;height:10px;border-radius: 10px;background: #e30000;display: inline-block"></div>
+          </div>
+
+        </template>
         <span slot="defaultcustomRender" slot-scope="text,record,index">
           <template>
             <a-tooltip :mouseEnterDelay="0.8">
@@ -286,6 +295,8 @@
           dataSource: [],
           columns: [
             {title: '序号', dataIndex: 'index', width: '50px', align: 'center'},
+            {title: '紧急程度',dataIndex: 'yuqi', width: '60px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'jjcd'}},
+            {title: '子任务数',dataIndex: 'zwrnum', width: '60px', align: 'center',titleAlign:'center'},
             {title: '汇总来源', dataIndex: 'hzly', width: '50px', align: 'center', titleAlign: 'center'},
             {title: '工作内容', dataIndex: 'gznr', width: '300px', align: 'left', titleAlign: 'center'},
             {title: '状态', dataIndex: 'state', width: '60px', align: 'center', titleAlign: 'center'},
@@ -634,6 +645,7 @@
             this.table.dataSource = this.$store.getters[getList]
             this.table.dataSource.forEach((item, index) => {
               item.index = index + (this.pagination.current - 1) * this.pagination.pageSize + 1
+
               item.starttime = item.starttime && item.starttime != '' ? moment(item.starttime).format('YYYY-MM-DD HH:ss') : ''
               item.endtime = item.endtime && item.endtime != '' ? moment(item.endtime).format('YYYY-MM-DD HH:ss') : ''
               item.jhwctime = item.jhwctime && item.jhwctime != '' ? moment(item.jhwctime).format('YYYY-MM-DD') : ''

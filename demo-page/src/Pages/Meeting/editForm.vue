@@ -64,7 +64,7 @@
             </a-row>
 
           <template>
-            <div style="width:400px ;margin-top: 16px;min-height: 100px;margin-left: 50px">
+            <div style="width:400px ;margin-top: 16px;min-height: 50px;margin-left: 50px">
               <a-upload :action="uploadUrl+lsid" :multiple="true" :fileList="fileList" @change="handleChange"  :remove="rmFile">
                 <a-button>
                   <a-icon type="upload" /> 上传附件
@@ -117,12 +117,13 @@
 //          departname:this.recordId && this.recordId!='' ?this.getMeetingById()(this.recordId).__dssbm.departName :'',
 //          id: this.recordId && this.recordId!='' ? this.getMeetingById()(this.recordId).__dssbm.departId : '' ,
         }],
-        uploadUrl:process.env.NODE_ENV === 'production'?'other/FileManager.upfile.json?param2=2&param3=asro_jcd&param1=' :'api/other/FileManager.upfile.json?param2=2&param3=asro_jcd&param1=' ,
+        uploadUrl:process.env.NODE_ENV === 'production'?'other/FileManager.upfile.json?param2=2&param3=asro_hygl&param1=' :'api/other/FileManager.upfile.json?param2=2&param3=asro_hygl&param1=' ,
 
       }
     },
     created(){
       this.$store.commit('INIT_MEETING_LSID')
+      this.reqFlies()
       this.reqZuzhiList()
         .then((res)=>{
               if(res.success){
@@ -148,7 +149,7 @@
     methods:{
       moment,
       ...mapGetters(['getMeetingById','system_zuzhi_list']),
-      ...mapActions(['reqZuzhiList','editRoleMenu']),
+      ...mapActions(['reqZuzhiList','editRoleMenu','reqHyFilelist','removeFile']),
 
       modalCancel(){
         this.$emit('cancel')
@@ -185,6 +186,36 @@
           }
         })
         this.fileList=fileList
+      },
+      reqFlies(){
+        if (!this.recordId ||this.recordId=='')return
+        const  paramater={
+          param2:this.recordId
+        }
+        this.reqHyFilelist(paramater)
+          .then((res)=>{
+//            debugger
+            if(res.success){
+              const filelist=[]
+              if (res.data.length>0){
+                res.data.forEach(item=>{
+//                    debugger
+                  filelist.push({
+                    uid: item.id,
+                    name: item.shortMsg,
+                    status: 'done',
+                    message: 'Server Error 500', // custom error message to show
+                    url: item.fpath,
+                  })
+                })
+                this.fileList=filelist
+//                  this.$message.success('文件上传成功')
+              }
+            }else{
+              this.$message.error('请求附件列表失败！')
+            }
+          })
+          .catch(err=>console.log(JSON.stringify(err)))
       },
       rmFile(file){
         return new Promise((resolve,reject)=>{

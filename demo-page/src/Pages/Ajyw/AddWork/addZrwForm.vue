@@ -281,7 +281,8 @@
         this.zrw[index].departmentId=value
         const tmp=this.departmentsTree && this.departmentsTree.length>0  ? this.departmentsTree:[]
         const tmpChildren=tmp.length>0 ? tmp[0]:[]
-        this.ssbmTree[index]=tmpChildren.children.find(i=>i.value==this.zrw[index].departmentId).children
+        this.ssbmTree[index]=[tmpChildren.children.find(i=>i.value==this.zrw[index].departmentId)]
+        this.zrw[index].ssbm=this.ssbmTree[index][0].value
       },
     }
   }
