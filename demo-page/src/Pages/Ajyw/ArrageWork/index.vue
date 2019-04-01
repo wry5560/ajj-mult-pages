@@ -125,12 +125,21 @@
           <!--</a-popconfirm>-->
           <a-divider v-if="" type="vertical"/>
           <a href="javascript:;" @click="showModal('fenpei',record)">分配</a>
+          <a-divider v-if="" type="vertical"/>
+          <a href="javascript:;" @click="showModal('addZrw',record)">新增子任务</a>
         </span>
         <template slot="sf" slot-scope="text,record,index">
           <span v-if="text=='1'">是</span>
           <span v-else>否</span>
         </template>
-
+        <template slot="jjcd" slot-scope="text,record,index" >
+          <div v-if="record.endtime || !record.jhwctime" style="text-align: center">-</div>
+          <div v-else style="text-align: center">
+            <div v-if="text=='1'" style="width: 10px;height:10px;border-radius: 10px;background: #0096ff;display: inline-block"></div>
+            <div v-if="text=='2'" style="width: 10px;height:10px;border-radius: 10px;background: #ffa800;display: inline-block"></div>
+            <div v-if="text=='3'" style="width: 10px;height:10px;border-radius: 10px;background: #e30000;display: inline-block"></div>
+          </div>
+        </template>
         <template slot="jindu" slot-scope="text,record,index" >
           <div style="padding-left: 10px">
             <a-progress
@@ -198,15 +207,23 @@
             :recordId="modalOption.recordId"
             :modelType="modalOption.modelType"
             ref="commitForm"/>
+          <add-zrw-form
+            v-if="modalOption.modelType =='addZrw'"
+            :selectOptions="modalOption.selectOptions"
+            :recordId="modalOption.recordId"
+            :parentid="modalOption.parentid"
+            :modelType="modalOption.modelType"
+            @cancel="modalCancel"
+            ref="commitForm"/>
           <data-detail
             v-if="modalOption.modelType=='query'"
             :recordId="modalOption.recordId"/>
 
         </a-spin>
         <template slot="footer">
-          <a-button v-show="modalOption.modelType !='jc'" key="back" @click="modalCancel" size="small">返 回</a-button>
+          <a-button v-show="modalOption.modelType !='addZrw'" key="back" @click="modalCancel" size="small">返 回</a-button>
           <a-popconfirm title="您确认提交当前信息吗？" placement="topRight" okText="Yes" cancelText="No" @confirm="handleCommit">
-            <a-button v-show="modalOption.modelType !='query'" key="submit" type="primary"
+            <a-button v-show="modalOption.modelType !='addZrw'" key="submit" type="primary"
                       :loading="modalOption.commitLoading" size="small">提 交
             </a-button>
           </a-popconfirm>
@@ -226,6 +243,7 @@
   //组件
   import editForm from './editForm.vue'
   import dataDetail from './dataDetail.vue'
+  import addZrwForm from './addZrwForm.vue'
 
   //页面全局变量
 
@@ -251,7 +269,8 @@
     name: pageName,
     components: {
       editForm,
-      dataDetail
+      dataDetail,
+      addZrwForm
     },
 
     data(){
@@ -263,6 +282,8 @@
         noEndNum: 0,
         activeTab:'1',
         uploadUrl:process.env.NODE_ENV === 'production'?'other/FileManager.upfile.json?param2=2&param3=asro_hygl&param1=' :'api/other/FileManager.upfile.json?param2=2&param3=asro_jcd&param1=' ,
+        thisRecord:null,
+
 
         qyid: '',
         //搜索配置
@@ -284,6 +305,7 @@
           dataSource: [],
           columns: [
             {title: '序号', dataIndex: 'index', width: '50px', align: 'center'},
+            {title: '逾期提醒',dataIndex: 'gqtype', width: '60px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'jjcd'}},
             {title: '汇总来源', dataIndex: 'hzly', width: '50px', align: 'center', titleAlign: 'center'},
             {title: '子任务数',dataIndex: 'zwrnum', width: '60px', align: 'center',titleAlign:'center'},
             {title: '工作内容', dataIndex: 'gznr', width: '120px', align: 'left', titleAlign: 'center'},
@@ -332,7 +354,7 @@
           bodyStyle: {
 //              "max-height":window.innerHeight-80 + 'px',
 //            "height":window.innerHeight-80 + 'px',
-//            'padding':0
+           'padding':0,
 //              "min-height":window.innerHeight-80 + 'px',
             "min-height": '250px',
           },
@@ -345,6 +367,7 @@
           },
           selectOptions: {},
           recordId: '',
+          parentid:'',
           modelType: '',
           jcType: '',
           modalClass: 'nomal-modal'
@@ -405,7 +428,7 @@
 
     methods: {
       ...mapGetters(['']),
-      ...mapActions(['fabuWork', 'qxfbWork']),
+      ...mapActions(['fabuWork', 'qxfbWork','reqWorkFilelist','removeFile']),
 
 
 //------------------------------------------------------------------通用方法区域-----------------------------------------------------------------------
@@ -563,7 +586,15 @@
             this.modalOption.recordId = record.id
             this.modalOption.modalClass = 'nomal-modal mapModal'
             break
-
+          case 'addZrw':
+            this.modalOption.title='新增子任务'
+            this.modalOption.modelType='addZrw'
+            this.modalOption.recordId=record.id
+            this.modalOption.parentid=record.parentid
+            this.thisRecord=record
+            this.modalOption.modalClass ='nomal-modal no-footer'
+            // this.isZrw= record.parentid != '0'
+            break;
           //其他操作弹框,每个页面有所不同
           case 'fenpei':
             this.modalOption.title = modalTitle
@@ -814,7 +845,8 @@
             console.log(JSON.stringify(err))
             this.table.tableIsLoading = false
           })
-      }
+      },
+
     }
   }
 

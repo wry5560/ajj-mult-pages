@@ -12,12 +12,12 @@
             </a-col>
             <a-col :lg="12" :md="12" :sm="24">
               <a-form-item label="开始时间" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
-                {{moment(wdgz.starttime).format('YYYY-MM-DD HH:ss')}}
+                {{wdgz.starttime ? moment(wdgz.starttime).format('YYYY-MM-DD HH:ss'):''}}
               </a-form-item>
             </a-col>
             <a-col :lg="12" :md="12" :sm="24">
               <a-form-item label="要求完成时间" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
-                {{moment(wdgz.jhwctime).format('YYYY-MM-DD HH:ss')}}
+                {{wdgz.jhwctime ?moment(wdgz.jhwctime).format('YYYY-MM-DD HH:ss'):''}}
               </a-form-item>
             </a-col>
             <a-col :lg="12" :md="12" :sm="24">
@@ -32,8 +32,14 @@
             </a-col>
           </a-row>
           <a-row>
-            <div ><strong>工作记录详情：</strong></div>
-            <a-divider/>
+            <a-tabs @change="tabChange" >
+              <a-tab-pane key="1">
+                <a-badge slot="tab">
+                  <div>工作记录详情</div>
+                </a-badge>
+              </a-tab-pane>
+              <a-tab-pane tab="子任务" key="2"></a-tab-pane>
+            </a-tabs>
           </a-row>
           <!--<div style="margin-bottom: 12px" class="my-work">-->
             <!--<a-row v-if="wdgzdetail.length>0" :gutter="16">-->
@@ -76,7 +82,8 @@
           <!--</a-row>-->
           <!--<a-button type="dashed" style="width: 100%" icon="plus"@click="addGz">添加工作详情</a-button>-->
         </a-form>
-        <a-table
+        <span v-show="activeTab=='1'">
+          <a-table
           bordered
           :rowClassName="rowClass"
           :dataSource="wdgzdetail"
@@ -86,6 +93,50 @@
           :loading="table.tableIsLoading"
           :rowSelection="table.rowSelection"
         />
+          <template>
+          <div style="width:400px ;margin-top: 80px;min-height: 50px;margin-left: 50px">
+            <a-upload  :multiple="true" :fileList="fileList"   :openFileDialogOnClick="false">
+              <a-button>
+                <a-icon type="upload" /> 工作附件
+              </a-button>
+            </a-upload>
+          </div>
+        </template>
+        </span>
+        <span v-show="activeTab=='2'" >
+          <a-table
+            bordered
+            :rowClassName="rowClass"
+            :dataSource="table2.dataSource"
+            :columns="table2.columns"
+            :pagination= "false"
+            :size="table2.size"
+            :loading="table2.tableIsLoading"
+            :scroll="table2.scrollSize"
+            :expandedRowKeys="table2.expandedRowKeys"
+            :rowSelection="table2.rowSelection"
+          >
+            <template slot="jjcd" slot-scope="text,record,index" >
+          <div v-if="record.endtime || !record.jhwctime" style="text-align: center">-</div>
+          <div v-else style="text-align: center">
+            <div v-if="text=='1'" style="width: 10px;height:10px;border-radius: 10px;background: #0096ff;display: inline-block"></div>
+            <div v-if="text=='2'" style="width: 10px;height:10px;border-radius: 10px;background: #ffa800;display: inline-block"></div>
+            <div v-if="text=='3'" style="width: 10px;height:10px;border-radius: 10px;background: #e30000;display: inline-block"></div>
+          </div>
+        </template>
+        <template slot="jindu" slot-scope="text,record,index" >
+          <div style="padding-left: 10px">
+            <a-progress
+              :percent="record.wcjd && record.wcjd!=''? record.wcjd:0"
+              size="small"
+              :status="record.wcjd=='100'? 'success' : record.sffb=='1'? 'active':'normal'"
+              :strokeColor="record.sffb=='0'? '#CBCBCB':''"
+
+            />
+            </div>
+        </template>
+          </a-table>
+        </span>
       </a-spin>
     </div>
     <!--<div class="bottom-buttons-bar">-->
@@ -127,12 +178,57 @@
         form: this.$form.createForm(this),
         contentLoading: false,
         wdgz:{},
+        fileList:[],
         wdgzdetail: [],
+        activeTab:'1',
         contentStyle:{
           padding:'16px',
           'padding-bottom':'60px',
           'max-height':parseInt(this.maxHeight)-50+'px',
           overflow: 'auto'
+        },
+        //表格配置
+        table2: {
+          dataSource: [],
+          columns: [
+            {title: '序号', dataIndex: 'index', width: '50px', align: 'center'},
+            {title: '逾期提醒',dataIndex: 'gqtype', width: '60px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'jjcd'}},
+            {title: '子任务数',dataIndex: 'zwrnum', width: '60px', align: 'center',titleAlign:'center'},
+            {title: '工作内容', dataIndex: 'gznr', width: '200px', align: 'left', titleAlign: 'center'},
+            // {title: '状态', dataIndex: 'state', width: '60px', align: 'center', titleAlign: 'center'},
+//            {title: '所属部门', dataIndex: 'ssbm', width: '80px', align: 'left', titleAlign: 'center'},
+//            {title: '负责人', dataIndex: 'fzr', width: '80px', align: 'center', titleAlign: 'center'},
+            {title: '要求完成时间', dataIndex: 'jhwctime', width: '80px', align: 'center', titleAlign: 'center'},
+//            {title: '开始时间', dataIndex: 'starttime', width: '80px', align: 'center', titleAlign: 'center'},
+//            {title: '完成时间', dataIndex: 'endtime', width: '80px', align: 'center', titleAlign: 'center'},
+//             {title: '难易程度', dataIndex: 'nycd', width: '60px', align: 'center', titleAlign: 'center',},
+//            {
+//              title: '是否发布',
+//              dataIndex: 'sffb',
+//              width: '60px',
+//              align: 'center',
+//              titleAlign: 'center',
+//              scopedSlots: {customRender: 'sf'}
+//            },
+            {title: '完成进度', dataIndex: 'wcjd', width: '80px', align: 'center', titleAlign: 'center',scopedSlots: {customRender: 'jindu'}},
+            // {
+            //   title: '操作',
+            //   dataIndex: 'actions',
+            //   width: '80px',
+            //   align: 'center',
+            //   scopedSlots: {customRender: 'actionCell'}
+            // },
+          ],
+          size: 'small',
+          tableIsLoading: false,
+          scrollSize: {x: 750},
+          // scrollSize: {x: 1450, y: window.innerHeight - 112},
+//           rowSelection:{
+//             selectedRowKeys: [],
+//             onChange: this.onSelectChange,
+//             columnWidth:'20px',
+//           }
+          rowSelection: null
         },
         //表格配置
         table: {
@@ -157,6 +253,8 @@
     },
     created(){
       this.reqDetail()
+      this.reqFlies()
+      this.reqTableData()
 
     },
     computed:{
@@ -181,7 +279,7 @@
     methods:{
       moment,
       ...mapGetters(['getMyWorkById','']),
-      ...mapActions(['reqWorkDetail','editMyWork']),
+      ...mapActions(['reqWorkDetail','editMyWork','removeFile','reqWorkFilelist']),
 
       modalCancel(){
         this.$emit('cancel')
@@ -200,6 +298,9 @@
           aaa.push(tmp)
         })
         return aaa
+      },
+      tabChange(activeKey){
+        activeKey == '1' ? this.activeTab = '1' : this.activeTab = '2'
       },
       //单双行条纹样式
       rowClass(record, index){
@@ -310,7 +411,98 @@
       },
       emitCancel(){
         this.$emit('cancel')
-      }
+      },
+      //请求表格数据
+      reqTableData(filterOption){
+        this.table2.tableIsLoading = true
+        const parameter = {
+          limit:10000,
+          start:0,
+          param4:this.recordId
+        }
+        if (filterOption) parameter.filter = JSON.stringify(filterOption)       //增加搜索条件
+        this.$store.dispatch('reqZrwList',parameter)
+          .then((res) => {
+            //请求成功后，在下面进行数据处理，赋值给table
+            // this.table.dataSource = this.$store.getters[getList]
+            this.table2.dataSource = res.data
+            this.table2.dataSource.forEach((item, index) => {
+              item.index = index  + 1
+              item.starttime = item.starttime && item.starttime != '' ? moment(item.starttime).format('YYYY-MM-DD HH:ss') : ''
+              item.endtime = item.endtime && item.endtime != '' ? moment(item.endtime).format('YYYY-MM-DD HH:ss') : ''
+              item.jhwctime = item.jhwctime && item.jhwctime != '' ? moment(item.jhwctime).format('YYYY-MM-DD') : ''
+            })
+            // if(this.activeTab=='1') this.noEndNum=res.totalCount
+            // this.pagination.total = res.totalCount
+            this.table2.tableIsLoading = false
+          })
+          .catch(err => console.log(JSON.stringify(err)))
+      },
+      handleChange(info){
+        let fileList = info.fileList
+        fileList.forEach((file)=>{
+          if(file.response){
+            if(file.response.success){
+              file.url=file.response.data[0].urlpicpath+file.response.data[0].cpPic_name
+            }else{
+              file.status="error"
+              this.$message.error(file.response.message)
+            }
+          }
+        })
+        this.fileList=fileList
+      },
+      reqFlies(){
+        if (!this.recordId ||this.recordId=='')return
+        const  paramater={
+          param2:this.recordId
+        }
+        this.reqWorkFilelist(paramater)
+          .then((res)=>{
+//            debugger
+            if(res.success){
+              const filelist=[]
+              if (res.data.length>0){
+                res.data.forEach(item=>{
+//                    debugger
+                  filelist.push({
+                    uid: item.id,
+                    name: item.shortMsg,
+                    status: 'done',
+                    message: 'Server Error 500', // custom error message to show
+                    url: item.fpath,
+                  })
+                })
+                this.fileList=filelist
+//                  this.$message.success('文件上传成功')
+              }
+            }else{
+              this.$message.error('请求附件列表失败！')
+            }
+          })
+          .catch(err=>console.log(JSON.stringify(err)))
+      },
+      rmFile(file){
+        return new Promise((resolve,reject)=>{
+          const paramater={
+            param1: file.response ? file.response.data[0].serverId :file.uid
+          }
+          this.removeFile(paramater)
+            .then((res)=>{
+              if (res.success){
+                this.$message.success('文件已删除！ ')
+                resolve()
+              }else{
+                this.$message.error('删除文件失败！ '+res.message)
+                reject()
+              }
+            })
+            .catch((err)=>{
+              console.log(JSON.stringify(err))
+              reject()
+            })
+        })
+      },
     }
   }
 </script>

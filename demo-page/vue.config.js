@@ -40,14 +40,14 @@ const settings={
   // pubilcUrl:'/asrsajj/90_asrs/ajyw/gzhz/'     //工作录入
   // pubilcUrl:'/asrsajj/90_asrs/ajyw/gzfp/'     //工作分配
   // pubilcUrl:'/asrsajj/90_asrs/ajyw/nycd/'     //难易程度调整
-  // pubilcUrl:'/asrsajj/90_asrs/ajyw/wdgz/'     //我的工作
+  pubilcUrl:'/asrsajj/90_asrs/ajyw/wdgz/'     //我的工作
 
 
 
   // pubilcUrl:'/asrsajj/90_asrs/ajguanli/sgbfl/',     //四个百分率
 
 
-  pubilcUrl:'/asrsajj/90_asrs/jxgl/zfjc_ng/',     //检查
+  // pubilcUrl:'/asrsajj/90_asrs/jxgl/zfjc_ng/',     //检查
   // pubilcUrl:'/asrsajj/90_asrs/jxgl/jcxx_ng/'     //检查查询
   // pubilcUrl:'/asrsajj/90_asrs/jxgl/zffc_ng/'     //复查
   // pubilcUrl:'/asrsajj/90_asrs/jxgl/zfxx_ng/'     //执法i
@@ -58,6 +58,11 @@ const settings={
   // pubilcUrl:'/asrsajj/90_asrs/system/user_ng/'     //用户管理
   // pubilcUrl:'/asrsajj/90_asrs/system/ajwgfp_ng/'     //网格分配
   // pubilcUrl:'/asrsajj/90_asrs/system/deptMenu_ng/'     //网格分配
+
+
+  // pubilcUrl:'/asrsajj/90_asrs/meeting/meetingGl/'     //会议管理
+
+  //
 
 }
 

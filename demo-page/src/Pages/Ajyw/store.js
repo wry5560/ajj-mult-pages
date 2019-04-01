@@ -1,19 +1,25 @@
 import {GeneralQuery,GeneralPostQuery,createWork,editWork,delWork,fabuWork,qxfbWork,reqWorkDetail,editWorkNycd,fenpeiWork,editMyWork,addZrw,finishWork} from './api'
 import message from 'ant-design-vue/es/message'
+import moment from 'moment'
 const jixiao = {
   state:{
-    addWork:{list:[],selectedOptions:[]},
+    addWork:{list:[],selectedOptions:[],zrwList:[]},
     zrwList:{},
     arrageWork:{list:[],selectedOptions:[],selList:[]},
     difficultyWork:{list:[],selectedOptions:[],selList:[],},
     myWork:{list:[],selectedOptions:[],selList:[],},
+    lsid:''
   },
   mutations: {
 
     INIT_AJYW_ADD_LIST: (state, payload) => {
       state.addWork.list=payload
     },
+    INIT_AJYW_ADD_ZRWLIST: (state, payload) => {
+      state.addWork.zrwList=payload
+    },
     INIT_AJYW_ADD_ZRW:(state, payload) => {
+      // debugger
       state.zrwList[payload.pid]=payload.zrwList
     },
     INIT_AJYW_ADD_SELECTED_OPTIONS:(state,payload)=>{
@@ -34,7 +40,9 @@ const jixiao = {
     INIT_AJYW_MYWORK_LIST: (state, payload) => {
       state.myWork.list=payload
     },
-
+    INIT_WORK_LSID:(state,payload)=>{
+      state.lsid='lsundefined-'+moment().valueOf()+Math.ceil(Math.random()*1000)
+    },
   },
   actions: {
 
@@ -175,7 +183,26 @@ const jixiao = {
       })
     },
 
-
+    //查询工作的附件
+    reqWorkFilelist:({commit},params)=>{
+      return new Promise((resolve, reject) => {
+        const parameter={
+          sqlId:'S350043',
+          param1:'asro_ajgzhz',
+          ...params
+        }
+        GeneralPostQuery(parameter)
+          .then((res)=>{
+            if(res.success){
+              res.data.forEach((item)=>{
+              })
+              resolve(res)
+            }else{
+              message.error(res.message)
+            }
+          })
+      })
+    },
     //-------------------------------------------------------------------------- 难易程度调整页面Actions--------------------------------------------------------------------------------
 
     //查询工作详情

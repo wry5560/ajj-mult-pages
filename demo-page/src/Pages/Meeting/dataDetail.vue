@@ -1,39 +1,70 @@
 <template>
-  <div class="role-form" :style="{height:height}">
+  <div class="role-form">
     <div class="role-content" :style="contentStyle">
       <a-spin :spinning="contentLoading" wrapperClassName="spinning">
         <a-form :form="form" >
           <a-row :gutter="16">
-            <a-col :lg="24">
-              <a-form-item label="工作内容" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
-                {{wdgz.gznr}}
-
+            <a-col :lg="12">
+              <a-form-item label="会议种类" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
+                {{initialValues.hytype =='1'?'内部':'外部'}}
                 </a-form-item>
             </a-col>
             <a-col :lg="12" :md="12" :sm="24">
-              <a-form-item label="开始时间" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
-                {{moment(wdgz.starttime).format('YYYY-MM-DD HH:ss')}}
+              <a-form-item label="会议名称" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
+                {{initialValues.hytitle}}
               </a-form-item>
             </a-col>
             <a-col :lg="12" :md="12" :sm="24">
-              <a-form-item label="要求完成时间" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
-                {{moment(wdgz.jhwctime).format('YYYY-MM-DD HH:ss')}}
+              <a-form-item label="所属部门" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
+                {{initialValues.__ddepartmentid.departName}}
               </a-form-item>
             </a-col>
             <a-col :lg="12" :md="12" :sm="24">
-              <a-form-item label="难易程度" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
-                {{wdgz.nycd}}
+              <a-form-item label="会议时间" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
+                {{initialValues.hytime ? moment(initialValues.hytime).format('YYYY-MM-DD HH:ss'):''}}
               </a-form-item>
             </a-col>
             <a-col :lg="12" :md="12" :sm="24">
-              <a-form-item label="完成进度" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
-                {{wdgz.wcjd && wdgz.wcjd != '' ?  wdgz.wcjd : '0' }} %
+              <a-form-item label="会议地点" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
+                {{initialValues.hydd}}
+              </a-form-item>
+            </a-col>
+            <a-col v-if="initialValues.hzly=='2'" :lg="12" :md="12" :sm="24">
+              <a-form-item label="开始报名时间" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
+                {{initialValues.startbmtime ? moment(initialValues.startbmtime).format('YYYY-MM-DD HH:ss'):''}}
+              </a-form-item>
+            </a-col>
+            <a-col  v-if="initialValues.hzly=='2'" :lg="12" :md="12" :sm="24">
+              <a-form-item label="结束报名时间" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
+                {{initialValues.endbmtime ? moment(initialValues.endbmtime).format('YYYY-MM-DD HH:ss'):''}}
+              </a-form-item>
+            </a-col>
+            <a-col :lg="12" :md="12" :sm="24">
+              <a-form-item label="会议类型" :labelCol="{ span: 8 }" :wrapperCol="{ span: 16 }">
+                {{initialValues.hylx }}
+              </a-form-item>
+            </a-col>
+            <a-col :lg="24" :md="24" :sm="24">
+              <a-form-item label="会议内容" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
+                {{initialValues.hynr }}
+              </a-form-item>
+            </a-col>
+            <a-col :lg="24" :md="24" :sm="24">
+              <a-form-item label="会议总结" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
+                {{initialValues.hyzj }}
               </a-form-item>
             </a-col>
           </a-row>
           <a-row>
-            <div ><strong>工作记录详情：</strong></div>
-            <a-divider/>
+            <template>
+              <div style="width:400px ;margin-top: 16px;min-height: 50px;margin-left: 50px">
+                <a-upload  :multiple="true" :fileList="fileList"   :openFileDialogOnClick="false">
+                  <a-button>
+                    <a-icon type="upload" /> 会议附件
+                  </a-button>
+                </a-upload>
+              </div>
+            </template>
           </a-row>
           <!--<div style="margin-bottom: 12px" class="my-work">-->
             <!--<a-row v-if="wdgzdetail.length>0" :gutter="16">-->
@@ -76,16 +107,6 @@
           <!--</a-row>-->
           <!--<a-button type="dashed" style="width: 100%" icon="plus"@click="addGz">添加工作详情</a-button>-->
         </a-form>
-        <a-table
-          bordered
-          :rowClassName="rowClass"
-          :dataSource="wdgzdetail"
-          :columns="table.columns"
-          :pagination="false"
-          :size="table.size"
-          :loading="table.tableIsLoading"
-          :rowSelection="table.rowSelection"
-        />
       </a-spin>
     </div>
     <!--<div class="bottom-buttons-bar">-->
@@ -128,6 +149,7 @@
         contentLoading: false,
         wdgz:{},
         wdgzdetail: [],
+        fileList:[],
         contentStyle:{
           padding:'16px',
           'padding-bottom':'72px',
@@ -156,14 +178,13 @@
       }
     },
     created(){
-      this.reqDetail()
-
+      this.reqFlies()
     },
     computed:{
       initialValues(){
         let initialValues={}
-        if(this.modelType=='edit'|| this.modelType=='fenpei') {
-          initialValues = {...this.getMyWorkById()(this.recordId)}
+        if(this.modelType=='edit'|| this.modelType=='query') {
+          initialValues = {...this.getMeetingById()(this.recordId)}
         }
         return initialValues
       },
@@ -180,8 +201,8 @@
     },
     methods:{
       moment,
-      ...mapGetters(['getMyWorkById','']),
-      ...mapActions(['reqWorkDetail','editMyWork']),
+      ...mapGetters(['getMeetingById','']),
+      ...mapActions(['reqHyFilelist','removeFile']),
 
       modalCancel(){
         this.$emit('cancel')
@@ -209,43 +230,7 @@
         console.log(value)
         this.departId=value
       },
-      reqDetail(){
-          this.contentLoading=true
-         const paramater={
-           param1:this.recordId,
-//           param3:'0'
-         }
-         this.reqWorkDetail(paramater)
-           .then((res)=>{
-             if(res.success){
-               this.wdgz=res.data[0].wdgz
-               this.wdgzdetail=res.data[0].wdgzdetail
-               this.wdgzdetail.forEach((item,index)=>{
-                   item.index=index+1
-                   item.key=item.key
-                 item.gzjd=item.gzjd+' %'
-               })
-               this.contentLoading=false
-             }else{
-               this.$message.error('获取工作详情失败')
-               this.contentLoading=false
-             }
-           })
-           .catch((err)=>{
-              console.log(JSON.stringify(err))
-             this.contentLoading=false
-           })
-      },
-      addGz(){
-        this.wdgzdetail.push({
-          gznr:'',
-          gzjd:0,
-          id:moment().valueOf()+Math.ceil(Math.random()*1000)
-        })
-      },
-      removeGz(index){
-        this.wdgzdetail.splice(index,1)
-      },
+
       handleCommit(){
         this.form.validateFields((err, values) => {
           if (!err) {
@@ -275,38 +260,35 @@
           }
         })
       },
-      jdChange(){
-
-        const value=arguments[0][0]
-        const index=arguments[0][1]
-        const item=arguments[0][2]
-        this.wdgzdetail[index].gzjd=value
-        if(this.zongJd>100){
-//        if(value>50){
+      reqFlies(){
+        if (!this.recordId ||this.recordId=='')return
+        const  paramater={
+          param2:this.recordId
+        }
+        this.reqHyFilelist(paramater)
+          .then((res)=>{
 //            debugger
-//          this.$message.error('')
-          const aaa=`gzjd-${item.id}`
-          const oldValue=this.form.getFieldValue(aaa)
-//          const tmp={}
-//          tmp[aaa]=50
-//          this.form.setFieldsValue(tmp)
-          this.wdgzdetail[index].gzjd=oldValue
-          const form=this.form
-          this.$error({
-            title:'总进度不能超过100%，请重新设置！',
-            style:{top:'300px'},
-//            centered:'true',
-            onOk(){
-            form.resetFields()
+            if(res.success){
+              const filelist=[]
+              if (res.data.length>0){
+                res.data.forEach(item=>{
+//                    debugger
+                  filelist.push({
+                    uid: item.id,
+                    name: item.shortMsg,
+                    status: 'done',
+                    message: 'Server Error 500', // custom error message to show
+                    url: item.fpath,
+                  })
+                })
+                this.fileList=filelist
+//                  this.$message.success('文件上传成功')
+              }
+            }else{
+              this.$message.error('请求附件列表失败！')
             }
           })
-        }
-      },
-      gznrChange(){
-//        debugger
-        const e=arguments[0][0]
-        const index=arguments[0][1]
-        this.wdgzdetail[index].gznr=e.target.value
+          .catch(err=>console.log(JSON.stringify(err)))
       },
       emitCancel(){
         this.$emit('cancel')

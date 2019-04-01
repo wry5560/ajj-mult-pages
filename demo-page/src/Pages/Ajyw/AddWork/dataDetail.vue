@@ -1,5 +1,5 @@
 <template>
-  <div class="role-form" :style="{height:height}">
+  <div class="role-form" >
     <div class="role-content" :style="contentStyle">
       <a-spin :spinning="contentLoading" wrapperClassName="spinning">
         <a-form :form="form" >
@@ -86,6 +86,16 @@
           :loading="table.tableIsLoading"
           :rowSelection="table.rowSelection"
         />
+
+        <template>
+          <div style="width:400px ;margin-top: 80px;min-height: 50px;margin-left: 50px">
+            <a-upload  :multiple="true" :fileList="fileList"   :openFileDialogOnClick="false">
+              <a-button>
+                <a-icon type="upload" /> 工作附件
+              </a-button>
+            </a-upload>
+          </div>
+        </template>
       </a-spin>
     </div>
     <!--<div class="bottom-buttons-bar">-->
@@ -153,10 +163,12 @@
 //           }
           rowSelection: null
         },
+        fileList:[],
       }
     },
     created(){
       this.reqDetail()
+      this.reqFlies()
 
     },
     computed:{
@@ -181,7 +193,7 @@
     methods:{
       moment,
       ...mapGetters(['getMyWorkById','']),
-      ...mapActions(['reqWorkDetail','editMyWork']),
+      ...mapActions(['reqWorkDetail','editMyWork','reqWorkFilelist']),
 
       modalCancel(){
         this.$emit('cancel')
@@ -307,6 +319,36 @@
         const e=arguments[0][0]
         const index=arguments[0][1]
         this.wdgzdetail[index].gznr=e.target.value
+      },
+      reqFlies(){
+        if (!this.recordId ||this.recordId=='')return
+        const  paramater={
+          param2:this.recordId
+        }
+        this.reqWorkFilelist(paramater)
+          .then((res)=>{
+//            debugger
+            if(res.success){
+              const filelist=[]
+              if (res.data.length>0){
+                res.data.forEach(item=>{
+//                    debugger
+                  filelist.push({
+                    uid: item.id,
+                    name: item.shortMsg,
+                    status: 'done',
+                    message: 'Server Error 500', // custom error message to show
+                    url: item.fpath,
+                  })
+                })
+                this.fileList=filelist
+//                  this.$message.success('文件上传成功')
+              }
+            }else{
+              this.$message.error('请求附件列表失败！')
+            }
+          })
+          .catch(err=>console.log(JSON.stringify(err)))
       },
       emitCancel(){
         this.$emit('cancel')

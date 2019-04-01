@@ -7,11 +7,18 @@
               <a-col :lg="12" :md="12" :sm="24">
                 <a-form-item label="会议种类" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
                   <a-select   placeholder="请选择会议种类"
-                             v-decorator="['hytype',{rules: [{ required: true, message: '请选择会议种类', whitespace: true}],initialValue: initialValues.hzly && initialValues.hzly!=''?initialValues.hzly:'1'}]" >
+                              @select="hytypeChange"
+                             v-decorator="['hytype',{rules: [{ required: true, message: '请选择会议种类', whitespace: true}],initialValue: initialValues.hytype && initialValues.hytype!='' ? initialValues.hytype:'1'}]" >
                     <!--<a-select-option v-for="(item) in selectOptions.hzly" :key="item.value" :value="item.value">{{item.label}}</a-select-option>-->
                     <a-select-option  value="1">内部</a-select-option>
                     <a-select-option  value="2">外部</a-select-option>
                   </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :lg="12" :md="12" :sm="24" >
+                <a-form-item label="会议名称" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+                  <a-input  placeholder="请输入会议名称"
+                            v-decorator="['hytitle',{rules: [{ required: true, message: '请输入会议名称'}],initialValue: initialValues.hytitle}]" />
                 </a-form-item>
               </a-col>
               <a-col :lg="12" :md="12" :sm="24">
@@ -43,6 +50,26 @@
                 <a-form-item label="会议地点" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
                   <a-input  placeholder="请输入会议地点"
                               v-decorator="['hydd',{rules: [{ required: true, message: '请选择会议地点'}],initialValue: initialValues.hydd}]" />
+                </a-form-item>
+              </a-col>
+              <a-col v-if="hyType=='2'" :lg="12" :md="12" :sm="24" >
+                <a-form-item label="开始报名时间" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+                  <a-date-picker  placeholder="请选择开始报名时间"
+                                  style="width: 100%"
+                                  v-decorator="['startbmtime',{rules: [{ required: true, message: '请选择开始报名时间',type:'object'}],initialValue: initialValues.startbmtime ? moment(initialValues.startbmtime):null}]"
+                                  format="YYYY-MM-DD HH:mm"
+                                  showTime
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col v-if="hyType=='2'" :lg="12" :md="12" :sm="24" >
+                <a-form-item label="结束报名时间" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+                  <a-date-picker  placeholder="请选择结束报名时间"
+                                  style="width: 100%"
+                                  v-decorator="['endbmtime',{rules: [{ required: true, message: '请选择结束报名时间',type:'object'}],initialValue: initialValues.endbmtime ? moment(initialValues.endbmtime):null}]"
+                                  format="YYYY-MM-DD HH:mm"
+                                  showTime
+                  />
                 </a-form-item>
               </a-col>
               <a-col :lg="12" :md="12" :sm="24" >
@@ -118,12 +145,13 @@
 //          id: this.recordId && this.recordId!='' ? this.getMeetingById()(this.recordId).__dssbm.departId : '' ,
         }],
         uploadUrl:process.env.NODE_ENV === 'production'?'other/FileManager.upfile.json?param2=2&param3=asro_hygl&param1=' :'api/other/FileManager.upfile.json?param2=2&param3=asro_hygl&param1=' ,
+        hyType:'1'
 
       }
     },
     created(){
       this.$store.commit('INIT_MEETING_LSID')
-      this.reqFlies()
+      if(this.recordId && this.recordId!='')this.reqFlies()
       this.reqZuzhiList()
         .then((res)=>{
               if(res.success){
@@ -173,6 +201,10 @@
         console.log(value)
         this.departId=value
       },
+      hytypeChange(value){
+        this.hyType=value
+      },
+
       handleChange(info){
         let fileList = info.fileList
         fileList.forEach((file)=>{
