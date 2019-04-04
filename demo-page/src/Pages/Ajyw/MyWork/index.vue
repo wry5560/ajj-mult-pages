@@ -144,13 +144,12 @@
 
         </template>
         <template slot="jjcd" slot-scope="text,record,index" >
-          <div v-if="record.endtime" style="text-align: center">-</div>
+          <div v-if="record.endtime || !record.jhwctime" style="text-align: center">-</div>
           <div v-else style="text-align: center">
-            <div v-if="text==1" style="width: 10px;height:10px;border-radius: 10px;background: #0096ff;display: inline-block"></div>
-            <div v-if="text==2" style="width: 10px;height:10px;border-radius: 10px;background: #ffa800;display: inline-block"></div>
-            <div v-if="text==3" style="width: 10px;height:10px;border-radius: 10px;background: #e30000;display: inline-block"></div>
+            <div v-if="text=='1'" style="width: 10px;height:10px;border-radius: 10px;background: #0096ff;display: inline-block"></div>
+            <div v-if="text=='2'" style="width: 10px;height:10px;border-radius: 10px;background: #ffa800;display: inline-block"></div>
+            <div v-if="text=='3'" style="width: 10px;height:10px;border-radius: 10px;background: #e30000;display: inline-block"></div>
           </div>
-
         </template>
         <span slot="defaultcustomRender" slot-scope="text,record,index">
           <template>
@@ -295,7 +294,7 @@
           dataSource: [],
           columns: [
             {title: '序号', dataIndex: 'index', width: '50px', align: 'center'},
-            {title: '紧急程度',dataIndex: 'yuqi', width: '60px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'jjcd'}},
+            {title: '逾期提醒',dataIndex: 'gqtype', width: '60px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'jjcd'}},
             {title: '子任务数',dataIndex: 'zwrnum', width: '60px', align: 'center',titleAlign:'center'},
             {title: '汇总来源', dataIndex: 'hzly', width: '50px', align: 'center', titleAlign: 'center'},
             {title: '工作内容', dataIndex: 'gznr', width: '300px', align: 'left', titleAlign: 'center'},
@@ -347,7 +346,7 @@
         modalOption: {
 //          style:{top:'20px'},
           title: '',
-          width: '65%',
+          width: '85%',
           visible: false,
           bodyStyle: {
               "max-height":window.innerHeight-220 + 'px',

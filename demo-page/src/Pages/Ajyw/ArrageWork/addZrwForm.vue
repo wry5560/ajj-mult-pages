@@ -4,27 +4,45 @@
       <a-spin :spinning="contentLoading" wrapperClassName="spinning">
         <a-form :form="form" >
             <a-row  :gutter="16">
-              <a-col :lg="14" :md="24" :offset="1" style="margin-bottom: 12px">
+              <a-col :lg="12" :md="24" :offset="1" style="margin-bottom: 12px">
                 <span style="padding-left: 0px;" class="gzjl-title"><strong>子任务内容：</strong></span>
               </a-col>
-              <a-col :lg="4" :md="24">
-                <span class="gzjl-title"><strong>所属局办：</strong></span>
+              <a-col :lg="3" :md="24">
+
               </a-col>
-              <a-col :lg="5" :md="24">
-                <span class="gzjl-title"><strong>所属部门：</strong></span>
+              <a-col :lg="8" :md="24">
+                <span class="gzjl-title"><strong>负责人/部门：</strong></span>
               </a-col>
             </a-row>
             <a-row  :gutter="12" v-for="(item,index) in zrw" :key="item.id">
               <a-col :lg="1">
                 <div style="text-align: center;line-height: 36px">{{index + 1}}</div>
               </a-col>
-              <a-col :lg="14" :md="24">
+              <a-col :lg="12" :md="24">
                 <a-form-item label="" :wrapperCol="{ span: 24 }">
                   <a-textarea placeholder="请输入任务内容" :autosize="{ minRows: 1, maxRows: 2 }" @change="gznrChange([...arguments,index,item])"
                               v-decorator="[`gznr-${item.id}`,{rules: [{ required: true, message: '请输入任务内容', whitespace: true}],initialValue: item ? item.gznr:''}]"/>
                 </a-form-item>
               </a-col>
-              <a-col :lg="4" :md="22">
+              <a-col :lg="3" :md="22">
+                <a-form-item  :wrapperCol="{ span: 24 }">
+                  <a-select @select="typeChange([...arguments,index,item])" defaultValue="1">
+                    <a-select-option value="1">组内任务</a-select-option>
+                    <a-select-option value="2">组外任务</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col  v-if="zrw[index].type=='1'" :lg="7" :md="12" :sm="24">
+                <a-form-item :wrapperCol="{ span: 24 }">
+                 <span style="display: inline-block;width: 100%">
+                  <a-select  @select="fzrChange([...arguments,index,item])" placeholder="请选择负责人"  :options="fzrList"   allowClear
+                             v-decorator="[ `fzr-${item.id}`,{rules: [{ required: true, message: '请选择负责人',whitespace: true,type:'number',validateTrigger:'blur'}]}]" >
+                  </a-select>
+                   </span>
+                </a-form-item>
+              </a-col>
+              <span v-if="zrw[index].type=='2'">
+                <a-col :lg="3" :md="22">
                 <a-form-item  :wrapperCol="{ span: 24 }">
                   <a-tree-select
                     showSearch
@@ -54,6 +72,8 @@
                     v-decorator="[`ssbm-${item.id}`,{initialValue: item ? item.ssbm:null}]" />
                 </a-form-item>
               </a-col>
+              </span>
+
               <a-col :lg="1":md="2">
                 <a href="javascript:;"@click="removeZrw(index)"><a-icon type="close-circle" style="color:gray;margin-top:12px;"/></a>
               </a-col>
@@ -106,13 +126,16 @@
         form: this.$form.createForm(this),
         contentLoading:false,
         data:[{
-          departname:this.recordId && this.recordId !='' ? (this.parentid=='0'? this.getWorkById()(this.recordId).__dssbm.departName : this.getZrwById()(this.parentid,this.recordId).__dssbm.departName ):'',
-          id: this.recordId && this.recordId!='' ? (this.parentid=='0'?this.getWorkById()(this.recordId).__dssbm.departId :  this.getZrwById()(this.parentid,this.recordId).__dssbm.departId) : '' ,
+          // departname:this.recordId && this.recordId !='' ? (this.parentid=='0'? this.getWorkById()(this.recordId).__dssbm.departName : this.getZrwById()(this.parentid,this.recordId).__dssbm.departName ):'',
+          departname:this.recordId && this.recordId !='' ?  this.getArrageWorkById()(this.recordId).__dssbm.departName:'',
+          // id: this.recordId && this.recordId!='' ? (this.parentid=='0'?this.getWorkById()(this.recordId).__dssbm.departId :  this.getZrwById()(this.parentid,this.recordId).__dssbm.departId) : '' ,
+          id: this.recordId && this.recordId!='' ? this.getArrageWorkById()(this.recordId).__dssbm.departId: '' ,
         }],
         zrw:[
-          {gznr:'',ssbm:null,departmentId:sys_relateDepId2,id:'lsid-'+moment().valueOf()+Math.ceil(Math.random()*1000)}
+          {gznr:'',ssbm:null,departmentId:sys_relateDepId2,id:'lsid-'+moment().valueOf()+Math.ceil(Math.random()*1000),type:'1'}
           ],
-        ssbmTree:[]
+        ssbmTree:[],
+        fzrList:[]
       }
     },
     created(){
@@ -125,12 +148,29 @@
                 this.data=res.data
               }
             })
+      this.reqFzrList()
+        .then((res)=>{
+          if(res.success){
+//            this.data=res.data
+            this.fzrList=[]
+            res.data.forEach(item=>{
+              let a={
+                key:item.id,
+                value:item.id,
+                title:item.name
+              }
+              this.fzrList.push(a)
+            })
+
+          }
+        })
     },
     computed:{
       initialValues(){
         let initialValues={}
         if(this.modelType=='edit') {
-          initialValues = this.parentid=='0'?{...this.getWorkById()(this.recordId)}:{...this.getZrwById()(this.parentid,this.recordId)}
+          // initialValues = this.parentid=='0'?{...this.getWorkById()(this.recordId)}:{...this.getZrwById()(this.parentid,this.recordId)}
+          initialValues = {...this.getArrageWorkById()(this.recordId)}
         }
         return initialValues
       },
@@ -155,8 +195,8 @@
     },
     methods:{
       moment,
-      ...mapGetters(['getWorkById','system_zuzhi_list','getZrwById']),
-      ...mapActions(['reqZuzhiList','editRoleMenu','addZrw']),
+      ...mapGetters(['getArrageWorkById','system_zuzhi_list','getZrwById']),
+      ...mapActions(['reqZuzhiList','editRoleMenu','addZrw','reqFzrList']),
 
       modalCancel(){
         this.$emit('cancel')
@@ -185,7 +225,8 @@
           gznr:'',
           ssbm:null,
           departmentId:sys_relateDepId2,
-          id:'lsid-'+moment().valueOf()+Math.ceil(Math.random()*1000)
+          id:'lsid-'+moment().valueOf()+Math.ceil(Math.random()*1000),
+          type:'1'
         })
       },
       removeZrw(index){
@@ -198,11 +239,18 @@
             this.contentLoading=true
             const zrw=[]
             this.zrw.forEach(i=>{
-              const tmp={
-                gznr:i.gznr,
-                ssbm:i.ssbm,
-                departmentId:i.departmentId,
-                parentid:this.recordId
+              const tmp={}
+              if(i.type=='2'){
+                tmp.gznr=i.gznr
+                tmp.ssbm=i.ssbm
+                tmp.departmentId=i.departmentId
+                tmp.parentid=this.recordId
+              }else{
+                tmp.fzr=i.fzr
+                tmp.gznr=i.gznr
+                tmp.ssbm=this.getArrageWorkById()(this.recordId).__ddepartmentId.departId
+                tmp.departmentId=this.getArrageWorkById()(this.recordId).__dssbm.departId
+                tmp.parentid=this.recordId
               }
               zrw.push(tmp)
             })
@@ -284,6 +332,17 @@
         this.ssbmTree[index]=[tmpChildren.children.find(i=>i.value==this.zrw[index].departmentId)]
         this.zrw[index].ssbm=this.ssbmTree[index][0].value
       },
+      typeChange(){
+        // debugger
+        const value=arguments[0][0]
+        const index=arguments[0][2]
+        this.zrw[index].type=value
+      },
+      fzrChange(){
+        const value=arguments[0][0]
+        const index=arguments[0][2]
+        this.zrw[index].fzr=value
+      }
     }
   }
 </script>

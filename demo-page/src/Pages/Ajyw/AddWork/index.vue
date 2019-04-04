@@ -106,7 +106,14 @@
           <span v-if="text=='1'">是</span>
           <span v-else>否</span>
         </template>
-
+        <template slot="jjcd" slot-scope="text,record,index" >
+          <div v-if="record.endtime || !record.jhwctime" style="text-align: center">-</div>
+          <div v-else style="text-align: center">
+            <div v-if="text=='1'" style="width: 10px;height:10px;border-radius: 10px;background: #0096ff;display: inline-block"></div>
+            <div v-if="text=='2'" style="width: 10px;height:10px;border-radius: 10px;background: #ffa800;display: inline-block"></div>
+            <div v-if="text=='3'" style="width: 10px;height:10px;border-radius: 10px;background: #e30000;display: inline-block"></div>
+          </div>
+        </template>
         <template slot="jindu" slot-scope="text,record,index" >
           <div style="padding-left: 10px">
             <a-progress
@@ -269,6 +276,7 @@
           dataSource:[],
           columns:[
             {title: '序号', dataIndex: 'index', width: '100px',align: 'center',titleAlign:'center',scopedSlots: {customRender: 'index'}},
+            {title: '逾期提醒',dataIndex: 'gqtype', width: '60px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'jjcd'}},
             {title: '子任务数',dataIndex: 'zwrnum', width: '60px', align: 'center',titleAlign:'center'},
             {title: '汇总来源',dataIndex: 'hzly', width: '50px', align: 'center',titleAlign:'center'},
             {title: '工作内容', dataIndex: 'gznr', width: '120px', align: 'left',titleAlign:'center'},
@@ -561,6 +569,9 @@
         if(type=='success') {
             if(this.isZrw){
               const expanded=this.table.expandedRowKeys.includes(this.thisRecord.parentid)
+              this.allRecords[this.thisRecord.parentid].children.forEach(i=>{
+                this.rmExpandedKey(i)
+              })
               this.reqZrwData(expanded,this.allRecords[this.thisRecord.parentid])
             }else{
               this.refresh()
@@ -569,6 +580,16 @@
             this.modalLoading=false
             this.modalOption.visible=false
 //          },300)
+        }else if(type=='successZrw'){
+          // debugger
+          const expanded=this.table.expandedRowKeys.includes(this.modalOption.recordId)
+          if(!expanded) {
+            this.allRecords[this.modalOption.recordId].children=[]
+            this.table.expandedRowKeys.push(this.modalOption.recordId)
+          }
+          this.reqZrwData(true,this.allRecords[this.modalOption.recordId])
+          this.modalLoading=false
+          this.modalOption.visible=false
         }else{
           this.modalLoading=false
           this.modalOption.visible=false
@@ -628,10 +649,10 @@
       },
 
       reqZrwData(expanded, record){
-//          debugger
+         // debugger
         if (expanded){
-//          debugger
-          this.table.expandedRowKeys.push(record.id)
+         // debugger
+          if(!this.table.expandedRowKeys.includes(record.key))this.table.expandedRowKeys.push(record.key)
           this.table.tableIsLoading=true
           const parameter={
             limit:10000,
@@ -639,24 +660,35 @@
             param4:record.id
           }
           const tmpChildren= [...record.children]
-          record.children=[]
+          // record.children=[]
           this.$store.dispatch('reqZrwList',parameter)
             .then((res)=>{
+              // debugger
               if(res.success){
+                // debugger
                 record.children=res.data
-                if(record.children.length==0) delete record.children
-                this.$store.commit('INIT_AJYW_ADD_ZRW',{pid:record.id,zrwList:res.data})
-                record.children.forEach((item,index)=>{
-                  this.allRecords[item.id]=item
-                  item.key=item.id + item.parentid
-                  item.index=index + 1
-                  item.starttime=item.starttime && item.starttime!='' ? moment(item.starttime).format('YYYY-MM-DD'):''
-                  item.endtime=item.endtime && item.endtime!='' ? moment(item.endtime).format('YYYY-MM-DD'):''
-                  item.fzr=item.__ufzr.userName
-                  item.departName=item.__ddepartmentId.departName
-                  item.ssbm=item.__dssbm.departName
-                  if(item.zwrnum >0 )item.children=[]
-                })
+                if(record.children.length==0) {
+                  delete record.children
+                  record.zwrnum=0
+                  this.rmExpandedKey(record)
+                }else{
+                  record.zwrnum=record.children.length
+
+                  // debugger
+                  record.children.forEach((item,index)=>{
+                    this.allRecords[item.id]=item
+                    item.key=item.id
+                    item.index=index + 1
+                    item.starttime=item.starttime && item.starttime!='' ? moment(item.starttime).format('YYYY-MM-DD'):''
+                    item.endtime=item.endtime && item.endtime!='' ? moment(item.endtime).format('YYYY-MM-DD'):''
+                    item.fzr=item.__ufzr.userName
+                    item.departName=item.__ddepartmentId.departName
+                    item.ssbm=item.__dssbm.departName
+                    if(item.zwrnum >0 )item.children=[]
+
+                  })
+                  this.$store.commit('INIT_AJYW_ADD_ZRW',{pid:record.id,zrwList:record.children})
+                }
                 this.table.tableIsLoading=false
               }else{
                 this.table.tableIsLoading=false
@@ -669,12 +701,18 @@
               record.children= tmpChildren
             })
         }else{
-//            debugger
-          const index=this.table.expandedRowKeys.findIndex(value=>value==record.id)
-          this.table.expandedRowKeys.splice(index,1)
+           // debugger
+          this.rmExpandedKey(record)
         }
       },
-
+      rmExpandedKey(record){
+        // debugger
+        const index=this.table.expandedRowKeys.findIndex(value=>value==record.key)
+        if (index>-1) this.table.expandedRowKeys.splice(index,1)
+        if(record.children && record.children.length>0){
+          record.children.forEach(i=>this.rmExpandedKey(i))
+        }
+      },
       //提交表单（弹出框内）
       handleCommit(){
         this.$refs.commitForm.form.validateFields((err, values) => {
@@ -688,6 +726,8 @@
             if (this.modalOption.modelType=='edit'){
               values.id=this.modalOption.recordId
 //              values.wzbzbm=this.$store.getters[getDetailById](this.modalOption.recordId).wzbzbm
+            }else if(this.modalOption.modelType=='add'){
+              values.lsid=this.$store.state.Ajyw.lsid
             }
 //            values.departmentid=sys_relateDepId2
             let parameter={
@@ -711,7 +751,6 @@
                 })
                 break
               case 'edit':
-
                 this.$store.dispatch(editAction,parameter).then((res)=>{
                   if (res.success==true){
                     this.$message.success('提交成功！')
@@ -747,9 +786,14 @@
           .then((res)=>{
             if (res.success==true){
               this.$message.success('删除成功！')
-              if(record.parentid=='0'){
+              if(tmp.parentid=='0'){
                 this.reqTableData()
               }else{
+                tmp.key=tmp.id
+                this.rmExpandedKey(record)
+                this.allRecords[record.parentid].children.forEach(i=>{
+                  this.rmExpandedKey(i)
+                })
                 this.reqZrwData(true,this.allRecords[record.parentid])
               }
               this.table.tableIsLoading=false

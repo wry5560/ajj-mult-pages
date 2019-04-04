@@ -191,6 +191,7 @@
             ref="commitForm"/>
           <data-detail
             v-if="modalOption.modelType=='query'"
+            :modelType="modalOption.modelType"
             :recordId="modalOption.recordId" />
 
         </a-spin>
@@ -272,6 +273,7 @@
           columns:[
             {title: '序号', dataIndex: 'index', width: '50px',align: 'center'},
             {title: '会议类型',dataIndex: 'hylx', width: '80px', align: 'center',titleAlign:'center'},
+            {title: '会议名称',dataIndex: 'hytitle', width: '100px', align: 'left',titleAlign:'center'},
             {title: '会议内容', dataIndex: 'hynr', width: '250px', align: 'left',titleAlign:'center'},
             {title: '会议时间', dataIndex: 'hytime', width: '80px', align: 'center',titleAlign:'center'},
             {title: '会议地点', dataIndex: 'hydd', width: '60px', align: 'center',titleAlign:'center'},
@@ -517,6 +519,7 @@
             this.modalOption.modelType='add'
 //            this.modalOption.width=''                             //修改弹出框的宽度
             this.modalOption.modalClass ='nomal-modal '
+            this.modalOption.recordId=''
             break;
           case 'query':
             this.modalOption.title=modalTitle+'详情'
@@ -617,6 +620,8 @@
 //            values.jclx=values.jclx[0]
 //              values.fzr=''
             values.hytime= values.hytime.format('YYYY-MM-DD HH:mm')
+            if(values.startbmtime)values.startbmtime = values.startbmtime.format('YYYY-MM-DD HH:mm')
+            if(values.endbmtime)values.endbmtime= values.endbmtime.format('YYYY-MM-DD HH:mm')
             if (this.modalOption.modelType=='edit'){
               values.id=this.modalOption.recordId
 //              values.wzbzbm=this.$store.getters[getDetailById](this.modalOption.recordId).wzbzbm

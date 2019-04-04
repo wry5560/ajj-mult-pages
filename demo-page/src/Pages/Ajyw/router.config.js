@@ -2,10 +2,10 @@ export const constantRouterMap = [
   {
     path: '/',
     name: 'index',
-    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Ajyw/AddWork/index'),
+    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Ajyw/AddWork/index'),
     // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Ajyw/ArrageWork/index'),
     // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Ajyw/Difficulty/index'),
-    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Ajyw/MyWork/index'),
+    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Ajyw/MyWork/index'),
     meta: {keepAlive:true},
   },
 

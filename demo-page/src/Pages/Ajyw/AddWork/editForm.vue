@@ -1,5 +1,5 @@
 <template>
-  <div class="work-form" :style="{height:height}">
+  <div class="work-form" >
     <div class="work-content">
       <a-spin :spinning="contentLoading" wrapperClassName="spinning">
         <a-form :form="form" >
@@ -102,6 +102,16 @@
             </a-row>
             <a-button type="dashed" style="width: 100%" icon="plus"@click="addZrw">添加子任务</a-button>
           </span>
+
+          <template>
+            <div style="width:400px ;margin-top: 16px;min-height: 50px;margin-left: 50px">
+              <a-upload :action="uploadUrl+lsid" :multiple="true" :fileList="fileList" @change="handleChange"  :remove="rmFile">
+                <a-button>
+                  <a-icon type="upload" /> 上传附件
+                </a-button>
+              </a-upload>
+            </div>
+          </template>
           </a-form>
       </a-spin>
     </div>
@@ -152,11 +162,15 @@
           id: this.recordId && this.recordId!='' ? (this.parentid=='0'?this.getWorkById()(this.recordId).__dssbm.departId :  this.getZrwById()(this.parentid,this.recordId).__dssbm.departId) : '' ,
         }],
         zrw:[],
-        ssbmTree:[]
+        ssbmTree:[],
+        uploadUrl:process.env.NODE_ENV === 'production'?'other/FileManager.upfile.json?param2=2&param3=asro_ajgzhz&param1=' :'api/other/FileManager.upfile.json?param2=2&param3=asro_ajgzhz&param1=' ,
+        fileList:[]
 
       }
     },
     created(){
+      this.$store.commit('INIT_WORK_LSID')
+      if(this.recordId && this.recordId!='')this.reqFlies()
       const paramater={
           param2:'2'
       }
@@ -168,6 +182,9 @@
             })
     },
     computed:{
+      lsid(){
+        return this.modelType=='add'? this.$store.state.Ajyw.lsid : this.recordId
+      },
       initialValues(){
         let initialValues={}
         if(this.modelType=='edit') {
@@ -197,7 +214,7 @@
     methods:{
       moment,
       ...mapGetters(['getWorkById','system_zuzhi_list','getZrwById']),
-      ...mapActions(['reqZuzhiList','editRoleMenu']),
+      ...mapActions(['reqZuzhiList','editRoleMenu','removeFile','reqWorkFilelist']),
 
       modalCancel(){
         this.$emit('cancel')
@@ -308,6 +325,71 @@
                 break
             }
           }
+        })
+      },
+      handleChange(info){
+        let fileList = info.fileList
+        fileList.forEach((file)=>{
+          if(file.response){
+            if(file.response.success){
+              file.url=file.response.data[0].urlpicpath+file.response.data[0].cpPic_name
+            }else{
+              file.status="error"
+              this.$message.error(file.response.message)
+            }
+          }
+        })
+        this.fileList=fileList
+      },
+      reqFlies(){
+        if (!this.recordId ||this.recordId=='')return
+        const  paramater={
+          param2:this.recordId
+        }
+        this.reqWorkFilelist(paramater)
+          .then((res)=>{
+//            debugger
+            if(res.success){
+              const filelist=[]
+              if (res.data.length>0){
+                res.data.forEach(item=>{
+//                    debugger
+                  filelist.push({
+                    uid: item.id,
+                    name: item.shortMsg,
+                    status: 'done',
+                    message: 'Server Error 500', // custom error message to show
+                    url: item.fpath,
+                  })
+                })
+                this.fileList=filelist
+//                  this.$message.success('文件上传成功')
+              }
+            }else{
+              this.$message.error('请求附件列表失败！')
+            }
+          })
+          .catch(err=>console.log(JSON.stringify(err)))
+      },
+      rmFile(file){
+        return new Promise((resolve,reject)=>{
+          const paramater={
+            param1: file.response ? file.response.data[0].serverId :file.uid
+          }
+          this.removeFile(paramater)
+            .then((res)=>{
+              if (res.success){
+                this.$message.success('文件已删除！ ')
+                resolve()
+              }else{
+                this.$message.error('删除文件失败！ '+res.message)
+                reject()
+              }
+            })
+            .catch((err)=>{
+              console.log(JSON.stringify(err))
+              reject()
+            })
         })
       },
       gznrChange(){
