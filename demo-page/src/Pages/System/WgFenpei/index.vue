@@ -150,9 +150,11 @@
                 halfChecked:[]
               }
               res.data.forEach(item=>{
+//                  debugger
                 if(item.authed=='true') {
                   const tmpKeyIndex=  this.rightTreeOption.checkedKeys.checked.findIndex(i=>i==item.id)
                   if(tmpKeyIndex==-1)this.rightTreeOption.checkedKeys.checked.push(item.id)
+                  console.log(this.rightTreeOption.checkedKeys.checked)
                   this.authedWg.push({
                     id: item.id,
                     authed:  item.authed,
@@ -168,14 +170,17 @@
               })
               this.rightTreeOption.treeData= this.initTree(this.initTableChildren(res.data))
 //                debugger
-              this.parentNodes.forEach(item=>this.initChecked(item))
-              this.parentNodes.forEach(item=>this.initChecked(item))
-              this.parentNodes.forEach(item=>this.initChecked(item))
-              this.parentNodes.forEach(item=>this.initChecked(item))
-              this.parentNodes.forEach(item=>this.initChecked(item))
-              this.parentNodes.forEach(item=>this.initChecked(item))
+//              this.parentNodes.forEach(item=>this.initChecked(item))
+//              this.parentNodes.forEach(item=>this.initChecked(item))
+//              this.parentNodes.forEach(item=>this.initChecked(item))
+//              this.parentNodes.forEach(item=>this.initChecked(item))
+//              this.parentNodes.forEach(item=>this.initChecked(item))
+//              this.parentNodes.forEach(item=>this.initChecked(item))
               if(this.isFirstLoading) {
-                this.rightTreeOption.expandedKeys.push(this.rightTreeOption.treeData[0].key)
+                this.parentNodes.forEach(i=>{
+                  this.rightTreeOption.expandedKeys.push(i.key)
+                })
+//                this.rightTreeOption.expandedKeys.push(this.rightTreeOption.treeData[0].key)
                 this.isFirstLoading=false
               }
               this.rightTreeOption.treeLoading=false
@@ -225,8 +230,8 @@
             pId:data.pId
           }
           if (data.children && data.children.length>0) {
-            const i=this.rightTreeOption.checkedKeys.checked.findIndex(i=>i==data.id)
-            if(i>-1)this.rightTreeOption.checkedKeys.checked.splice(i,1)
+//            const i=this.rightTreeOption.checkedKeys.checked.findIndex(i=>i==data.id)
+//            if(i>-1)this.rightTreeOption.checkedKeys.checked.splice(i,1)
             tmp.children=this.initTree(data.children)
           }
           aaa.push(tmp)
@@ -364,13 +369,13 @@
         console.log('onCheck checkedKeys', checkedKeys)
 //        console.log('onCheck info', info)
         this.rightTreeOption.checkedKeys = checkedKeys
-        if(checked){
-          this.checkedChildren('checked',node.value)
-        }else{
-          this.checkedChildren('unChecked',node.value)
-        }
-        const aaa= this.wgData.find(i=>i.id==node.value)
-        this.initParent(aaa.pId)
+//        if(checked){
+//          this.checkedChildren('checked',node.value)
+//        }else{
+//          this.checkedChildren('unChecked',node.value)
+//        }
+//        const aaa= this.wgData.find(i=>i.id==node.value)
+//        this.initParent(aaa.pId)
 
       },
       saveWgfp(){
@@ -379,7 +384,8 @@
         const authedWg=this.authedWg
         const addWg=[]
         const delWg=[]
-        const selKeys=this.rightTreeOption.checkedKeys.checked.concat(this.rightTreeOption.checkedKeys.halfChecked)
+//        const selKeys=this.rightTreeOption.checkedKeys.checked.concat(this.rightTreeOption.checkedKeys.halfChecked)
+        const selKeys=this.rightTreeOption.checkedKeys.checked
         selKeys.forEach(i=>{
           const index=authedWg.findIndex(item=>item.id==i)
           if(index ==-1){

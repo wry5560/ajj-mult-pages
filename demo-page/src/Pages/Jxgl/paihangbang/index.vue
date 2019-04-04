@@ -1,24 +1,24 @@
 <template>
   <div class="sige-baifenlv">
     <!--下面是顶部的按钮栏-->
-    <div  class="header-buttons-bar" style="padding: 12px; display: flex;vertical-align: middle;">
-      <!--<span style="display: inline-block;margin-top: 0px"><a-button @click="refresh"size="small">刷新</a-button></span>-->
-      <template>
-        <a-select style="width: 120px;margin-right: 12px" v-model="yearSelectKey">
-          <a-select-option v-for="item in yearSels" :value="item.value">{{item.label}}</a-select-option>
-        </a-select>
-        <a-select  style="width: 120px;margin-right: 12px" v-model="jdSelectKey">
-          <a-select-option value="1">第一季度</a-select-option>
-          <a-select-option value="2">第二季度</a-select-option>
-          <a-select-option value="3">第三季度</a-select-option>
-          <a-select-option value="4">第四季度</a-select-option>
-        </a-select>
-        <a-button type="primary" style="margin-top: 0; margin-right: 12px" @click="reqTableData">确定</a-button>
-        <a-breadcrumb style="margin-top: 5px">
-          <a-breadcrumb-item v-for="(item,index) in breadcrumbs"><a @click="selBreadcrumb(item,index)">{{item.departName}}</a></a-breadcrumb-item>
-        </a-breadcrumb>
-      </template>
-    </div>
+    <!--<div  class="header-buttons-bar" style="padding: 12px; display: flex;vertical-align: middle;">-->
+      <!--&lt;!&ndash;<span style="display: inline-block;margin-top: 0px"><a-button @click="refresh"size="small">刷新</a-button></span>&ndash;&gt;-->
+      <!--<template>-->
+        <!--<a-select style="width: 120px;margin-right: 12px" v-model="yearSelectKey">-->
+          <!--<a-select-option v-for="item in yearSels" :value="item.value">{{item.label}}</a-select-option>-->
+        <!--</a-select>-->
+        <!--<a-select  style="width: 120px;margin-right: 12px" v-model="jdSelectKey">-->
+          <!--<a-select-option value="1">第一季度</a-select-option>-->
+          <!--<a-select-option value="2">第二季度</a-select-option>-->
+          <!--<a-select-option value="3">第三季度</a-select-option>-->
+          <!--<a-select-option value="4">第四季度</a-select-option>-->
+        <!--</a-select>-->
+        <!--<a-button type="primary" style="margin-top: 0; margin-right: 12px" @click="reqTableData">确定</a-button>-->
+        <!--<a-breadcrumb style="margin-top: 5px">-->
+          <!--<a-breadcrumb-item v-for="(item,index) in breadcrumbs"><a @click="selBreadcrumb(item,index)">{{item.departName}}</a></a-breadcrumb-item>-->
+        <!--</a-breadcrumb>-->
+      <!--</template>-->
+    <!--</div>-->
 
     <!--下面是表格区域，分为表格主体和分页器-->
 
@@ -120,32 +120,37 @@
           table:{
             dataSource:[],
             columns:[
-              {title: '序号', dataIndex: 'index', width: '50px',align: 'center',style:{'font-size':'18px'}},
-              {title: '考核单位名称', dataIndex: 'departName', width: '200px',align: 'left',titleAlign:'center',scopedSlots: {customRender: 'dwmc'},style:{'font-size':'18px'}},
+              {title: '序号', dataIndex: 'index', width: '50px',align: 'center',style:{'font-size':'16px'}},
+              {title: '考核单位名称', dataIndex: 'departName', width: '150px',align: 'left',titleAlign:'center',scopedSlots: {customRender: 'dwmc'},style:{'font-size':'16px'}},
               {title:'上报率',
               children:[
-                {title: '单位数',dataIndex: 'dws', width: '100px', align: 'center',titleAlign:'center',style:{'font-size':'18px'}},
-                {title: '上报数 ',dataIndex: 'wcs', width: '100px', align: 'center',titleAlign:'center',style:{'font-size':'18px'}},
-                {title: '上报率',dataIndex: 'sbl', width: '100px', align: 'center',titleAlign:'center',style:{color:'#189cfc','font-size':'18px'}},
+                {title: '单位数',dataIndex: 'dws', width: '60px', align: 'center',titleAlign:'center',style:{'font-size':'16px'}},
+                {title: '上报数 ',dataIndex: 'wcs', width: '60px', align: 'center',titleAlign:'center',style:{'font-size':'16px'}},
+                {title: '上报率',dataIndex: 'sbl', width: '60px', align: 'center',titleAlign:'center',style:{color:'#189cfc','font-size':'16px'}},
+                {title: '评分',dataIndex: 'sblpf', width: '60px', align: 'center',titleAlign:'center',style:{color:'#189cfc','font-size':'16px'}},
               ]},
               {title:'查处率',
                 children:[
-                  {title: '黑名单企业数',dataIndex: 'hmds', width: '100px', align: 'center',titleAlign:'center',style:{'font-size':'18px'}},
-                  {title: '查处数',dataIndex: 'ccs', width: '100px', align: 'center',titleAlign:'center',style:{'font-size':'18px'}},
-                  {title: '查处率',dataIndex: 'ccl', width: '100px', align: 'center',titleAlign:'center',style:{color:'#189cfc','font-size':'18px'}},
+                  {title: '黑名单企业数',dataIndex: 'hmds', width: '60px', align: 'center',titleAlign:'center',style:{'font-size':'16px'}},
+                  {title: '查处数',dataIndex: 'ccs', width: '60px', align: 'center',titleAlign:'center',style:{'font-size':'16px'}},
+                  {title: '查处率',dataIndex: 'ccl', width: '60px', align: 'center',titleAlign:'center',style:{color:'#189cfc','font-size':'16px'}},
+                  {title: '评分',dataIndex: 'cclpf', width: '60px', align: 'center',titleAlign:'center',style:{color:'#189cfc','font-size':'16px'}},
                 ]},
               {title:'检查率',
                 children:[
-                  {title: '零隐患企业总数',dataIndex: 'lyhqys', width: '100px', align: 'center',titleAlign:'center',style:{'font-size':'18px'}},
-                  {title: '检查数',dataIndex: 'jcs', width: '100px', align: 'center',titleAlign:'center',style:{'font-size':'18px'}},
-                  {title: '检查率',dataIndex: 'jcl', width: '100px', align: 'center',titleAlign:'center',style:{color:'#189cfc','font-size':'18px'}},
+                  {title: '零隐患企业总数',dataIndex: 'lyhqys', width: '60px', align: 'center',titleAlign:'center',style:{'font-size':'16px'}},
+                  {title: '检查数',dataIndex: 'jcs', width: '60px', align: 'center',titleAlign:'center',style:{'font-size':'16px'}},
+                  {title: '检查率',dataIndex: 'jcl', width: '60px', align: 'center',titleAlign:'center',style:{color:'#189cfc','font-size':'16px'}},
+                  {title: '评分',dataIndex: 'jclpf', width: '60px', align: 'center',titleAlign:'center',style:{color:'#189cfc','font-size':'16px'}},
                 ]},
               {title:'抽查率',
                 children:[
-                  {title: '其他企业数',dataIndex: 'qtqys', width: '100px', align: 'center',titleAlign:'center',style:{'font-size':'18px'}},
-                  {title: '抽查数',dataIndex: 'choucs', width: '100px', align: 'center',titleAlign:'center',style:{'font-size':'18px'}},
-                  {title: '抽查率',dataIndex: 'choucl', width: '100px', align: 'center',titleAlign:'center',style:{color:'#189cfc','font-size':'18px'}},
+                  {title: '其他企业数',dataIndex: 'qtqys', width: '60px', align: 'center',titleAlign:'center',style:{'font-size':'16px'}},
+                  {title: '抽查数',dataIndex: 'choucs', width: '60px', align: 'center',titleAlign:'center',style:{'font-size':'16px'}},
+                  {title: '抽查率',dataIndex: 'choucl', width: '60px', align: 'center',titleAlign:'center',style:{color:'#189cfc','font-size':'16px'}},
+                  {title: '评分',dataIndex: 'chouclpf', width: '60px', align: 'center',titleAlign:'center',style:{color:'#189cfc','font-size':'16px'}},
                 ]},
+              {title: '总分', dataIndex: 'zongfen', width: '80px',align: 'center',titleAlign:'center',style:{color:'#189cfc','font-size':'16px'}},
 //              {title: '操作', dataIndex: 'actions', width: '60px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
             ],
             size:'large',
@@ -240,9 +245,10 @@
             if(res.success){
               //请求成功后，在下面进行数据处理，赋值给table
               this.table.dataSource=this.$store.getters[getList]
+              let num=0
               this.table.dataSource.forEach((item,index)=>{
 //              item.index=index+(this.pagination.current -1)*this.pagination.pageSize+1
-                item.index=index+1
+//                item.index=index+1
                 item.key=item.departmentId
                 if(!item.ccs) item.ccs=0
                 if(!item.choucs) item.choucs=0
@@ -256,9 +262,47 @@
                 item.ccl =item.hmds==0? '- ' : ((item.ccs/item.hmds)* 100).toFixed(2) + '%'
                 item.jcl=item.lyhqys==0? '- ' : ((item.jcs/item.lyhqys)* 100).toFixed(2) + '%'
                 item.choucl=item.qtqys==0? '- ' : ((item.choucs/item.qtqys)* 100).toFixed(2) + '%'
+                num = 0
+//                debugger
+                if(item.dws!=0){
+                  item.sblpf=((item.wcs/item.dws)*100).toFixed(2)
+                  item.zongfen=Number(item.sblpf)
+                  num = num + 1
+                }else{
+                  item.sblpf= '- '
+                }
+                if(item.hmds!=0){
+                  item.cclpf = ((item.ccs/item.hmds)* 100).toFixed(2)
+                  item.zongfen=item.zongfen+Number(item.cclpf)
+                  num = num + 1
+                }else{
+                  item.cclpf = '- '
+                }
+                if(item.lyhqys!=0){
+                  item.jclpf= ((item.jcs/item.lyhqys)* 100).toFixed(2)
+                  item.zongfen=item.zongfen+Number(item.jclpf)
+                  num = num + 1
+                }else{
+                  item.jclpf='- '
+                }
+                if(item.qtqys!=0){
+                  item.chouclpf= ((item.choucs/item.qtqys)* 100).toFixed(2)
+                  item.zongfen=item.zongfen+Number(item.chouclpf)
+                  num = num + 1
+                }else{
+                  item.chouclpf='- '
+                }
 //              item.jctimeend=moment(item.jctimeend).format('YYYY-MM-DD HH:ss')
 //              item.fctime=item.fctime && item.fctime!='' ? moment(item.fctime).format('YYYY-MM-DD HH:ss'):''
-
+                item.zongfen= num==0?'-':(item.zongfen/num).toFixed(2)
+              })
+              this.table.dataSource.sort((a,b)=>{
+                  const aaa=a.zongfen=='-'? -1 :a.zongfen
+                  const bbb=b.zongfen=='-'? -1 :b.zongfen
+                  return bbb-aaa
+              })
+              this.table.dataSource.forEach((item,index)=>{
+                  item.index=index+1
               })
 //            this.pagination.total=res.totalCount
 //            if(this.activeTab=='1') this.noEndNum=res.totalCount

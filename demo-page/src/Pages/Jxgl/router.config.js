@@ -7,6 +7,7 @@ export const constantRouterMap = [
     // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Jxgl/Jcbgl/index'),
     component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Jxgl/Zxjcplan/index'),
     // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Jxgl/sigeBaifenlv/index'),
+    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Jxgl/paihangbang/index'),
     meta: {keepAlive:true},
   },
 

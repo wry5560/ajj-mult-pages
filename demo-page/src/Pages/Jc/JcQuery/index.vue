@@ -433,6 +433,10 @@
           this.search.advancedForm.gmjjhyfl[2] &&this.search.advancedForm.gmjjhyfl[2]!='' ? SelValues.push(`(d.gmjjhyfl3= '${this.search.advancedForm.gmjjhyfl[2]}') `): null
           this.search.advancedForm.gmjjhyfl[3] &&this.search.advancedForm.gmjjhyfl[3]!='' ? SelValues.push(`(d.gmjjhyfl4 = '${this.search.advancedForm.gmjjhyfl[3]}') `): null
         }
+
+        if(this.search.advancedForm.jghy){
+          SelValues.push(`(a.jghy = '${this.search.advancedForm.jghy}')`)
+        }
         SelValues.forEach((value,index)=>{
           index>0 ? advancedVlaue.fix=advancedVlaue.fix+' and '+value
             :advancedVlaue.fix=value

@@ -47,17 +47,18 @@ const settings={
   // pubilcUrl:'/asrsajj/90_asrs/ajguanli/sgbfl/',     //四个百分率
 
 
-  pubilcUrl:'/asrsajj/90_asrs/jxgl/zfjc_ng/',     //检查
+  // pubilcUrl:'/asrsajj/90_asrs/jxgl/zfjc_ng/',     //检查
   // pubilcUrl:'/asrsajj/90_asrs/jxgl/jcxx_ng/'     //检查查询
   // pubilcUrl:'/asrsajj/90_asrs/jxgl/zffc_ng/'     //复查
   // pubilcUrl:'/asrsajj/90_asrs/jxgl/zfxx_ng/'     //执法i
+  // pubilcUrl:'/asrsajj/90_asrs/jxgl/paihangbang/'     //排行榜
 
 
   // pubilcUrl:'/asrsajj/90_asrs/system/ajzz_ng/'     //组织管理
   // pubilcUrl:'/asrsajj/90_asrs/system/ajrole_ng/'   //角色管理
   // pubilcUrl:'/asrsajj/90_asrs/system/user_ng/'     //用户管理
-  // pubilcUrl:'/asrsajj/90_asrs/system/ajwgfp_ng/'     //网格分配
-  // pubilcUrl:'/asrsajj/90_asrs/system/deptMenu_ng/'     //网格分配
+  pubilcUrl:'/asrsajj/90_asrs/system/ajwgfp_ng/'     //网格分配
+  // pubilcUrl:'/asrsajj/90_asrs/system/deptMenu_ng/'     //功能分配
 
 }
 
