@@ -40,7 +40,7 @@ const settings={
   // pubilcUrl:'/asrsajj/90_asrs/ajyw/gzhz/'     //工作录入
   // pubilcUrl:'/asrsajj/90_asrs/ajyw/gzfp/'     //工作分配
   // pubilcUrl:'/asrsajj/90_asrs/ajyw/nycd/'     //难易程度调整
-  pubilcUrl:'/asrsajj/90_asrs/ajyw/wdgz/'     //我的工作
+  // pubilcUrl:'/asrsajj/90_asrs/ajyw/wdgz/'     //我的工作
 
 
 
