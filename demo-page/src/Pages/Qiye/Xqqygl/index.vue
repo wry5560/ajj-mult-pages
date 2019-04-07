@@ -192,9 +192,9 @@
           dataSource:[],
           columns:[
             {title: '序号', dataIndex: 'index', width: '50px',align: 'center'},
-            {title: '企业名称',dataIndex: 'dwmc', width: '220px', align: 'center'},
-            {title: '单位类型', dataIndex: 'dwlx', width: '100px', align: 'center'},
-            {title: '单位地址', dataIndex: 'dwdz', width: '250px', align: 'center',},
+            {title: '企业名称',dataIndex: 'dwmc', width: '220px', align: 'left',titleAlign:'center'},
+            {title: '单位类型', dataIndex: 'dwlx', width: '100px', align: 'left',titleAlign:'center'},
+            {title: '单位地址', dataIndex: 'dwdz', width: '250px', align: 'left',titleAlign:'center'},
             {title: '所属网格', dataIndex: 'nodeNm', width: '120px',align: 'center'},
             {title: '操作', dataIndex: 'actions', width: '120px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
           ],

@@ -1,130 +1,116 @@
-{
-  "wdgz": {
-    "endtime": null,
-    "sffb": "1",
-    "fptime": null,
-    "ACTIVE_FLAG": "1",
-    "starttime": 1552539473000,
-    "gznr": "啦啦啦测试下分配",
-    "remark": "啦啦啦测试下分配",
-    "jhwctime": 1553788800000,
-    "__ufzr": {
-      "departmentId": "9361",
-      "departmentName": "区安监局",
-      "email": "",
-      "hrLoginId": "",
-      "ipPhone": "",
-      "isActive": "1",
-      "loginId": "区安监局管理人员",
-      "mobilePhone": "13111111110",
-      "officeId": "2",
-      "officeNm": "",
-      "phone": "",
-      "rank": "",
-      "roleId": "160,98",
-      "roleName": "区安监局管理角色,普通员工",
-      "sex": "M",
-      "superUserFlag": "0",
-      "userId": "3068",
-      "userLevel": "0",
-      "userName": "区安监局管理人员"
-    },
-    "hzly": "OA",
-    "__ddepartmentId": {
-      "areaid": "横琴",
-      "companyId": "555555",
-      "companyNm": "客户",
-      "departId": "9361",
-      "departName": "区安监局",
-      "firstItemId": "2",
-      "firstItemName": "演示企业",
-      "fullPath": "2|9361|",
-      "isRH": null,
-      "ltype": "0",
-      "relateDep1Id": "9361",
-      "relateDep2Id": "9361",
-      "relateDep3Id": "9361",
-      "relateDep4Id": "9361",
-      "relateDep5Id": "9361",
-      "shortNm": "横琴",
-      "topManageDepId": "2",
-      "topManageDepName": null
-    },
-    "gzms": null,
-    "state": "工作进行",
-    "__ufpr": {
-      "departmentId": "",
-      "departmentName": "",
-      "email": "",
-      "hrLoginId": "",
-      "ipPhone": "",
-      "isActive": "",
-      "loginId": "",
-      "mobilePhone": "",
-      "officeId": "",
-      "officeNm": "",
-      "phone": "",
-      "rank": "",
-      "roleId": "",
-      "roleName": "",
-      "sex": "",
-      "superUserFlag": "",
-      "userId": "",
-      "userLevel": "",
-      "userName": ""
-    },
-    "wcjd": 59,
-    "id": "A-17",
-    "nycd": "1",
-    "__dssbm": {
-      "areaid": "横琴",
-      "companyId": "555555",
-      "companyNm": "客户",
-      "departId": "9361",
-      "departName": "区安监局",
-      "firstItemId": "2",
-      "firstItemName": "演示企业",
-      "fullPath": "2|9361|",
-      "isRH": null,
-      "ltype": "0",
-      "relateDep1Id": "9361",
-      "relateDep2Id": "9361",
-      "relateDep3Id": "9361",
-      "relateDep4Id": "9361",
-      "relateDep5Id": "9361",
-      "shortNm": "横琴",
-      "topManageDepId": "2",
-      "topManageDepName": null
-    },
-    "sfgd": "0",
-    "sfwc": "0"
-  },
-  "wdgzdetail": [
-    {
-      "id": "14",
-      "gzr": null,
-      "ACTIVE_FLAG": "1",
-      "gznr": "ads df d",
-      "worktime": null,
-      "gzjd": 20,
-      "gzid": "A-17",
-      "$$hashKey": "object:221"
-    },
-    {
-      "id": "15",
-      "gzr": null,
-      "ACTIVE_FLAG": "1",
-      "gznr": "dsa fds",
-      "worktime": null,
-      "gzjd": 29,
-      "gzid": "A-17",
-      "$$hashKey": "object:222"
-    },
-    {
-      "gznr": "的地方的的",
-      "worktime": "",
-      "gzjd": 10,
-      "$$hashKey": "object:250"
-    }
-  ]
-}
+{ABOLISHED_BY: null,
+ABOLITION_DATE: null,
+ACTIVE_FLAG: "1",
+CREATED_BY: {departmentId: "2", departmentName: "横琴安监动态监管平台", email: "", hrLoginId: "", ipPhone: "", isActive: "1",…},
+CREATION_DATE: 1513335200000,
+LAST_UPDATED_BY: {departmentId: "2", departmentName: "横琴安监动态监管平台", email: "", hrLoginId: "", ipPhone: "", isActive: "1",…},
+LAST_UPDATE_DATE: 1554570595000,
+PROGRAM_APPLICATION_ID: "01",
+PROGRAM_ID: null,
+bz: "",
+clr: "",
+cz: null,
+dbdj: null,
+departmentId: "7609",
+dh: "",
+djjg: null,
+dwId: "A-4617",
+dwdz: "珠海保税区第27-1号区域厂房",
+dwfxdj: null,
+dwgpsj: 113.503433,
+dwgpsw: 22.170774,
+dwlx: "",
+dwmc: "广东至简科技有限公司",
+dwpy: "",
+dwqt: "安监",
+dwscore: "73",
+dwsx: null,
+dwsx2: null,
+email: "",
+entInfoId: "93b1e76756fcfe1d015703d78a7c0019",
+entLoginName: "广东至简科技有限公司",
+entLoginPwd: "123456",
+fcjg: null,
+fcr: null,
+fctime: null,
+fctimeend: null,
+fctimestart: null,
+fcuser: null,
+fcusers: null,
+fczj: null,
+fjfl: "0",
+fjlevel: "1",
+fr: "田凌",
+frlx: "13902802838",
+frsfz: null,
+gdzc: null,
+gmjjhyfl: "",
+gmjjhyfl2: "",
+gmjjhyfl3: "",
+gmjjhyfl4: "",
+groupId: null,
+gszch: "9144040005070484X8",
+id: "A-4617",
+isprint: "1",
+jcdlx: "日常",
+jcdz: "dsdasd",
+jcfzr: null,
+jcid: "A-100",
+jcmonth: "2",
+jcno: "安监检记〔2019〕横琴0220号",
+jctimeend: 1550759954000,
+jctimestart: 1550759880000,
+jcuser: "测试人员,测试111管理人员",
+jcusers: "3084,3083",
+jcyear: "2019",
+jczj: "3085,3079",
+jd: null,
+jghy: null,
+jjlx: "内资",
+jjlx2: "私有",
+jyfw: "",
+jzmj: null,
+lsgx: "其他",
+nsr: null,
+qyaqfzr: "",
+qyaqfzrlx: "",
+qydj: null,
+qygm: null,
+qylx: "中小微企业类",
+qylx2: "金属制品及搪瓷制品企业",
+qyqk: null,
+qystate: null,
+safefzr: "dsdsad"
+safefzrlxfs: "12332"
+sfczyh: "0"
+sffc: "0"
+sffcwc: null
+sfqbwc: "1"
+sfzd: ""
+sjdw: null
+ssxq: "横琴"
+state: "归档"
+swdjzh: null
+symc: null
+tyshxydm: "9144040005070484X8"
+xkz: null
+xkznum: null
+xkzyxq: null
+xzqy: "广东省"
+xzqy2: "珠海市"
+xzqy3: "9"
+xzqy4: "179"
+xzqy5: ""
+xzqy6: ""
+yqzgsj: null
+yyzz: null
+yyzznum: null
+yyzzyxq: null
+yzbm: ""
+zcdz: null
+zczb: null
+zdmj: null
+zdrs: null
+zgrs: null
+zxplanid: ""
+zzjgdm: "9144040005070484X8"}

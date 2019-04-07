@@ -16,6 +16,7 @@ import System from '../Pages/System/store'
 import GuiDang from '../Pages/Guidang/store'
 import Ajyw from '../Pages/Ajyw/store'
 import Meeting from '../Pages/Meeting/store'
+import Query from '../Pages/Query/store'
 
 import Login from '../Pages/Login/store'
 
@@ -39,6 +40,7 @@ export default new Vuex.Store({
     Login,
     Ajyw,
     Meeting,
+    Query,
 
   },
   state: {

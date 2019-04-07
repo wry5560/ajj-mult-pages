@@ -57,13 +57,14 @@ const settings={
   // pubilcUrl:'/asrsajj/90_asrs/system/ajzz_ng/'     //组织管理
   // pubilcUrl:'/asrsajj/90_asrs/system/ajrole_ng/'   //角色管理
   // pubilcUrl:'/asrsajj/90_asrs/system/user_ng/'     //用户管理
-  pubilcUrl:'/asrsajj/90_asrs/system/ajwgfp_ng/'     //网格分配
+  // pubilcUrl:'/asrsajj/90_asrs/system/ajwgfp_ng/'     //网格分配
   // pubilcUrl:'/asrsajj/90_asrs/system/deptMenu_ng/'     //功能分配
 
 
   // pubilcUrl:'/asrsajj/90_asrs/meeting/meetingGl/'     //会议管理
 
-  //
+  pubilcUrl:'/asrsajj/90_asrs/query/qycx/'     //综合查询  企业查询
+
 
 }
 
