@@ -2,8 +2,8 @@ const path = require('path')
 const webpack = require('webpack')
 const settings={
   // proxyTarget:'https://www.easy-mock.com/mock/5c1134372a95a012b1c7497d', //开发时的代理服务器地址，使用mock数据
-  // proxyTarget:'http://feooe.myds.me:6200/', //开发时的代理服务器地址，使用ajj项目测试服务器/
-  proxyTarget:'http://feooe.myds.me:8090/', //开发时的代理服务器地址，使用ajj项目测试服务器
+  proxyTarget:'http://feooe.myds.me:6200/', //开发时的代理服务器地址，使用ajj项目测试服务器/
+  // proxyTarget:'http://feooe.myds.me:8090/', //开发时的代理服务器地址，使用ajj项目测试服务器
   // proxyTarget:'http://192.168.0.105:8090/', //开发时的代理服务器地址，使用ajj项目测试服务器
   isPathRewrite:true,  //开发时代理服务器是否需要重定向接口地址,当使用http://feooe.myds.me:6200/做开发服务器时，需要设置为true
   // isPathRewrite:false,  //开发时代理服务器是否需要重定向接口地址
@@ -63,7 +63,9 @@ const settings={
 
   // pubilcUrl:'/asrsajj/90_asrs/meeting/meetingGl/'     //会议管理
 
-  pubilcUrl:'/asrsajj/90_asrs/query/qycx/'     //综合查询  企业查询
+  // pubilcUrl:'/asrsajj/90_asrs/query/qycx/'     //综合查询  企业查询
+  // pubilcUrl:'/asrsajj/90_asrs/query/jccx/'     //综合查询  检查查询
+  pubilcUrl:'/asrsajj/90_asrs/query/qyzccx/'     //综合查询  企业自查查询
 
 
 }

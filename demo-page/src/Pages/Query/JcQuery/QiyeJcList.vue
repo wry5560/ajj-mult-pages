@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div  class="header-buttons-bar" style="padding-left: 5px">
+      <a-button @click="back"size="small">返回</a-button>
+    </div>
     <a-table
       bordered
       :rowClassName="rowClass"
@@ -111,7 +114,7 @@
   const modalTitle="检查"   //模态框的title标题通用变量
 
   //修改以下获取store数据的getters 配置
-  const getList='query_qiyejc_list'                //获取table的list
+  const getList='query_qiyejc_jclist'                //获取table的list
   // const getSearchValues='getQiyeZiChaSearchValues'                //获取table的list
   // const getSelOpitons=''   //获取选择项的配置内容
   const getDetailById=''              //获取某一具体记录的详情
@@ -138,7 +141,7 @@
             {title: '安全负责人', dataIndex: 'safefzr', width: '100px', align: 'left',titleAlign:'center'},
             {title: '安全负责人电话', dataIndex: 'safefzrlxfs', width: '120px', align: 'center',titleAlign:'center'},
             {title: '检查单类型', dataIndex: 'jcdlx', width: '100px', align: 'center',titleAlign:'center'},
-            {title: '隐患数/整改数', dataIndex: 'yhzg', width: '120px', align: 'center',titleAlign:'center'},
+//            {title: '隐患数/整改数', dataIndex: 'yhzg', width: '120px', align: 'center',titleAlign:'center'},
             {title: '检查时间', dataIndex: 'jctimeend', width: '100px', align: 'center',titleAlign:'center'},
             {title: '检查人', dataIndex: 'jcuser', width: '120px', align: 'left',titleAlign:'center'},
             {title: '要求整改时间', dataIndex: 'yqzgsj', width: '120px', align: 'center',titleAlign:'center'},
@@ -205,13 +208,13 @@
         item.yhzg=item.yhnum ? item.yhnum + '/'+ item.yzgnum :'- / -'
         // item.qylx0=item.qylx + (!item.qylx2 || item.qylx2=='' ? '': ' - ' + item.qylx2 )
       })
-      this.pagination.total=this.query_qiyejc_totalCount()
+      this.pagination.total=this.query_qiyejc_jcTotalCount()
 
       this.table.columns=initColumn(this.table.columns)
     },
     methods:{
       moment,
-      ...mapGetters(['getQiyeJcSearchValues','query_qiyejc_totalCount']),
+      ...mapGetters(['getQiyeJcSearchValues','query_qiyejc_jcTotalCount']),
       ...mapActions(['','']),
 
       //----------------------------------------------------表格通用方法--------------------------
@@ -326,6 +329,9 @@
           })
           .catch(err=>console.log(JSON.stringify(err)))
       },
+      back(){
+        this.$emit('back')
+      }
     }
   }
 </script>

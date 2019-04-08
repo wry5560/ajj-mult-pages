@@ -2,7 +2,9 @@ export const constantRouterMap = [
   {
     path: '/',
     name: 'index',
-    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Query/QiyeQuery/index'),
+    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Query/QiyeQuery/index'),
+    // component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Query/JcQuery/index'),
+    component: ()=>import(/* webpackChunkName: "index" */'@/Pages/Query/QiyezichaQuery/index'),
     meta: {keepAlive:true},
   },
 

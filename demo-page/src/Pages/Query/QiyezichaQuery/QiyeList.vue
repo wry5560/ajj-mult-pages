@@ -1,5 +1,10 @@
 <template>
   <div>
+    <a-spin  :spinning="pageLoading">
+      <div v-show="!showData">
+    <div  class="header-buttons-bar" style="padding-left: 5px">
+      <a-button @click="back"size="small">返回</a-button>
+    </div>
     <a-table
       bordered
       :rowClassName="rowClass"
@@ -23,11 +28,23 @@
           <!--</a-popconfirm>-->
           <!--<a href="javascript:;" @click="showModal('jc',record)">检查</a>-->
         </span>
-      <span slot="jcYdCell" slot-scope="text,record,index" >
-          <a href="javascript:;" @click="showModal('jcYdDetail',record)">{{text}}</a>
+      <span slot="fxpcList" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="showDataList('fxpcList',record)">{{text}}</a>
         </span>
-      <span slot="jcJdCell" slot-scope="text,record,index" >
-          <a href="javascript:;" @click="showModal('jcJdDetail',record)">{{text}}</a>
+      <span slot="fxpcwcList" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="showDataList('fxpcwcList',record)">{{text}}</a>
+        </span>
+      <span slot="gwpcList" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="showDataList('gwpcList',record)">{{text}}</a>
+        </span>
+      <span slot="gwpcwcList" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="showDataList('gwpcwcList',record)">{{text}}</a>
+        </span>
+      <span slot="yhList" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="showDataList('yhList',record)">{{text}}</a>
+        </span>
+      <span slot="zgList" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="showDataList('zgList',record)">{{text}}</a>
         </span>
       <span slot="defaultcustomRender" slot-scope="text,record,index">
           <template>
@@ -55,6 +72,12 @@
         size="small"/>
       <div style="clear: both"></div>
     </div>
+      </div>
+    <div v-if="showData">
+      <qiye-zicha-list v-if="dataType=='jc'" @back="()=>showData=false"></qiye-zicha-list>
+      <yinhuan-list v-if="dataType=='yh'" @back="()=>showData=false"></yinhuan-list>
+    </div>
+    </a-spin>
   </div>
 </template>
 
@@ -62,6 +85,9 @@
   import {  mapGetters,mapActions } from 'vuex'
   import { initColumn } from '@/utils/tableColumnInit'
   import moment from 'moment'
+
+  import QiyeZichaList from './QiyeZichaList.vue'
+  import YinhuanList from './YinhuanList.vue'
 
   //修改以下获取store数据的getters 配置
   const getList='query_qiyezicha_list'                //获取table的list
@@ -74,22 +100,27 @@
 
   export default {
     name:'queryZichaQiyeList',
-
+    components:{
+      QiyeZichaList,
+      YinhuanList
+    },
     data(){
       return{
-
+        showData:false,
+        dataType:'jc',
+        pageLoading:false,
         //表格配置
         table:{
           dataSource:[],
           columns:[
             {title: '序号', dataIndex: 'index', width: '50px',align: 'center'},
             {title: '企业名称',dataIndex: 'dwmc', width: '200px', align: 'left',titleAlign:'center'},
-            {title: '风险排查数量', dataIndex: 'yhpcNum', width: '100px', align: 'center',titleAlign:'center'},
-            {title: '风险排查完成数量', dataIndex: 'yhpcwcNum', width: '100px', align: 'center',titleAlign:'center'},
-            {title: '岗位排查数量', dataIndex: 'gwpcNum', width: '100px', align: 'center',titleAlign:'center'},
-            {title: '岗位排查完成数量', dataIndex: 'gwpcwcNum', width: '100px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'jcYdCell'}},
-            {title: '自查隐患数量', dataIndex: 'yhNum', width: '100px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'jcJdCell'}},
-            {title: '隐患整改数量', dataIndex: 'yhzgNum', width: '100px', align: 'center',titleAlign:'center'},
+            {title: '风险排查数量', dataIndex: 'yhpcNum', width: '100px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'fxpcList'}},
+            {title: '风险排查完成数量', dataIndex: 'yhpcwcNum', width: '100px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'fxpcwcList'}},
+            {title: '岗位排查数量', dataIndex: 'gwpcNum', width: '100px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'gwpcList'}},
+            {title: '岗位排查完成数量', dataIndex: 'gwpcwcNum', width: '100px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'gwpcwcList'}},
+            {title: '自查隐患数量', dataIndex: 'yhNum', width: '100px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'yhList'}},
+            {title: '隐患整改数量', dataIndex: 'yhzgNum', width: '100px', align: 'center',titleAlign:'center',scopedSlots: {customRender: 'zgList'}},
             // {title: '本年隐患数', dataIndex: 'bnyhnum', width: '80px', align: 'center',titleAlign:'center'},
             // {title: '本年已整改数', dataIndex: 'bnyzgnum', width: '80px', align: 'center',titleAlign:'center'},
             // {title: '操作', dataIndex: 'actions', width: '60px', align: 'center', scopedSlots: {customRender: 'actionCell'}},
@@ -186,6 +217,174 @@
           })
           .catch(err=>console.log(JSON.stringify(err)))
       },
+      showDataList(type,record){
+        this.pageLoading=true
+        const searchVlaues= {...this.getQiyeZiChaSearchValues()}
+        searchVlaues.param1=record.departmentId
+        switch (type){
+          case 'fxpcList':
+            searchVlaues.param2=16
+            this.$store.dispatch('reqQiyeZichaInfoList',searchVlaues)
+              .then((res)=>{
+                if(res.success){
+                  if(res.data.length>0){
+                    this.pageLoading=false
+                    this.showData=true
+                    this.dataType='jc'
+                  }else{
+                    this.$error({
+                      title:"没有符合要求的结果！",
+                      content:"请重新设置搜索条件！"
+                    })
+                    this.pageLoading=false
+                  }
+                }else{
+                  this.$message.error(res.message)
+                  this.pageLoading=false
+                }
+              })
+              .catch(err=>{
+                console.log(JSON.stringify(err))
+                this.pageLoading=false
+              })
+            break
+          case 'fxpcwcList':
+            searchVlaues.param2=16
+            searchVlaues.param3=1
+            this.$store.dispatch('reqQiyeZichaInfoList',searchVlaues)
+              .then((res)=>{
+                if(res.success){
+                  if(res.data.length>0){
+                    this.pageLoading=false
+                    this.showData=true
+                    this.dataType='jc'
+                  }else{
+                    this.$error({
+                      title:"没有符合要求的结果！",
+                      content:"请重新设置搜索条件！"
+                    })
+                    this.pageLoading=false
+                  }
+                }else{
+                  this.$message.error(res.message)
+                  this.pageLoading=false
+                }
+              })
+              .catch(err=>{
+                console.log(JSON.stringify(err))
+                this.pageLoading=false
+              })
+            break
+          case 'gwpcList':
+            searchVlaues.param2=17
+            this.$store.dispatch('reqQiyeZichaInfoList',searchVlaues)
+              .then((res)=>{
+                if(res.success){
+                  if(res.data.length>0){
+                    this.pageLoading=false
+                    this.showData=true
+                    this.dataType='jc'
+                  }else{
+                    this.$error({
+                      title:'没有符合要求的结果！',
+                      content:'请重新设置搜索条件！'
+                    })
+                    this.pageLoading=false
+                  }
+                }else{
+                  this.$message.error(res.message)
+                  this.pageLoading=false
+                }
+              })
+              .catch(err=>{
+                console.log(JSON.stringify(err))
+                this.pageLoading=false
+              })
+            break
+          case 'gwpcwcList':
+            searchVlaues.param2=17
+            searchVlaues.param3=1
+            this.$store.dispatch('reqQiyeZichaInfoList',searchVlaues)
+              .then((res)=>{
+                if(res.success){
+                  if(res.data.length>0){
+                    this.pageLoading=false
+                    this.showData=true
+                    this.dataType='jc'
+                  }else{
+                    this.$error({
+                      title:'没有符合要求的结果！',
+                      content:'请重新设置搜索条件！'
+                    })
+                    this.pageLoading=false
+                  }
+                }else{
+                  this.$message.error(res.message)
+                  this.pageLoading=false
+                }
+              })
+              .catch(err=>{
+                console.log(JSON.stringify(err))
+                this.pageLoading=false
+              })
+            break
+          case 'yhList':
+            this.$store.dispatch('reqQiyeZichaYinhuanList',searchVlaues)
+              .then((res)=>{
+                if(res.success){
+                  if(res.data.length>0){
+                    this.pageLoading=false
+                    this.showData=true
+                    this.dataType='yh'
+                  }else{
+                    this.$error({
+                      title:"没有符合要求的结果！",
+                      content:"请重新设置搜索条件！"
+                    })
+                    this.pageLoading=false
+                  }
+                }else{
+                  this.$message.error(res.message)
+                  this.pageLoading=false
+                }
+              })
+              .catch(err=>{
+                console.log(JSON.stringify(err))
+                this.pageLoading=false
+              })
+            break
+          case 'zgList':
+            searchVlaues.param2=1
+            this.$store.dispatch('reqQiyeZichaYinhuanList',searchVlaues)
+              .then((res)=>{
+                if(res.success){
+                  if(res.data.length>0){
+                    this.pageLoading=false
+                    this.showData=true
+                    this.dataType='yh'
+                  }else{
+                    this.$error({
+                      title:"没有符合要求的结果！",
+                      content:"请重新设置搜索条件！"
+                    })
+                    this.pageLoading=false
+                  }
+                }else{
+                  this.$message.error(res.message)
+                  this.pageLoading=false
+                }
+              })
+              .catch(err=>{
+                console.log(JSON.stringify(err))
+                this.pageLoading=false
+              })
+            break
+        }
+      },
+
+      back(){
+        this.$emit('back')
+      }
     }
   }
 </script>

@@ -16,25 +16,25 @@
           <div class="search-item">
             <span class="search-title">开始时间：</span>
             <span class="search-input">
-              <a-date-picker style="width: 100%" v-model="searchValues.param1" placeholder="请选择开始时间"></a-date-picker>
+              <a-date-picker style="width: 100%" v-model="searchValues.startTime" placeholder="请选择开始时间"></a-date-picker>
             </span>
           </div>
           <div class="search-item">
             <span class="search-title">截止时间：</span>
             <span class="search-input">
-              <a-date-picker style="width: 100%" v-model="searchValues.param2" placeholder="请选择截止时间"></a-date-picker>
+              <a-date-picker style="width: 100%" v-model="searchValues.endTime" placeholder="请选择截止时间"></a-date-picker>
             </span>
           </div>
         <div class="search-item">
           <span class="search-title">企业名称：</span>
           <span class="search-input">
-            <a-input v-model="searchValues.param3" placeholder="请输入企业名称"></a-input>
+            <a-input v-model="searchValues.qyname" placeholder="请输入企业名称"></a-input>
           </span>
         </div>
         <div class="search-item">
           <span class="search-title">企业地址：</span>
           <span class="search-input">
-            <a-input v-model="searchValues.param4" placeholder="请输入企业地址"></a-input>
+            <a-input v-model="searchValues.qydz" placeholder="请输入企业地址"></a-input>
           </span>
         </div>
         <div class="search-item">
@@ -45,7 +45,7 @@
               style="width:100%"
               :loadData="selLoadData"
               placeholder="请选择企业类型"
-              v-model="searchValues.param5"
+              v-model="searchValues.qylx"
               changeOnSelect />
           </span>
         </div>
@@ -57,7 +57,7 @@
               style="width:100%"
               :loadData="selGmjjLoadData"
               placeholder="请选择国名经济类型"
-              v-model="searchValues.param6"
+              v-model="searchValues.gmjjfl"
               changeOnSelect />
           </span>
         </div>
@@ -68,11 +68,30 @@
               :options="selectOptions['安全监管行业']"
               style="width:100%"
               placeholder="请选择工贸行业类型"
-              v-model="searchValues.param7"
+              v-model="searchValues.gmhy"
               allowClear />
           </span>
         </div>
-
+          <div class="search-item" v-if="searchValues.type==2">
+            <span class="search-title">工单类型：</span>
+            <span class="search-input">
+              <a-radio-group v-model="searchValues.gdlx">
+                <a-radio :value="2">全部</a-radio>
+                <a-radio :value="16">风险排查</a-radio>
+                <a-radio :value="17">岗位排查</a-radio>
+              </a-radio-group>
+            </span>
+          </div>
+          <div class="search-item" v-if="searchValues.type!=1">
+            <span class="search-title">是否完成：</span>
+            <span class="search-input">
+              <a-radio-group v-model="searchValues.sfwc">
+                <a-radio :value="2">全部</a-radio>
+                <a-radio :value="1">是</a-radio>
+                <a-radio :value="0">否</a-radio>
+              </a-radio-group>
+            </span>
+          </div>
         <div style="text-align: right">
           <a-button type='primary' style="margin-right:8px" @click="search" >搜索</a-button>
           <a-button  style="margin-left: 5px"  @click="clearSearch">清除搜索项</a-button>
@@ -80,12 +99,9 @@
       </a-card>
       </div>
       <div v-if="showData" style="text-align: left">
-        <div  class="header-buttons-bar" style="padding-left: 5px">
-          <a-button @click="back"size="small">返回</a-button>
-          <qiye-list v-if="searchValues.type==1"></qiye-list>
-          <qiye-zicha-list v-if="searchValues.type==2"></qiye-zicha-list>
-          <yinhuan-list v-if="searchValues.type==3"></yinhuan-list>
-        </div>
+          <qiye-list  @back="()=>showData=false" v-if="searchValues.type==1"></qiye-list>
+          <qiye-zicha-list  @back="()=>showData=false" v-if="searchValues.type==2"></qiye-zicha-list>
+          <yinhuan-list  @back="()=>showData=false" v-if="searchValues.type==3"></yinhuan-list>
       </div>
     </a-spin>
   </div>
@@ -119,13 +135,15 @@
         pageLoading:false,
         showData:false,
         searchValues:{
-          param1:null,
-          param2:null,
-          param3:'',
-          param4:'',
-          param5:[],
-          param6:[],
-          param7:undefined,
+          startTime:null,
+          endTime:null,
+          qyname:'',
+          qydz:'',
+          qylx:[],
+          gmjjfl:[],
+          gmhy:undefined,
+          gdlx:2,
+          sfwc:2,
           type:1,
         },
         selectOptions:{},
@@ -233,45 +251,48 @@
         let reqList=''
         switch (this.searchValues.type) {
           case 1:
-            if(this.searchValues.param1)commitValues.param1=this.searchValues.param1.format('YYYY-MM-DD')
-            if(this.searchValues.param2)commitValues.param2=this.searchValues.param2.format('YYYY-MM-DD')
-            if(this.searchValues.param3!='')commitValues.param3=this.searchValues.param3
-            if(this.searchValues.param4!='')commitValues.param4=this.searchValues.param4
-            if(this.searchValues.param5.length>0)commitValues.param5=this.searchValues.param5[0]
-            if(this.searchValues.param5.length>1)commitValues.param6=this.searchValues.param5[1]
-            if(this.searchValues.param6.length>0)commitValues.param7=this.searchValues.param6[0]
-            if(this.searchValues.param6.length>1)commitValues.param8=this.searchValues.param6[1]
-            if(this.searchValues.param6.length>2)commitValues.param9=this.searchValues.param6[2]
-            if(this.searchValues.param6.length>3)commitValues.param10=this.searchValues.param4[3]
-            commitValues.param11=this.searchValues.param7
+            if(this.searchValues.startTime)commitValues.param1=this.searchValues.startTime.format('YYYY-MM-DD')
+            if(this.searchValues.endTime)commitValues.param2=this.searchValues.endTime.format('YYYY-MM-DD')
+            if(this.searchValues.qyname!='')commitValues.param3=this.searchValues.qyname
+            if(this.searchValues.qydz!='')commitValues.param4=this.searchValues.qydz
+            if(this.searchValues.qylx.length>0)commitValues.param5=this.searchValues.qylx[0]
+            if(this.searchValues.qylx.length>1)commitValues.param6=this.searchValues.qylx[1]
+            if(this.searchValues.gmjjfl.length>0)commitValues.param7=this.searchValues.gmjjfl[0]
+            if(this.searchValues.gmjjfl.length>1)commitValues.param8=this.searchValues.gmjjfl[1]
+            if(this.searchValues.gmjjfl.length>2)commitValues.param9=this.searchValues.gmjjfl[2]
+            if(this.searchValues.gmjjfl.length>3)commitValues.param10=this.searchValues.gmjjfl[3]
+            if(this.searchValues.gmhy)commitValues.param11=this.searchValues.gmhy
             reqList='reqQiyeZichaQueryList'
                 break
           case 2:
-            if(this.searchValues.param1)commitValues.param1=this.searchValues.param1.format('YYYY-MM-DD')
-            if(this.searchValues.param2)commitValues.param2=this.searchValues.param2.format('YYYY-MM-DD')
-            if(this.searchValues.param3!='')commitValues.param3=this.searchValues.param3
-            if(this.searchValues.param4!='')commitValues.param4=this.searchValues.param4
-            if(this.searchValues.param5.length>0)commitValues.param5=this.searchValues.param5[0]
-            if(this.searchValues.param5.length>1)commitValues.param6=this.searchValues.param5[1]
-            if(this.searchValues.param6.length>0)commitValues.param7=this.searchValues.param6[0]
-            if(this.searchValues.param6.length>1)commitValues.param8=this.searchValues.param6[1]
-            if(this.searchValues.param6.length>2)commitValues.param9=this.searchValues.param6[2]
-            if(this.searchValues.param6.length>3)commitValues.param10=this.searchValues.param4[3]
-            commitValues.param11=this.searchValues.param7
+            if(this.searchValues.startTime)commitValues.param4=this.searchValues.startTime.format('YYYY-MM-DD')
+            if(this.searchValues.endTime)commitValues.param5=this.searchValues.endTime.format('YYYY-MM-DD')
+            if(this.searchValues.qyname!='')commitValues.param6=this.searchValues.qyname
+            if(this.searchValues.qydz!='')commitValues.param7=this.searchValues.qydz
+            if(this.searchValues.qylx.length>0)commitValues.param8=this.searchValues.qylx[0]
+            if(this.searchValues.qylx.length>1)commitValues.param9=this.searchValues.qylx[1]
+            if(this.searchValues.gmjjfl.length>0)commitValues.param10=this.searchValues.gmjjfl[0]
+            if(this.searchValues.gmjjfl.length>1)commitValues.param11=this.searchValues.gmjjfl[1]
+            if(this.searchValues.gmjjfl.length>2)commitValues.param12=this.searchValues.gmjjfl[2]
+            if(this.searchValues.gmjjfl.length>3)commitValues.param13=this.searchValues.gmjjfl[3]
+            if(this.searchValues.gmhy)commitValues.param14=this.searchValues.gmhy
+            if(this.searchValues.gdlx!=2)commitValues.param2=this.searchValues.gdlx
+            if(this.searchValues.sfwc!=2)commitValues.param3=this.searchValues.sfwc
             reqList='reqQiyeZichaInfoList'
             break
           case 3:
-            if(this.searchValues.param1)commitValues.param1=this.searchValues.param1.format('YYYY-MM-DD')
-            if(this.searchValues.param2)commitValues.param2=this.searchValues.param2.format('YYYY-MM-DD')
-            if(this.searchValues.param3!='')commitValues.param3=this.searchValues.param3
-            if(this.searchValues.param4!='')commitValues.param4=this.searchValues.param4
-            if(this.searchValues.param5.length>0)commitValues.param5=this.searchValues.param5[0]
-            if(this.searchValues.param5.length>1)commitValues.param6=this.searchValues.param5[1]
-            if(this.searchValues.param6.length>0)commitValues.param7=this.searchValues.param6[0]
-            if(this.searchValues.param6.length>1)commitValues.param8=this.searchValues.param6[1]
-            if(this.searchValues.param6.length>2)commitValues.param9=this.searchValues.param6[2]
-            if(this.searchValues.param6.length>3)commitValues.param10=this.searchValues.param4[3]
-            commitValues.param11=this.searchValues.param7
+            if(this.searchValues.startTime)commitValues.param3=this.searchValues.startTime.format('YYYY-MM-DD')
+            if(this.searchValues.endTime)commitValues.param4=this.searchValues.endTime.format('YYYY-MM-DD')
+            if(this.searchValues.qyname!='')commitValues.param5=this.searchValues.qyname
+            if(this.searchValues.qydz!='')commitValues.param6=this.searchValues.qydz
+            if(this.searchValues.qylx.length>0)commitValues.param7=this.searchValues.qylx[0]
+            if(this.searchValues.qylx.length>1)commitValues.param8=this.searchValues.qylx[1]
+            if(this.searchValues.gmjjfl.length>0)commitValues.param9=this.searchValues.gmjjfl[0]
+            if(this.searchValues.gmjjfl.length>1)commitValues.param10=this.searchValues.gmjjfl[1]
+            if(this.searchValues.gmjjfl.length>2)commitValues.param11=this.searchValues.gmjjfl[2]
+            if(this.searchValues.gmjjfl.length>3)commitValues.param12=this.searchValues.gmjjfl[3]
+            if(this.searchValues.gmhy)commitValues.param13=this.searchValues.gmhy
+            if(this.searchValues.sfwc!=2)commitValues.param2=this.searchValues.sfwc
             reqList='reqQiyeZichaYinhuanList'
             break
         }
@@ -304,13 +325,15 @@
             },
       clearSearch(){
         this.searchValues={
-          param1:null,
-          param2:null,
-          param3:'',
-          param4:'',
-          param5:[],
-          param6:[],
-          param7:undefined,
+          startTime:null,
+          endTime:null,
+          qyname:'',
+          qydz:'',
+          qylx:[],
+          gmjjfl:[],
+          gmhy:undefined,
+          gdlx:this.searchValues.gdlx,
+          sfwc:this.searchValues.sfwc,
           type:this.searchValues.type
         }
         this.$store.commit(clearSearchMutation)

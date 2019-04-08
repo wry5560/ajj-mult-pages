@@ -1,16 +1,21 @@
 <template>
   <div>
-    <a-table
-      bordered
-      :rowClassName="rowClass"
-      :dataSource="table.dataSource"
-      :columns="table.columns"
-      :pagination= "false"
-      :size="table.size"
-      :loading="table.tableIsLoading"
-      :scroll="table.scrollSize"
-      :rowSelection="table.rowSelection"
-    >
+    <a-spin  :spinning="pageLoading">
+    <div v-show="!showData">
+      <div  class="header-buttons-bar" style="padding-left: 5px">
+        <a-button @click="back"size="small">返回</a-button>
+      </div>
+      <a-table
+        bordered
+        :rowClassName="rowClass"
+        :dataSource="table.dataSource"
+        :columns="table.columns"
+        :pagination= "false"
+        :size="table.size"
+        :loading="table.tableIsLoading"
+        :scroll="table.scrollSize"
+        :rowSelection="table.rowSelection"
+      >
         <span slot="actionCell" slot-scope="text,record,index" >
           <!--<a href="javascript:;" @click="showModal('query',record)">查看</a>-->
           <!--<a-divider v-if="" type="vertical" />-->
@@ -23,22 +28,22 @@
           <!--</a-popconfirm>-->
           <!--<a href="javascript:;" @click="showModal('jc',record)">检查</a>-->
         </span>
-      <span slot="jcCell" slot-scope="text,record,index" >
-          <a href="javascript:;" @click="showModal('jcList',record)">{{text}}</a>
+        <span slot="jcCell" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="showDataList('jcList',record)">{{text}}</a>
         </span>
-      <span slot="fcCell" slot-scope="text,record,index" >
-          <a href="javascript:;" @click="showModal('fcList',record)">{{text}}</a>
+        <span slot="fcCell" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="showDataList('fcList',record)">{{text}}</a>
         </span>
-      <span slot="fcwcCell" slot-scope="text,record,index" >
-          <a href="javascript:;" @click="showModal('fcwcList',record)">{{text}}</a>
+        <span slot="fcwcCell" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="showDataList('fcwcList',record)">{{text}}</a>
         </span>
-      <span slot="yhCell" slot-scope="text,record,index" >
-          <a href="javascript:;" @click="showModal('yhList',record)">{{text}}</a>
+        <span slot="yhCell" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="showDataList('yhList',record)">{{text}}</a>
         </span>
-      <span slot="zgCell" slot-scope="text,record,index" >
-          <a href="javascript:;" @click="showModal('zgList',record)">{{text}}</a>
+        <span slot="zgCell" slot-scope="text,record,index" >
+          <a href="javascript:;" @click="showDataList('zgList',record)">{{text}}</a>
         </span>
-      <span slot="defaultcustomRender" slot-scope="text,record,index">
+        <span slot="defaultcustomRender" slot-scope="text,record,index">
           <template>
             <a-tooltip :mouseEnterDelay="0.8">
               <template slot='title'>
@@ -48,22 +53,28 @@
             </a-tooltip>
           </template>
         </span>
-    </a-table>
-    <div class="bottom-pagination-warpper">
-      <a-pagination
-        v-model="pagination.current"
-        style="float:right;"
-        :total="pagination.total"
-        :pageSizeOptions="pagination.pageSizeOptions"
-        :pageSize="pagination.pageSize"
-        showSizeChanger
-        showQuickJumper
-        :showTotal="total =>`共${total}条数据`"
-        @change="changeCurrentPage"
-        @showSizeChange="showSizeChange"
-        size="small"/>
-      <div style="clear: both"></div>
+      </a-table>
+      <div class="bottom-pagination-warpper">
+        <a-pagination
+          v-model="pagination.current"
+          style="float:right;"
+          :total="pagination.total"
+          :pageSizeOptions="pagination.pageSizeOptions"
+          :pageSize="pagination.pageSize"
+          showSizeChanger
+          showQuickJumper
+          :showTotal="total =>`共${total}条数据`"
+          @change="changeCurrentPage"
+          @showSizeChange="showSizeChange"
+          size="small"/>
+        <div style="clear: both"></div>
+      </div>
     </div>
+    <div v-if="showData">
+      <qiye-jc-list v-if="dataType=='jc'" @back="()=>showData=false"></qiye-jc-list>
+      <yinhuan-list v-if="dataType=='yh'" @back="()=>showData=false"></yinhuan-list>
+    </div>
+    </a-spin>
   </div>
 </template>
 
@@ -71,6 +82,9 @@
   import {  mapGetters,mapActions } from 'vuex'
   import { initColumn } from '@/utils/tableColumnInit'
   import moment from 'moment'
+
+  import QiyeJcList from './QiyeJcList.vue'
+  import YinhuanList from './YinhuanList.vue'
 
   //修改以下获取store数据的getters 配置
   const getList='query_qiyejc_list'                //获取table的list
@@ -83,10 +97,15 @@
 
   export default {
     name:'queryJcQiyeList',
-
+    components:{
+      QiyeJcList,
+      YinhuanList
+    },
     data(){
       return{
-
+        showData:false,
+        dataType:'jc',
+        pageLoading:false,
         //表格配置
         table:{
           dataSource:[],
@@ -200,6 +219,147 @@
           })
           .catch(err=>console.log(JSON.stringify(err)))
       },
+
+      showDataList(type,record){
+          this.pageLoading=true
+       const searchVlaues= {...this.getQiyeJcSearchValues()}
+        searchVlaues.param2=record.id
+        switch (type){
+          case 'jcList':
+            this.$store.dispatch('reqQiyeJcInfoList',searchVlaues)
+              .then((res)=>{
+                if(res.success){
+                  if(res.data.length>0){
+                    this.pageLoading=false
+                    this.showData=true
+                    this.dataType='jc'
+                  }else{
+                    this.$error({
+                      title:"没有符合要求的结果！",
+                      content:"请重新设置搜索条件！"
+                    })
+                    this.pageLoading=false
+                  }
+                }else{
+                  this.$message.error(res.message)
+                  this.pageLoading=false
+                }
+              })
+              .catch(err=>{
+                console.log(JSON.stringify(err))
+                this.pageLoading=false
+              })
+              break
+          case 'fcList':
+            searchVlaues.param5=1
+            this.$store.dispatch('reqQiyeJcInfoList',searchVlaues)
+              .then((res)=>{
+                if(res.success){
+                  if(res.data.length>0){
+                    this.pageLoading=false
+                    this.showData=true
+                    this.dataType='jc'
+                  }else{
+                    this.$error({
+                      title:"没有符合要求的结果！",
+                      content:"请重新设置搜索条件！"
+                    })
+                    this.pageLoading=false
+                  }
+                }else{
+                  this.$message.error(res.message)
+                  this.pageLoading=false
+                }
+              })
+              .catch(err=>{
+                console.log(JSON.stringify(err))
+                this.pageLoading=false
+              })
+            break
+          case 'fcwcList':
+            searchVlaues.param5=1
+            searchVlaues.param6=1
+            this.$store.dispatch('reqQiyeJcInfoList',searchVlaues)
+              .then((res)=>{
+                if(res.success){
+                  if(res.data.length>0){
+                    this.pageLoading=false
+                    this.showData=true
+                    this.dataType='jc'
+                  }else{
+                    this.$error({
+                      title:'没有符合要求的结果！',
+                      content:'请重新设置搜索条件！'
+                    })
+                    this.pageLoading=false
+                  }
+                }else{
+                  this.$message.error(res.message)
+                  this.pageLoading=false
+                }
+              })
+              .catch(err=>{
+                console.log(JSON.stringify(err))
+                this.pageLoading=false
+              })
+            break
+          case 'yhList':
+            this.$store.dispatch('reqQiyeJcYinhuanList',searchVlaues)
+              .then((res)=>{
+                if(res.success){
+                  if(res.data.length>0){
+                    this.pageLoading=false
+                    this.showData=true
+                    this.dataType='yh'
+                  }else{
+                    this.$error({
+                      title:"没有符合要求的结果！",
+                      content:"请重新设置搜索条件！"
+                    })
+                    this.pageLoading=false
+                  }
+                }else{
+                  this.$message.error(res.message)
+                  this.pageLoading=false
+                }
+              })
+              .catch(err=>{
+                console.log(JSON.stringify(err))
+                this.pageLoading=false
+              })
+            break
+          case 'zgList':
+            searchVlaues.param5='已整改'
+            this.$store.dispatch('reqQiyeJcYinhuanList',searchVlaues)
+              .then((res)=>{
+                if(res.success){
+                  if(res.data.length>0){
+                    this.pageLoading=false
+                    this.showData=true
+                    this.dataType='yh'
+                  }else{
+                    this.$error({
+                      title:"没有符合要求的结果！",
+                      content:"请重新设置搜索条件！"
+                    })
+                    this.pageLoading=false
+                  }
+                }else{
+                  this.$message.error(res.message)
+                  this.pageLoading=false
+                }
+              })
+              .catch(err=>{
+                console.log(JSON.stringify(err))
+                this.pageLoading=false
+              })
+            break
+        }
+      },
+
+      back(){
+        this.$emit('back')
+      }
     }
   }
 </script>
